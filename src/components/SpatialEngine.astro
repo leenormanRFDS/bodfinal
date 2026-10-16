@@ -1,0 +1,214 @@
+---
+/**
+ * THE BOMBING OF DARWIN — HISTORICAL SPATIAL ENGINE
+ * Spatial Engine Stage Component
+ * 
+ * Provides the persistent CesiumJS geographic viewport, 
+ * museum-grade institutional orientation overlays, and the static WebGL fallback.
+ */
+
+import { CANONICAL_EVIDENCE_RECORDS } from '../lib/spatial/spatial-evidence-overlay';
+
+interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class={`spatial-stage ${className}`} data-spatial-stage id="spatial-engine-root">
+  <!-- Screen reader / keyboard accessible evidence roster -->
+  <div class="spatial-stage__evidence-access sr-only">
+    <h2>Accessible Spatial Evidence Ledger</h2>
+    <ul>
+      {Object.entries(CANONICAL_EVIDENCE_RECORDS).map(([id, record]) => (
+        <li>
+          <button 
+            type="button" 
+            data-evidence-id={id} 
+            aria-haspopup="dialog"
+            onclick={`if (typeof openEvidenceLedger === 'function' && typeof CANONICAL_EVIDENCE_RECORDS !== 'undefined') { const id = '${id}'; openEvidenceLedger(CANONICAL_EVIDENCE_RECORDS[id]); }`}
+          >
+            {record.title} ({record.time})
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Development state buttons (hidden in production) -->
+  {import.meta.env.DEV && (
+    <div class="spatial-stage__dev-hud sr-only" aria-label="Development Spatial Controls">
+      <button type="button" class="spatial-state-btn" data-state-id="STATE_00_WORLD">World</button>
+      <button type="button" class="spatial-state-btn" data-state-id="STATE_01_NORTH">North</button>
+      <button type="button" class="spatial-state-btn" data-state-id="STATE_02_DARWIN">Darwin</button>
+      <button type="button" class="spatial-state-btn" data-state-id="STATE_03_WHARF">Wharf</button>
+    </div>
+  )}
+
+  <!-- Spatial Canvas Container for Cesium -->
+  <div class="spatial-stage__canvas" data-cesium-container id="cesium-container" aria-label="Geographic spatial view of Australia and Darwin Harbour" role="region">
+  </div>
+
+  <!-- Accessible Static / WebGL Failure Fallback -->
+  <div class="spatial-fallback" data-spatial-fallback aria-hidden="true">
+    <div class="spatial-fallback__inner">
+      <div class="spatial-fallback__header">
+        <span class="spatial-fallback__tag">GEOGRAPHIC STAGE · CONTEMPORARY GEOGRAPHY</span>
+        <span class="spatial-fallback__coord">12°28'21"S · 130°50'55"E</span>
+      </div>
+      <div class="spatial-fallback__visual">
+        <svg viewBox="0 0 400 300" class="spatial-fallback__map" aria-label="Stylized dark map of Darwin Harbour and Stokes Hill Wharf">
+          <rect width="100%" height="100%" fill="#070A0E" />
+          <!-- Continental / Harbour contours -->
+          <path d="M 40,80 Q 140,50 200,90 T 320,120 T 380,240 L 400,300 L 0,300 Z" fill="#181D23" stroke="#222830" stroke-width="1.5" />
+          <path d="M 120,140 Q 180,120 220,160 T 300,220" fill="none" stroke="#252B32" stroke-dasharray="3 3" />
+          <!-- Stokes Hill Wharf Marker (Contemporary) -->
+          <circle cx="218" cy="164" r="5" fill="#C6A15B" />
+          <circle cx="218" cy="164" r="14" fill="none" stroke="#C6A15B" stroke-width="1" opacity="0.4" />
+          <text x="232" y="168" fill="#EEE9DF" font-family="monospace" font-size="10" letter-spacing="1">STOKES HILL WHARF</text>
+        </svg>
+      </div>
+      <p class="spatial-fallback__desc">
+        Hardware-accelerated 3D is inactive. Displaying geographic orientation coordinates for Stokes Hill Wharf, Darwin Harbour (contemporary survey).
+      </p>
+    </div>
+  </div>
+
+  <!-- Restrained footer metadata & compliant attribution -->
+  <footer class="spatial-stage__foot" aria-label="Spatial Engine Metadata and Attribution">
+    <span class="spatial-stage__scope" data-spatial-scope>AUSTRALIA & INDO-PACIFIC</span>
+    <div class="spatial-stage__credits" data-spatial-credits id="spatial-credits">
+      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> · <a href="https://carto.com/attributions" target="_blank" rel="noopener">© CARTO</a> · GEOSCIENCE AUSTRALIA
+    </div>
+  </footer>
+</div>
+
+<style>
+  .spatial-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #070A0E;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .spatial-stage__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: #070A0E;
+    pointer-events: none;
+  }
+
+  /* Remove default Cesium canvas focus ring / border */
+  .spatial-stage__canvas :global(canvas) {
+    outline: none !important;
+  }
+
+  /* WebGL Fallback */
+  .spatial-fallback {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: #07090B;
+    padding: 24px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spatial-fallback.is-active {
+    display: flex;
+  }
+
+  .spatial-fallback__inner {
+    max-width: 360px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border: 1px solid rgba(236, 231, 219, 0.12);
+    padding: 20px;
+    background: rgba(17, 20, 24, 0.92);
+  }
+
+  .spatial-fallback__header {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    color: var(--bone-mute, #949a9e);
+    letter-spacing: 0.08em;
+  }
+
+  .spatial-fallback__visual {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 1px solid rgba(236, 231, 219, 0.06);
+    overflow: hidden;
+  }
+
+  .spatial-fallback__desc {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+    color: var(--bone-dim, #d7d0c4);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Footer */
+  .spatial-stage__foot {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 8px 14px;
+    background: linear-gradient(0deg, rgba(7, 9, 11, 0.92) 0%, transparent 100%);
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.58rem;
+    color: var(--bone-mute, #949a9e);
+    letter-spacing: 0.08em;
+  }
+
+  .spatial-stage__credits {
+    opacity: 0.85;
+    pointer-events: auto;
+  }
+
+  .spatial-stage__credits a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(148, 154, 158, 0.4);
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .spatial-stage__credits a:hover {
+    color: var(--bone, #eee9df);
+    border-bottom-color: var(--bone, #eee9df);
+  }
+</style>
+
+<script>
+  import { CANONICAL_EVIDENCE_RECORDS } from '../lib/spatial/spatial-evidence-overlay';
+
+  // Wire accessible evidence roster for keyboard users
+  document.querySelectorAll<HTMLButtonElement>('.spatial-stage__evidence-access button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.evidenceId;
+      if (id && (window as any).openEvidenceLedger) {
+        (window as any).openEvidenceLedger(CANONICAL_EVIDENCE_RECORDS[id]);
+      }
+    });
+  });
+</script>
+

@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { CONTACT } from '../consts';
+
+const faqs = [
+  { q: 'Does my ticket include both experiences?', a: 'Yes. Every ticket includes full entry to both the Bombing of Darwin Experience and the Royal Flying Doctor Service Experience.' },
+  { q: 'How long should I allow?', a: 'Around two hours to experience both facilities at your own pace.' },
+  { q: 'Is it indoors?', a: 'Entirely indoors and fully air-conditioned. Comfortable footwear is recommended.' },
+  { q: 'Is it suitable for children?', a: 'Yes. The reenactment uses immersive audio, virtual reality and a brief air effect — every module is optional, so children can sit any part out.' },
+  { q: 'What is the Family ticket?', a: 'The Family ticket covers 2 adults and 3 children for $90 — our best value.' },
+  { q: 'Is there parking?', a: 'Free for the first three hours at Stokes Hill Wharf via PayStay, and the free Darwin Waterfront Shuttle stops directly outside.' },
+  { q: 'Is the experience accessible?', a: 'Step-free throughout, with Companion Cards and accredited assistance animals welcome. See our Accessibility page for full detail.' },
+];
+---
+<Base title="Contact" description="Contact the Bombing of Darwin Experience at Stokes Hill Wharf, Darwin — general enquiries, group bookings, venue hire and trade partnerships.">
+  <PageHeader record="Get in touch" title="Contact" />
+
+  <section class="section">
+    <div class="container grid">
+      <div>
+        <p class="eyebrow">Directory</p>
+        <dl class="deflist">
+          <div><dt>PRESENCE / FACILITY</dt><dd>{CONTACT.address}<br /><a href="tel:+61889835700" data-phone-trigger>{CONTACT.phone}</a></dd></div>
+          <div><dt>GENERAL ENQUIRIES</dt><dd><a href={`mailto:${CONTACT.email}`} data-enquiry-trigger="general" role="button">Contact General Support →</a></dd></div>
+          <div><dt>EDUCATION & GROUPS</dt><dd><a href="mailto:bookingsdrw@flyingdoctor.net.au" data-enquiry-trigger="schools" role="button">Enquire About School &amp; Group Visits →</a></dd></div>
+          <div><dt>TRADE & PARTNERSHIPS</dt><dd><a href="mailto:bek.garrett@flyingdoctor.net" data-enquiry-trigger="trade" role="button">Contact Trade &amp; Industry Partnerships →</a></dd></div>
+          <div><dt>VENUE HIRE & EVENTS</dt><dd><a href="mailto:bookingsdrw@flyingdoctor.net.au" data-enquiry-trigger="venue" role="button">Enquire About Exclusive Venue Hire →</a></dd></div>
+        </dl>
+      </div>
+
+      <div>
+        <p class="eyebrow">Frequently asked</p>
+        <div class="faq">
+          {faqs.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p class="prose">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: clamp(40px, 7vw, 72px);">
+      <p class="eyebrow">Find us</p>
+      <div class="cmap map-embed">
+        <iframe
+          src="https://www.google.com/maps?q=Royal%20Flying%20Doctor%20Service%20Darwin%20Tourist%20Facility%2C%2045%20Stokes%20Hill%20Road%2C%20Darwin%20NT&output=embed"
+          title="Map — RFDS Darwin Tourist Facility, Stokes Hill Wharf"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 80px); }
+  .deflist dd a:hover { color: var(--gold-bright); }
+  .faq details { border-top: 1px solid var(--line); }
+  .faq details:last-child { border-bottom: 1px solid var(--line); }
+  .faq summary {
+    cursor: pointer; list-style: none; padding: 18px 0;
+    font-family: var(--font-sans); font-weight: 500; color: var(--bone);
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: '+'; color: var(--gold); font-family: var(--font-mono); font-size: 1.2rem; transition: transform 0.2s var(--ease); }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq details p { margin: 0 0 18px; max-width: 60ch; }
+  .cmap { border: 1px solid var(--line-strong); border-radius: 4px; overflow: hidden; height: clamp(280px, 40vw, 420px); }
+  .cmap iframe { display: block; width: 100%; height: 100%; border: 0; filter: grayscale(1) contrast(0.95); }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,147 @@
+---
+// PlotBoard — the morning of 19 February 1942 as an operations plot.
+// Hand-engraved SVG in the site's line idiom. A schematic plot drawn from
+// accounts — positions indicative, not a navigation chart.
+// mode="live": markers kindle as the timeline scrolls (driven by story.astro).
+// mode="complete": the finished plot, every contact lit (mobile / reduced-motion).
+interface Props { mode?: 'live' | 'complete' }
+const { mode = 'live' } = Astro.props;
+---
+<figure class={`plot ${mode === 'complete' ? 'plot--complete' : ''}`} data-plot={mode}>
+  <div class="plot__head">
+    <span class="record plot__t">Operations plot</span>
+    <span class="record plot__d">19 · 02 · 1942</span>
+  </div>
+
+  <div class="plot__board">
+    <svg viewBox="0 0 600 760" role="img" aria-label="A schematic plot of Darwin Harbour showing the events of the morning of 19 February 1942">
+      <!-- graticule -->
+      <g class="plot__grat">
+        <path d="M0 190 h600 M0 380 h600 M0 570 h600 M150 0 v760 M300 0 v760 M450 0 v760" />
+      </g>
+
+      <!-- compass -->
+      <g class="plot__compass" transform="translate(56 470)">
+        <path d="M0 -26 v52 M-26 0 h52" />
+        <path d="M0 -26 l5 10 h-10 z" fill="currentColor" stroke="none" />
+        <text x="0" y="-34">N</text>
+      </g>
+
+      <!-- coastline: north coast in from the NE, East Point, Fannie Bay,
+           the town peninsula SW to the tip, Frances Bay, the east arm -->
+      <g class="plot__coast">
+        <path d="M600 120 C 540 128, 480 148, 436 170 C 414 180, 398 172, 386 184 C 374 198, 382 214, 398 226 C 418 240, 434 256, 440 286 C 444 306, 442 322, 438 338 C 432 362, 412 390, 380 416 C 362 430, 344 440, 336 450 C 330 460, 336 470, 348 472 C 362 474, 376 466, 388 456 C 402 444, 420 448, 430 464 C 442 482, 460 492, 488 498 C 528 506, 568 506, 600 502" />
+        <!-- south shore: Cox Peninsula with Mandorah point, closing the harbour -->
+        <path d="M0 552 C 48 548, 92 540, 122 548 C 148 556, 168 574, 196 592 C 232 616, 276 644, 324 664 C 380 688, 456 702, 528 706 C 556 708, 582 706, 600 702" />
+      </g>
+
+      <!-- water: a few strokes of hatching, engraver's shorthand -->
+      <g class="plot__hatch">
+        <path d="M150 500 h64 M210 540 h84 M160 580 h56 M250 596 h64" />
+      </g>
+
+      <!-- water labels -->
+      <text class="plot__sea" x="34" y="300">TIMOR SEA</text>
+      <text class="plot__sea" x="128" y="640">DARWIN HARBOUR</text>
+
+      <!-- the bearing: 188 aircraft, entering from the north-west.
+           Geometry is exact: the line is P(t) = (22,36) + t·(330,432), and every
+           contact on the flight path sits on a lattice point of that vector —
+           fleet at t=0, Bathurst at t=1/3, the wharf at t=1. Struck through
+           centre, as a plot would be. -->
+      <path class="plot__bearing" data-bearing d="M22 36 L 352 468" pathLength="1" />
+
+      <!-- contacts -->
+      <g class="pm" data-ev="0" transform="translate(22 36)">
+        <circle class="pm__hit" r="22" /><circle class="pm__ring" r="11" /><circle class="pm__dot" r="3" />
+        <text class="pm__l" x="16" y="5">CARRIER FLEET · 188 AIRCRAFT</text>
+      </g>
+      <g class="pm" data-ev="1" transform="translate(132 180)">
+        <circle class="pm__hit" r="22" /><circle class="pm__ring" r="11" /><circle class="pm__dot" r="3" />
+        <text class="pm__l" x="16" y="5">BATHURST ISLAND · THE WARNING</text>
+      </g>
+      <g class="pm" data-ev="2" transform="translate(352 468)">
+        <circle class="pm__hit" r="22" /><circle class="pm__ring" r="11" /><circle class="pm__dot" r="3" />
+        <text class="pm__l pm__l--mid" x="6" y="24">STOKES HILL WHARF</text>
+      </g>
+      <g class="pm" data-ev="3" transform="translate(396 408)">
+        <circle class="pm__hit" r="22" /><circle class="pm__ring" r="11" /><circle class="pm__dot" r="3" />
+        <text class="pm__l" x="14" y="5">POST OFFICE</text>
+      </g>
+      <g class="pm pm--lost" data-ev="4" data-lost transform="translate(240 500)">
+        <circle class="pm__hit" r="22" /><circle class="pm__ring" r="11" /><circle class="pm__dot" r="3" />
+        <path class="pm__x" d="M-5 -5 L5 5 M-5 5 L5 -5" />
+        <text class="pm__l pm__l--end" x="-16" y="5">USS PEARY</text>
+      </g>
+      <g class="pm" data-ev="5" transform="translate(452 278)">
+        <circle class="pm__hit" r="22" /><circle class="pm__ring" r="11" /><circle class="pm__dot" r="3" />
+        <text class="pm__l" x="14" y="5">RAAF PARAP</text>
+      </g>
+    </svg>
+  </div>
+
+  <figcaption class="record plot__cap">Schematic plot · drawn from accounts · positions indicative</figcaption>
+</figure>
+
+<style>
+  .plot { margin: 0; }
+  .plot__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .plot__t { color: var(--gold); }
+  .plot__d { color: var(--bone-mute); }
+  .plot__board { position: relative; border: 1px solid var(--line-strong); background: rgba(236, 231, 219, 0.012); }
+  .plot__board svg { display: block; width: 100%; height: auto; }
+  .plot__cap { display: block; margin-top: 10px; color: var(--bone-mute); font-size: 0.6rem; }
+
+  /* engraving */
+  .plot__grat path { stroke: rgba(236, 231, 219, 0.05); stroke-width: 1; stroke-dasharray: 1 22; fill: none; }
+  .plot__compass { color: rgba(236, 231, 219, 0.2); }
+  .plot__compass path { stroke: currentColor; stroke-width: 1; fill: none; }
+  .plot__compass path[fill] { fill: currentColor; }
+  .plot__compass text { fill: rgba(236, 231, 219, 0.3); font-family: var(--font-mono); font-size: 12px; letter-spacing: 2px; text-anchor: middle; }
+  .plot__coast path { stroke: rgba(236, 231, 219, 0.3); stroke-width: 1.3; fill: none; stroke-linecap: round; }
+  .plot__hatch path { stroke: rgba(236, 231, 219, 0.07); stroke-width: 1; stroke-dasharray: 5 9; fill: none; }
+  .plot__sea { fill: rgba(236, 231, 219, 0.16); font-family: var(--font-mono); font-size: 12px; letter-spacing: 3px; }
+
+  /* the bearing line draws in three reaches: launch → warning → the harbour */
+  .plot__bearing {
+    stroke: var(--gold); stroke-width: 1.2; fill: none; stroke-dasharray: 1;
+    stroke-dashoffset: 1; opacity: 0.75;
+    transition: stroke-dashoffset 1.6s var(--ease-solemn), opacity 1.2s var(--ease);
+  }
+
+  /* contacts: unlit = a faint plotted point; lit = a live gold contact */
+  .pm { color: var(--gold-bright); }
+  .pm__hit { fill: transparent; }
+  .pm__dot { fill: rgba(236, 231, 219, 0.14); transition: fill 0.9s var(--ease); }
+  .pm__ring { fill: none; stroke: currentColor; stroke-width: 1; opacity: 0; transform-origin: center; transform-box: fill-box; }
+  .pm__l { fill: rgba(236, 231, 219, 0); font-family: var(--font-mono); font-size: 13px; letter-spacing: 1.6px; transition: fill 1.1s var(--ease); }
+  .pm__l--end { text-anchor: end; }
+  .pm__l--mid { text-anchor: middle; }
+  .pm__x { stroke: var(--gold-bright); stroke-width: 1.4; fill: none; opacity: 0; transition: opacity 0.9s var(--ease); }
+
+  .pm.is-lit .pm__dot { fill: var(--gold-bright); }
+  .pm.is-lit .pm__l { fill: rgba(236, 231, 219, 0.5); }
+  .pm.is-lit .pm__ring { animation: pmPulse 1.6s var(--ease) 1 both; }
+  @keyframes pmPulse {
+    0% { opacity: 0.8; transform: scale(0.35); }
+    100% { opacity: 0; transform: scale(1.6); }
+  }
+  /* Peary at 13:00 — the contact becomes a loss */
+  .pm.is-x .pm__x { opacity: 1; }
+  .pm.is-x .pm__dot { fill: rgba(236, 231, 219, 0.18); }
+
+  /* dusk: the board settles — the bearing has done its work */
+  .plot.is-dusk .plot__bearing { opacity: 0.28; }
+
+  /* completed plot (mobile / reduced motion): everything already on the board */
+  .plot--complete .plot__bearing { stroke-dashoffset: 0; opacity: 0.4; transition: none; }
+  .plot--complete .pm__dot { fill: var(--gold-bright); }
+  .plot--complete .pm__l { fill: rgba(236, 231, 219, 0.5); }
+  .plot--complete .pm--lost .pm__x { opacity: 1; }
+  .plot--complete .pm--lost .pm__dot { fill: rgba(236, 231, 219, 0.18); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plot__bearing { transition: none; }
+    .pm.is-lit .pm__ring { animation: none; }
+  }
+</style>

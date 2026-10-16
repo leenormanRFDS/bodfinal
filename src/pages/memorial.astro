@@ -1,0 +1,217 @@
+---
+import Base from '../layouts/Base.astro';
+
+// The ten members of the Darwin Post Office staff, as inscribed on the
+// memorial plaque. They were offered evacuation and chose to stay.
+const postOffice = [
+  { name: 'Hurtle C. Bald', role: 'Postmaster' },
+  { name: 'Alice L. Bald', role: '' },
+  { name: 'Iris E. Bald', role: '' },
+  { name: 'Archibald T. R. Halls', role: '' },
+  { name: 'Jean C. Mullen', role: '' },
+  { name: 'Eileen C. Mullen', role: '' },
+  { name: 'Jennie F. Stasinowsky', role: '' },
+  { name: 'Arthur W. Wellington', role: '' },
+  { name: 'Emily F. Young', role: '' },
+  { name: 'Walter R. L. Rowling', role: '' },
+];
+
+// Honoured groups — documented losses of the day, held as numbers where names
+// are not recorded on a single roll.
+const fallen = [
+  { n: '88', label: 'USS Peary', note: 'Of her crew of 144, only fifty-three survived. She sank stern-first in the harbour; official registries record between 80 and 91 lost.' },
+  { n: '45', label: 'MV Neptuna & the wharf', note: 'The merchant vessel Neptuna exploded at the main jetty; wharf labourers and ships’ crews were lost across the burning harbour.' },
+  { n: '9', label: 'The ships of the harbour', note: 'Nine vessels were sunk that morning — among them the Neptuna, Zealandia, Mauna Loa, Meigs and the Peary.' },
+  { n: '235+', label: 'The town and the Territory', note: 'Servicemen, wharf workers, postal staff, hospital patients and civilians. By nightfall at least 235 were dead — a toll historians still count today.' },
+];
+---
+<Base title="In Memoriam" description="In memory of those who died in the Bombing of Darwin, 19 February 1942 — including the ten members of the Darwin Post Office staff who chose to stay. Lest we forget." depth="seabed">
+  <!-- The seabed: the whole harbour beneath the page — a radar of remembrance.
+       The same engraved geography as the operations plot; each wreck an ✕ with
+       a low gold presence, breathing out of phase. Seen faintly, felt strongly.
+       An evocation, not a navigation chart — positions indicative. -->
+  <div class="seabed" aria-hidden="true">
+    <svg viewBox="0 0 600 760" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="memglow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#E4C583" stop-opacity="0.5" />
+          <stop offset="55%" stop-color="#C6A15B" stop-opacity="0.15" />
+          <stop offset="100%" stop-color="#C6A15B" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+
+      <!-- the coasts, as on the plot -->
+      <g class="sb__coast">
+        <path d="M600 120 C 540 128, 480 148, 436 170 C 414 180, 398 172, 386 184 C 374 198, 382 214, 398 226 C 418 240, 434 256, 440 286 C 444 306, 442 322, 438 338 C 432 362, 412 390, 380 416 C 362 430, 344 440, 336 450 C 330 460, 336 470, 348 472 C 362 474, 376 466, 388 456 C 402 444, 420 448, 430 464 C 442 482, 460 492, 488 498 C 528 506, 568 506, 600 502" />
+        <path d="M0 552 C 48 548, 92 540, 122 548 C 148 556, 168 574, 196 592 C 232 616, 276 644, 324 664 C 380 688, 456 702, 528 706 C 556 708, 582 706, 600 702" />
+      </g>
+
+      <!-- the water: depth contours through the sea and the harbour -->
+      <g class="sb__contours">
+        <path d="M-20 150 C 70 146, 150 158, 220 184" />
+        <path d="M-20 230 C 80 222, 170 238, 250 270" />
+        <path d="M-20 320 C 90 310, 190 330, 280 366" />
+        <path d="M-20 415 C 100 404, 200 428, 292 464" />
+        <path d="M40 476 C 120 466, 200 486, 264 514" />
+        <path d="M28 524 C 110 515, 192 536, 254 568" />
+        <path d="M56 614 C 140 603, 222 622, 292 650" />
+        <path d="M448 542 C 500 550, 550 554, 610 552" />
+        <path d="M470 590 C 520 598, 564 602, 610 600" />
+      </g>
+
+      <!-- the wrecks: each a loss, each a low gold presence -->
+      <g class="seabed__wrecks">
+        <g transform="translate(240 500)"><circle class="mg" r="34" /><path class="wx" d="M-6 -6 L6 6 M-6 6 L6 -6" /><text x="-18" y="5" text-anchor="end">USS PEARY</text></g>
+        <g transform="translate(352 470)"><circle class="mg" r="34" /><path class="wx" d="M-6 -6 L6 6 M-6 6 L6 -6" /><text x="16" y="5">NEPTUNA</text></g>
+        <g transform="translate(415 548)"><circle class="mg" r="34" /><path class="wx" d="M-6 -6 L6 6 M-6 6 L6 -6" /><text x="16" y="5">ZEALANDIA</text></g>
+        <g transform="translate(155 565)"><circle class="mg" r="34" /><path class="wx" d="M-6 -6 L6 6 M-6 6 L6 -6" /><text x="-18" y="5" text-anchor="end">MAUNA LOA</text></g>
+        <g transform="translate(100 468)"><circle class="mg" r="34" /><path class="wx" d="M-6 -6 L6 6 M-6 6 L6 -6" /><text x="16" y="5">MEIGS</text></g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Monument header -->
+  <section class="mem-intro">
+    <div class="container mem-intro__inner">
+      <p class="eyebrow mem-el" style="--i:0">19 February 1942</p>
+      <h1 class="mem-monument mem-el" style="--i:1">In Memoriam</h1>
+      <div class="mem-rule mem-el" style="--i:2"></div>
+      <p class="mem-lede mem-el" style="--i:3">
+        By nightfall, at least two hundred and thirty-five people were dead. This page is for them —
+        the named and the unnamed, the servicemen and the civilians, on the day the war reached home.
+      </p>
+    </div>
+  </section>
+
+  <!-- The Ode -->
+  <section class="section mem-ode-sec">
+    <div class="container">
+      <blockquote class="mem-ode">
+        <p>They shall grow not old, as we that are left grow old;</p>
+        <p>Age shall not weary them, nor the years condemn.</p>
+        <p>At the going down of the sun and in the morning</p>
+        <p>We will remember them.</p>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- Honoured groups -->
+  <section class="section mem-roll-sec">
+    <div class="container">
+      <p class="eyebrow eyebrow--gold">The fallen</p>
+      <div class="mem-roll">
+        {fallen.map((f) => (
+          <article class="mem-row">
+            <span class="mem-row__n">{f.n}</span>
+            <div class="mem-row__body">
+              <h2 class="mem-row__label">{f.label}</h2>
+              <p class="mem-row__note">{f.note}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- The Post Office — named -->
+  <section class="section mem-po-sec">
+    <div class="container">
+      <p class="eyebrow eyebrow--gold">The Darwin Post Office</p>
+      <h2 class="mem-po__h">They were offered evacuation.<br />They chose to stay.</h2>
+      <p class="mem-po__intro">
+        A single bomb found the shelter in the postmaster's garden, where the telephonists and staff had
+        gathered. Ten are remembered by name on the memorial that stands where they worked.
+      </p>
+      <ul class="mem-names">
+        {postOffice.map((p) => (
+          <li class="mem-name">
+            <span class="mem-name__n">{p.name}</span>
+            {p.role && <span class="mem-name__r">{p.role}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Closing -->
+  <section class="section mem-close">
+    <div class="container">
+      <p class="mem-note">
+        The toll of 19 February 1942 has never been settled. Figures range from 235 to more than 290.
+        Every count is an attempt to hold a number to a grief that resists it.
+      </p>
+      <p class="mem-lest">Lest we forget.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---- the seabed layer: a radar of remembrance ---- */
+  .seabed { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .seabed svg { width: 100%; height: 100%; }
+  /* the geography — quieter than before; present, not read */
+  .sb__coast path { stroke: rgba(236, 231, 219, 0.05); stroke-width: 1.2; fill: none; stroke-linecap: round; }
+  .sb__contours path { stroke: rgba(236, 231, 219, 0.028); stroke-width: 1; fill: none; stroke-linecap: round; }
+  /* the wrecks — gold, low, breathing out of phase: felt more than seen */
+  .seabed__wrecks .wx { stroke: var(--gold); stroke-opacity: 0.42; stroke-width: 1.3; fill: none; }
+  .seabed__wrecks text { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.22em; fill: rgba(236, 231, 219, 0.09); }
+  .mg { fill: url(#memglow); opacity: 0.09; animation: memBreathe 17s ease-in-out infinite; }
+  .seabed__wrecks g:nth-child(1) .mg { animation-delay: 0s; }
+  .seabed__wrecks g:nth-child(2) .mg { animation-delay: -3.4s; }
+  .seabed__wrecks g:nth-child(3) .mg { animation-delay: -6.8s; }
+  .seabed__wrecks g:nth-child(4) .mg { animation-delay: -10.2s; }
+  .seabed__wrecks g:nth-child(5) .mg { animation-delay: -13.6s; }
+  @keyframes memBreathe {
+    0%, 100% { opacity: 0.06; }
+    50% { opacity: 0.2; }
+  }
+  @media (prefers-reduced-motion: reduce) { .mg { animation: none; opacity: 0.11; } }
+  /* content floats above the floor */
+  section { position: relative; z-index: 1; }
+
+  /* ---- monument header ---- */
+  .mem-intro { min-height: 84svh; display: flex; align-items: center; position: relative; padding-block: calc(var(--nav-h) + 40px) 40px; }
+  .mem-intro__inner { max-width: 1000px; }
+  .mem-monument { font-family: var(--font-display-xl); font-weight: 400; text-transform: uppercase; line-height: 0.9; letter-spacing: 0.01em; color: var(--bone); font-size: clamp(3rem, 11vw, 8rem); margin: 0 0 clamp(28px, 4vw, 48px); text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(236,231,219,0.04), 0 0 12px rgba(236,231,219,0.05); }
+  .mem-rule { width: 64px; height: 1px; background: var(--line-strong); margin-bottom: clamp(28px, 4vw, 44px); }
+  .mem-lede { font-family: var(--font-serif); font-size: clamp(1.2rem, 2.2vw, 1.7rem); line-height: 1.55; color: var(--bone-dim); max-width: 46ch; margin: 0; }
+
+  /* ---- the Ode ---- */
+  .mem-ode-sec { border-top: 1px solid var(--line); }
+  .mem-ode { margin: 0; text-align: center; padding-block: clamp(20px, 5vw, 56px); }
+  .mem-ode p { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.3rem, 3vw, 2.1rem); line-height: 1.7; color: var(--bone); margin: 0; }
+  .mem-ode p:nth-child(4) { color: var(--gold-bright); margin-top: 0.4em; }
+
+  /* ---- honoured groups ---- */
+  .mem-roll-sec { border-top: 1px solid var(--line); }
+  .mem-roll { margin-top: 36px; }
+  .mem-row { display: grid; grid-template-columns: minmax(90px, 130px) 1fr; gap: clamp(20px, 4vw, 52px); align-items: baseline; padding: clamp(24px, 4vw, 38px) 0; border-top: 1px solid var(--line); }
+  .mem-row:first-child { border-top: 0; }
+  .mem-row__n { font-family: var(--font-display-xl); font-weight: 400; font-size: clamp(2.6rem, 6vw, 4.4rem); color: var(--gold); line-height: 0.9; }
+  .mem-row__label { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.2rem, 2.4vw, 1.7rem); color: var(--bone); margin: 0 0 10px; letter-spacing: 0.01em; }
+  .mem-row__note { font-family: var(--font-serif); font-size: 1.08rem; line-height: 1.65; color: var(--bone-dim); max-width: 52ch; margin: 0; }
+
+  /* ---- Post Office named roll ---- */
+  .mem-po-sec { border-top: 1px solid var(--line); }
+  .mem-po__h { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.6rem, 4vw, 2.8rem); line-height: 1.06; color: var(--bone); margin: 14px 0 22px; }
+  .mem-po__intro { font-family: var(--font-serif); font-size: 1.15rem; line-height: 1.7; color: var(--bone-dim); max-width: 54ch; margin: 0 0 clamp(32px, 5vw, 52px); }
+  .mem-names { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0; }
+  .mem-name { display: flex; flex-direction: column; gap: 2px; padding: 20px 0; border-top: 1px solid var(--line); }
+  .mem-name__n { font-family: var(--font-display-reg); font-weight: 500; font-size: 1.3rem; color: var(--bone); letter-spacing: 0.01em; }
+  .mem-name__r { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+
+  /* ---- closing ---- */
+  .mem-close { border-top: 1px solid var(--line); text-align: center; }
+  .mem-note { font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.7; color: var(--bone-mute); max-width: 56ch; margin: 0 auto clamp(40px, 6vw, 64px); font-style: italic; }
+  .mem-lest { font-family: var(--font-mono); font-size: clamp(0.9rem, 2vw, 1.1rem); letter-spacing: 0.36em; text-transform: uppercase; color: var(--bone); margin: 0; }
+
+  /* ---- intro load reveal ---- */
+  .mem-el { opacity: 0; transform: translateY(40px); filter: blur(10px); animation: memRise 1.6s var(--ease-solemn) both; animation-delay: calc(var(--i) * 0.16s + 0.1s); }
+  @keyframes memRise { to { opacity: 1; transform: none; filter: blur(0); } }
+  @media (prefers-reduced-motion: reduce) { .mem-el { animation: none; opacity: 1; transform: none; filter: none; } }
+
+  @media (max-width: 560px) {
+    .mem-row { grid-template-columns: 1fr; gap: 10px; }
+    .mem-names { grid-template-columns: 1fr; }
+  }
+</style>

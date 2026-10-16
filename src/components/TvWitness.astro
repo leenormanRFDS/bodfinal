@@ -1,0 +1,81 @@
+---
+// The period television as artefact — static, its screen a window to the archive.
+// A short montage crossfades through the transparent screen; when the real
+// footage exists, swap the <img> frames for a <video> in .tv__screen.
+const frames = ['frame1', 'frame2', 'frame3'];
+---
+<figure class="tv" data-tv aria-label="A period television showing archival scenes of 19 February 1942">
+  <div class="tv__set-wrap">
+    <div class="tv__screen" aria-hidden="true">
+      {frames.map((f, i) => (
+        <img class:list={['tv__frame', { 'is-on': i === 0 }]} src={`/images/witness/${f}.webp`} alt="" loading="lazy" decoding="async" />
+      ))}
+      <div class="tv__crt"></div>
+    </div>
+    <img class="tv__set" src="/images/witness/tv-set.webp" alt="A period television set" width="1600" height="1160" loading="lazy" decoding="async" />
+    <div class="tv__shroud" aria-hidden="true"></div>
+  </div>
+  <figcaption class="tv__cap record">Period television · the window to the archive</figcaption>
+</figure>
+
+<style>
+  .tv { display: flex; flex-direction: column; align-items: center; gap: 18px; margin: 0; }
+  .tv__set-wrap { position: relative; width: 100%; max-width: 760px; aspect-ratio: 1600 / 1160; isolation: isolate; }
+
+  /* ambient light pooling out from the screen, behind the set */
+  .tv__set-wrap::before {
+    content: ''; position: absolute; z-index: 0;
+    left: 34%; top: 42%; width: 74%; height: 82%; transform: translate(-50%, -50%);
+    border-radius: 50%; filter: blur(34px);
+    background: radial-gradient(circle, rgba(150,170,190,0.16) 0%, rgba(130,115,90,0.08) 34%, transparent 66%);
+  }
+
+  /* the shroud — the set falls away into darkness, the screen stays lit */
+  .tv__shroud {
+    position: absolute; inset: 0; z-index: 5; pointer-events: none;
+    background: radial-gradient(118% 115% at 34% 42%, transparent 23%, rgba(7,7,6,0.52) 58%, rgba(7,7,6,0.93) 100%);
+  }
+
+  /* screen positioned over the transparent hole (15.5% / 22% · 37% × 41%), slightly over-covered */
+  .tv__screen {
+    position: absolute; left: 14.6%; top: 20.8%; width: 39.2%; height: 43.4%;
+    z-index: 1; overflow: hidden; background: #070a0c;
+  }
+  .tv__frame {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    opacity: 0; transition: opacity 1.6s ease;
+  }
+  .tv__frame.is-on { opacity: 1; }
+  .tv__crt {
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background:
+      repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.16) 2px 3px),
+      radial-gradient(120% 120% at 50% 42%, rgba(150,180,200,0.05), transparent 55%),
+      radial-gradient(130% 130% at 50% 50%, transparent 52%, rgba(0,0,0,0.5) 100%);
+  }
+  .tv__set { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; }
+
+  .tv__cap { color: var(--bone-mute); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tv__crt { animation: crtFlicker 6s steps(48) infinite; }
+    .tv__set-wrap::before { animation: crtFlicker 6s steps(48) infinite; }
+  }
+  @keyframes crtFlicker { 0%, 100% { opacity: 1; } 48% { opacity: 0.94; } 72% { opacity: 0.98; } 90% { opacity: 0.95; } }
+</style>
+
+<script>
+  const tv = document.querySelector('[data-tv]');
+  if (tv) {
+    const frames = Array.from(tv.querySelectorAll<HTMLElement>('.tv__frame'));
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce && frames.length > 1) {
+      let i = 0;
+      setInterval(() => {
+        frames[i].classList.remove('is-on');
+        i = (i + 1) % frames.length;
+        frames[i].classList.add('is-on');
+      }, 4500);
+    }
+  }
+</script>

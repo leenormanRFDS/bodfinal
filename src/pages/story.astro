@@ -1,0 +1,972 @@
+---
+import Base from '../layouts/Base.astro';
+import Interstitial from '../components/Interstitial.astro';
+import SpatialEngine from '../components/SpatialEngine.astro';
+
+import beatsData from '../../data/story-beats.json';
+
+const BEAT_EVIDENCE_MAP: Record<number, { id: string; label: string }> = {
+  0: { id: 'timor-launch', label: 'Launch Envelope Evidence' },
+  1: { id: 'bathurst-mission', label: 'Warning Log Evidence' },
+  2: { id: 'first-wave-approach', label: 'Impact Sector Evidence' },
+  3: { id: 'post-office', label: 'Civic Casualty Record' },
+  4: { id: 'peary-underway', label: 'Combat Action Evidence' },
+  5: { id: 'raaf-station', label: 'Airfield Raid Log' },
+  6: { id: 'peary-wreck', label: 'Surveyed War Grave' },
+  7: { id: 'stokes-hill-wharf', label: 'Wharf Precinct Provenance' },
+};
+
+const timeline = beatsData.beats.map((beat, idx) => ({
+  t: beat.historicalTime,
+  h: beat.headline,
+  d: beat.description,
+  evidence: BEAT_EVIDENCE_MAP[idx] || null,
+}));
+---
+<Base title="The Story — 19 February 1942" description="A chronological account of the first attacks on the Australian mainland — before the town's air-raid sirens could sound." depth="descent">
+  <!-- Intro — a full screen of silence -->
+  <section class="s-intro">
+    <div class="container s-intro__inner">
+      <p class="eyebrow s-el" style="--i:0">19 February 1942</p>
+      <h1 class="s-monument s-el" style="--i:1">The Bombing<br />of Darwin</h1>
+      <div class="s-rule s-el" style="--i:2"></div>
+      <p class="s-lede s-el" style="--i:3">
+        A chronological account of the first attacks on the Australian mainland. Behind the timeline are
+        people — those who decided, those who fought, and those whose lives were changed forever.
+      </p>
+    </div>
+    <div class="s-scroll s-el" style="--i:4"><span class="s-scroll__label">Scroll to begin</span><span class="s-scroll__track"><span></span></span></div>
+  </section>
+
+  <!-- Archival interstitial — the raid breaks. The real record:
+       MV Neptuna explodes at Stokes Hill Wharf, HMAS Deloraine in the foreground. -->
+  <Interstitial
+    src="/images/story/neptuna-awm128108.webp"
+    alt="The explosion of MV Neptuna at Stokes Hill Wharf during the first raid, a corvette in the foreground — Australian War Memorial 128108"
+    record="19 February 1942 · AWM 128108"
+    line="Before the town’s air-raid sirens sound, the first bombs fell on the harbour."
+    register="archival"
+    align="left"
+  />
+
+  <!-- The morning's clock — ticks forward as you scroll -->
+  <div class="s-clock" data-clock aria-hidden="true">
+    <span class="s-clock__t record" data-clock-t>08:00</span>
+    <span class="s-clock__z record">DARWIN LOCAL TIME</span>
+  </div>
+  <!-- 09:58 — one frame of white, then the light never recovers -->
+  <div class="s-flash" data-flash aria-hidden="true"></div>
+  <div class="s-smoke" data-smoke aria-hidden="true"></div>
+
+  <!-- The timeline, with the full-bleed Historical Spatial Engine behind -->
+  <section class="s-tl-section" id="story-timeline-section">
+    <!-- Persistent Full-Bleed Spatial Engine Stage -->
+    <div class="s-spatial-stage" aria-hidden="true">
+      <!-- 3D Cesium Geographic View -->
+      <div class="s-spatial-view s-spatial-view--3d is-active" data-spatial-view="3d" id="spatial-view-3d">
+        <SpatialEngine />
+      </div>
+
+      <!-- Directional Scrim: protects typography legibility across desktop, tablet and mobile -->
+      <div class="s-spatial-scrim" aria-hidden="true"></div>
+
+      <!-- Docked Institutional Spatial Utility -->
+      <aside class="s-spatial-dock" aria-label="Spatial Engine Controls and Provenance">
+        <div class="s-spatial-dock__inner">
+          <div class="s-spatial-dock__telemetry" aria-live="polite">
+            <span class="s-spatial-telemetry__scope record" data-spatial-dock-scope>TIMOR SEA</span>
+            {import.meta.env.DEV && <span class="sr-only" data-spatial-dock-alt>DEV ALTITUDE</span>}
+            <button 
+              type="button" 
+              class="s-spatial-dock__ledger-btn record" 
+              id="open-evidence-index-btn"
+              aria-haspopup="dialog"
+              aria-label="Open Historical Evidence Ledger"
+            >
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="currentColor" aria-hidden="true">
+                <path d="M2 3h12v1.5H2zm0 3.5h12V8H2zm0 3.5h8V11.5H2z"/>
+              </svg>
+              EVIDENCE LEDGER
+            </button>
+          </div>
+
+          <div class="s-spatial-dock__credits">
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OSM</a> · <a href="https://carto.com/attributions" target="_blank" rel="noopener">© CARTO</a> · GEOSCIENCE AUSTRALIA
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Scrolling Semantic Narrative Content -->
+    <div class="container s-tl-container">
+      <div class="tl" data-tl>
+        <div class="tl__line" aria-hidden="true"></div>
+        <div class="tl__progress" data-progress aria-hidden="true"></div>
+
+        {timeline.map((e, index) => {
+          const isSpineBeat = index === 1 || index === 2;
+          return (
+            <article class="tl__event" data-beat-index={index}>
+              <span class="tl__node" data-reveal aria-hidden="true"></span>
+              <div class="tl__row">
+                <div class="tl__time-wrap" data-reveal>
+                  <div class="tl__time record">
+                    {e.t} {e.t !== 'Dusk' && <span class="tl__time-meta">DARWIN LOCAL TIME</span>}
+                  </div>
+                  {isSpineBeat && (
+                    <div class="tl__time-interval record">09:35 → 09:58 · 23 ELAPSED MINUTES</div>
+                  )}
+                </div>
+                <div class="tl__body">
+                  <h2 class="tl__title" data-reveal>{e.h}</h2>
+                  <p class="tl__desc" data-reveal>{e.d}</p>
+                  {e.evidence && (
+                    <button 
+                      type="button" 
+                      class="tl__evidence-trigger" 
+                      data-open-evidence={e.evidence.id}
+                      aria-haspopup="dialog"
+                      aria-label={`Inspect verified evidence: ${e.evidence.label}`}
+                    >
+                      <span class="tl__evidence-icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+                          <path d="M2 3h12v1.5H2zm0 3.5h12V8H2zm0 3.5h8V11.5H2z"/>
+                        </svg>
+                      </span>
+                      <span class="tl__evidence-text">{e.evidence.label}</span>
+                      <span class="tl__evidence-tag record">RECORD</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- Archival footage -->
+  <section class="s-film">
+    <div class="container">
+      <p class="eyebrow" data-reveal>Archival footage</p>
+      <h2 class="s-film__h" data-reveal>See it for yourself.</h2>
+      <div class="film" data-reveal>
+        <div class="film__screen">
+          <button class="film__player" data-yt="inqvsMqvrrE" aria-label="Play archival footage of the Bombing of Darwin">
+            <img class="film__poster" src="https://i.ytimg.com/vi/inqvsMqvrrE/maxresdefault.jpg" alt="" loading="lazy" decoding="async" width="1280" height="720" />
+            <span class="film__scrim"></span>
+            <span class="film__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6L19 12z" /></svg></span>
+            <span class="tk tl"></span><span class="tk tr"></span><span class="tk bl"></span><span class="tk br"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Present-day resolve — the same geography as the plot, photographed.
+       Wide aerial for desktop; windowed on the peninsula + wharf for mobile. -->
+  <Interstitial
+    src="/images/story/harbour-today.webp"
+    srcMobile="/images/story/harbour-today-mobile.webp"
+    alt="Aerial view of Darwin today — the town peninsula, Stokes Hill Wharf and the calm harbour"
+    record="The same harbour · today"
+    line="Today the same water lies calm. The wharf remembers."
+    register="present"
+    align="left"
+  />
+
+  <!-- The Reckoning -->
+  <section class="s-reckon">
+    <div class="container">
+      <p class="eyebrow" data-reveal>The Reckoning</p>
+      <h2 class="s-reckon__h" data-reveal>The bombing changed<br />Australia forever.</h2>
+      <p class="s-reckon__p" data-reveal>
+        Today Darwin stands as a place of remembrance and resilience. Across the city, memorials and wartime
+        sites honour those who served, those who were lost, and the community that rebuilt. The raids did not
+        end that day — they were the first of more than sixty on northern Australia.
+      </p>
+      <p class="s-reckon__lest" data-reveal>Lest we forget.</p>
+      <a class="s-reckon__mem" href="/memorial" data-reveal>In Memoriam — those who were lost →</a>
+    </div>
+  </section>
+
+  <!-- The threshold — the story stops here; the experience continues at the wharf -->
+  <section class="s-threshold">
+    <div class="container">
+      <p class="s-threshold__line" data-reveal>
+        What those forty minutes felt like cannot be scrolled.<br />
+        It is told standing where it happened.
+      </p>
+      <a class="btn-book" href="/tickets" data-reveal>Continue at the Wharf</a>
+      <p class="record s-threshold__sub" data-reveal>Every ticket includes both experiences · Stokes Hill Wharf, Darwin</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- intro ---------- */
+  .s-intro { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; position: relative; padding-block: calc(var(--nav-h) + 40px) 40px; }
+  .s-intro__inner { max-width: 1000px; }
+  .s-monument { font-family: var(--font-display-xl); font-weight: 400; text-transform: uppercase; line-height: 0.92; letter-spacing: 0.01em; color: var(--bone); font-size: clamp(3.2rem, 12vw, 8.5rem); margin: 0 0 clamp(28px, 4vw, 48px); text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(236,231,219,0.04), 0 0 12px rgba(236,231,219,0.05); }
+  .s-rule { width: 64px; height: 1px; background: var(--line-strong); margin-bottom: clamp(28px, 4vw, 48px); }
+  .s-lede { font-family: var(--font-serif); font-size: clamp(1.25rem, 2.4vw, 1.9rem); line-height: 1.5; color: var(--bone-dim); max-width: 42ch; margin: 0; }
+
+  .s-scroll { position: absolute; bottom: clamp(28px, 5vh, 56px); left: var(--gutter); display: flex; align-items: flex-end; gap: 14px; }
+  .s-scroll__label { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--bone-mute); writing-mode: vertical-rl; transform: rotate(180deg); }
+  .s-scroll__track { width: 1px; height: 60px; background: var(--line); position: relative; overflow: hidden; }
+  .s-scroll__track span { position: absolute; inset: 0; background: var(--gold); animation: sScroll 2.2s linear infinite; }
+  @keyframes sScroll { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+
+  /* intro load reveal */
+  .s-el { opacity: 0; transform: translateY(40px); filter: blur(10px); animation: sRise 1.6s var(--ease-solemn) both; animation-delay: calc(var(--i) * 0.14s + 0.1s); }
+  @keyframes sRise { to { opacity: 1; transform: none; filter: blur(0); } }
+
+  /* ---------- timeline & full-bleed spatial stage ---------- */
+  .s-tl-section {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 1fr;
+    position: relative;
+    width: 100%;
+    background: #07090b;
+  }
+
+  /* Full-Bleed Sticky Spatial Engine Stage */
+  .s-spatial-stage {
+    grid-area: 1 / 1;
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100svh;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+    align-self: start;
+  }
+
+  .s-spatial-view {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    pointer-events: none;
+  }
+  .s-spatial-view.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .s-spatial-view--3d {
+    z-index: 1;
+  }
+
+  /* Directional Scrims for Text Legibility — Rebalanced for Archival Map Clarity */
+  .s-spatial-scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+  }
+  /* Desktop Widescreen (>= 1100px): left narrative zone is protected; geographic zone is clear */
+  @media (min-width: 1100px) {
+    .s-spatial-scrim {
+      background: linear-gradient(
+        90deg,
+        rgba(7, 9, 11, 0.85) 0%,
+        rgba(7, 9, 11, 0.72) 26%,
+        rgba(7, 9, 11, 0.44) 40%,
+        rgba(7, 9, 11, 0.05) 54%,
+        transparent 75%,
+        transparent 100%
+      );
+    }
+  }
+  /* Tablet (768px - 1099px) */
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .s-spatial-scrim {
+      background: linear-gradient(
+        90deg,
+        rgba(7, 9, 11, 0.85) 0%,
+        rgba(7, 9, 11, 0.65) 32%,
+        rgba(7, 9, 11, 0.44) 40%,
+        rgba(7, 9, 11, 0.05) 64%,
+        transparent 75%,
+        transparent 100%
+      );
+    }
+  }
+  /* Mobile Portrait (< 768px): upper 35-45% open for clear geography, lower half protected for narrative */
+  @media (max-width: 767px) {
+    .s-spatial-scrim {
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        transparent 34%,
+        rgba(7, 9, 11, 0.25) 50%,
+        rgba(7, 9, 11, 0.82) 60%,
+        rgba(7, 9, 11, 0.92) 80%,
+        rgba(7, 9, 11, 0.98) 100%
+      );
+    }
+  }
+  /* Mobile Landscape (< 550px height) */
+  @media (max-height: 550px) and (orientation: landscape) {
+    .s-spatial-scrim {
+      background: linear-gradient(
+        90deg,
+        rgba(7, 9, 11, 0.85) 0%,
+        rgba(7, 9, 11, 0.64) 38%,
+        rgba(7, 9, 11, 0.12) 62%,
+        transparent 75%,
+        transparent 100%
+      );
+    }
+  }
+
+  /* Tame global radial vignette during the spatial journey so the map is not smothered at the edges */
+  :global(body.grain::before) {
+    opacity: 0.35;
+  }
+
+  /* Docked Institutional Spatial Utility */
+  .s-spatial-dock {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 6;
+    pointer-events: none;
+    padding: 10px 16px;
+    background: linear-gradient(0deg, rgba(7, 9, 11, 0.95) 0%, rgba(7, 9, 11, 0.6) 70%, transparent 100%);
+  }
+  .s-spatial-dock__inner {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .s-spatial-dock__telemetry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.60rem;
+    letter-spacing: 0.12em;
+    font-family: var(--font-mono);
+  }
+  .s-spatial-telemetry__scope {
+    color: var(--bone);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .s-spatial-dock__ledger-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(198, 161, 91, 0.12);
+    border: 1px solid rgba(198, 161, 91, 0.35);
+    border-radius: 2px;
+    color: var(--gold);
+    padding: 3px 8px;
+    font-family: var(--font-mono);
+    font-size: 0.60rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+  }
+  .s-spatial-dock__ledger-btn:hover {
+    background: rgba(198, 161, 91, 0.22);
+    border-color: var(--gold);
+    color: var(--gold-bright);
+  }
+  .s-spatial-dock__credits {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    color: var(--bone-mute);
+    opacity: 0.85;
+    pointer-events: auto;
+  }
+  .s-spatial-dock__credits a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(148, 154, 158, 0.4);
+  }
+  .s-spatial-dock__credits a:hover {
+    color: var(--bone);
+    border-bottom-color: var(--bone);
+  }
+  @media (max-width: 600px) {
+    .s-spatial-dock__credits {
+      display: none;
+    }
+  }
+
+  /* Editorial Narrative Rail */
+  .s-tl-container {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 10;
+    pointer-events: none;
+    padding-bottom: 16vh;
+    padding-left: clamp(24px, 4vw, 48px);
+    padding-right: clamp(16px, 3vw, 32px);
+  }
+  .tl {
+    position: relative;
+    pointer-events: auto;
+    width: 100%;
+    max-width: clamp(340px, 32vw, 420px);
+    margin-left: 0;
+    --tl-pad: clamp(80px, 14vh, 190px);
+  }
+  .tl__line, .tl__progress { position: absolute; left: 0; top: 0; bottom: 0; width: 1px; }
+  .tl__line { background: var(--line); }
+  .tl__progress { background: var(--gold); transform: scaleY(0); transform-origin: top; box-shadow: 0 0 12px rgba(198, 161, 91, 0.5); }
+
+  .tl__event { position: relative; padding-left: clamp(24px, 4vw, 40px); }
+  .tl__node { position: absolute; left: -5px; top: clamp(24px, 4vw, 36px); width: 11px; height: 11px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 5px var(--ink), 0 0 16px rgba(198, 161, 91, 0.7); }
+  .tl__row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .tl__time-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 2px;
+  }
+  .tl__time {
+    font-family: 'museo-sans', system-ui, sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.75);
+  }
+  .tl__time-meta {
+    font-size: 0.55em;
+    color: var(--gold-bright);
+    margin-left: 6px;
+    letter-spacing: 0.04em;
+    vertical-align: baseline;
+  }
+  .tl__time-interval {
+    font-family: 'museo-sans', system-ui, sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    font-size: 0.68rem;
+    color: var(--gold);
+    opacity: 0.85;
+    text-transform: uppercase;
+  }
+  .tl__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: var(--bone);
+    font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+    line-height: 1.05;
+    margin: 0 0 clamp(8px, 1.4vw, 16px);
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+  }
+  .tl__desc {
+    font-family: var(--font-serif);
+    font-size: clamp(1.02rem, 1.7vw, 1.3rem);
+    line-height: 1.6;
+    color: var(--bone-dim);
+    max-width: 38ch;
+    margin: 0;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
+  }
+
+  /* Evidence Trigger Button */
+  .tl__evidence-trigger {
+    appearance: none;
+    background: transparent;
+    border: 1px solid rgba(198, 161, 91, 0.4);
+    border-radius: 2px;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    padding: 6px 12px;
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    width: fit-content;
+  }
+  .tl__evidence-trigger:hover {
+    background: rgba(198, 161, 91, 0.12);
+    border-color: var(--gold);
+    color: #fff;
+  }
+  .tl__evidence-trigger:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+  }
+  .tl__evidence-icon {
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+  }
+  .tl__evidence-tag {
+    font-size: 0.55rem;
+    color: var(--gold-bright);
+    border-left: 1px solid rgba(198, 161, 91, 0.4);
+    padding-left: 6px;
+  }
+
+  /* Desktop Widescreen Layout */
+  @media (min-width: 1100px) {
+    .tl {
+      max-width: 400px;
+      margin-left: 0;
+    }
+    .tl__event {
+      padding-bottom: 85vh;
+    }
+    .tl__event:last-child {
+      padding-bottom: 12vh;
+    }
+    .tl__row {
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* Tablet Layout (768px - 1099px) */
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .tl {
+      max-width: 380px;
+      margin-left: 0;
+    }
+    .tl__event {
+      padding-bottom: 75vh;
+    }
+    .tl__event:last-child {
+      padding-bottom: 14vh;
+    }
+    .tl__row {
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* Mobile Portrait Layout (< 768px) */
+  @media (max-width: 767px) {
+    .tl {
+      max-width: 100%;
+    }
+    .tl__event {
+      padding-top: 55vh;
+      padding-bottom: 35vh;
+    }
+    .tl__event:last-child {
+      padding-bottom: 10vh;
+    }
+    .tl__node {
+      top: calc(55vh + 18px);
+    }
+    .tl__row {
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* ---------- reckoning ---------- */
+  .s-reckon { min-height: 90svh; display: flex; flex-direction: column; justify-content: center; border-top: 1px solid var(--line); padding-block: clamp(80px, 14vh, 180px); }
+  .s-reckon__h { font-family: var(--font-display-xl); font-weight: 400; text-transform: uppercase; line-height: 0.94; color: var(--bone); font-size: clamp(2.4rem, 8vw, 5.5rem); margin: 20px 0 clamp(28px, 4vw, 44px); }
+  .s-reckon__p { font-family: var(--font-serif); font-size: clamp(1.2rem, 2.2vw, 1.7rem); line-height: 1.55; color: var(--bone-dim); max-width: 44ch; margin: 0 0 clamp(40px, 6vw, 72px); }
+  .s-reckon__lest { font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 0.34em; text-transform: uppercase; color: var(--bone-mute); margin: 0; }
+  .s-reckon__mem { display: inline-block; margin-top: clamp(28px, 4vw, 44px); font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-bright); border-bottom: 1px solid var(--line-strong); padding-bottom: 4px; transition: border-color 0.25s var(--ease); }
+  .s-reckon__mem:hover { border-color: var(--gold); }
+
+  /* ---------- archival footage ---------- */
+  .s-film { padding-block: clamp(60px, 10vh, 130px); border-top: 1px solid var(--line); }
+  .s-film__h { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.8rem, 4vw, 3rem); color: var(--bone); margin: 14px 0 clamp(28px, 4vw, 44px); letter-spacing: 0.01em; }
+  .film { position: relative; width: 100%; }
+  .film__screen {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+    border: 1px solid var(--line-strong);
+    overflow: hidden;
+  }
+  .film__player {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+  .film__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.55) contrast(1.05); transition: filter 0.5s var(--ease), transform 0.6s var(--ease); }
+  .film__player:hover .film__poster { filter: grayscale(0.15) contrast(1.05); transform: scale(1.02); }
+  .film__scrim { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(12,12,11,0.15) 0%, rgba(12,12,11,0.6) 100%); }
+  .film__play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(66px, 8vw, 92px); height: clamp(66px, 8vw, 92px); border-radius: 50%; display: grid; place-items: center; background: rgba(12,12,11,0.55); border: 1px solid rgba(236,231,219,0.6); backdrop-filter: blur(6px); color: var(--bone); transition: background 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease); }
+  .film__play svg { width: 40%; height: 40%; margin-left: 8%; }
+  .film__player:hover .film__play { background: var(--gold); border-color: var(--gold); color: var(--ink); transform: translate(-50%, -50%) scale(1.06); }
+  .film__iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: var(--ink); }
+  .film .tk { position: absolute; width: 15px; height: 15px; border: 1px solid var(--bone); opacity: 0.5; z-index: 3; pointer-events: none; }
+  .film .tk.tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+  .film .tk.tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+  .film .tk.bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+  .film .tk.br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+  .film iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  /* ---------- the clock ---------- */
+  .s-clock {
+    position: fixed; right: var(--gutter); top: 50%; transform: translateY(-50%);
+    z-index: 40; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+    opacity: 0; transition: opacity 0.8s var(--ease); pointer-events: none;
+  }
+  .s-clock.is-on { opacity: 1; }
+  .s-clock__t { font-size: 1.05rem; letter-spacing: 0.2em; color: var(--gold-bright); }
+  .s-clock__z { font-size: 0.56rem; color: var(--bone-mute); }
+  @media (max-width: 900px) { .s-clock { display: none; } }
+  /* on wide screens the plot board carries the clock instead */
+  @media (min-width: 1100px) { .s-clock { display: none; } }
+
+  /* ---------- 09:58 ---------- */
+  /* not a strobe — a bloom of light, like the sky brightening through eyelids */
+  .s-flash {
+    position: fixed; inset: 0; z-index: 90; opacity: 0; pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 30%, var(--bone) 0%, rgba(236, 231, 219, 0.6) 45%, transparent 100%);
+  }
+  .s-flash.is-flash { animation: flashOnce 1.8s cubic-bezier(0.2, 0, 0.4, 1) forwards; }
+  @keyframes flashOnce {
+    0% { opacity: 0; }
+    18% { opacity: 0.34; }
+    100% { opacity: 0; }
+  }
+  .s-smoke {
+    position: fixed; inset: 0; z-index: 55; pointer-events: none; opacity: 0;
+    background: linear-gradient(180deg, rgba(10, 8, 6, 0.12) 0%, rgba(10, 8, 6, 0.34) 60%, rgba(8, 6, 5, 0.5) 100%);
+    transition: opacity 3s var(--ease);
+  }
+  .s-smoke.is-on { opacity: 1; }
+
+  /* ---------- the threshold ---------- */
+  .s-threshold { text-align: center; padding-block: clamp(80px, 16vh, 180px); border-top: 1px solid var(--line); position: relative; z-index: 1; }
+  .s-threshold__line { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.4rem, 3.2vw, 2.3rem); line-height: 1.5; color: var(--bone); margin: 0 0 clamp(36px, 5vw, 52px); }
+  .s-threshold__sub { color: var(--bone-mute); margin: 18px 0 0; }
+
+  /* ---------- scroll-reveal (blur-in) ---------- */
+  [data-reveal] { opacity: 0; transform: translateY(30px); filter: blur(5px); transition: opacity 1.3s var(--ease-solemn), transform 1.3s var(--ease-solemn), filter 1.3s var(--ease-solemn); }
+  [data-reveal][data-shown] { opacity: 1; transform: none; filter: blur(0); }
+  .tl__title[data-reveal] { transition-delay: 0.1s; }
+  .tl__desc[data-reveal] { transition-delay: 0.2s; }
+  .tl__node[data-reveal] { transform: scale(0); filter: none; transition: opacity 1s var(--ease-solemn), transform 1s var(--ease-solemn); }
+  .tl__node[data-reveal][data-shown] { transform: scale(1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .s-el { animation: none; opacity: 1; transform: none; filter: none; }
+    .s-scroll__track span { animation: none; }
+    [data-reveal] { opacity: 1; transform: none; filter: none; }
+    .tl__node[data-reveal] { transform: scale(1); }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { StoryStateController } from '../lib/story-controller';
+  import { SpatialViewer } from '../lib/spatial/spatial-viewer';
+  import { SpatialStateAdapter } from '../lib/spatial/spatial-adapter';
+  import type { SpatialDemonstrationStateId } from '../lib/spatial/spatial-types';
+  import beatsData from '../../data/story-beats.json';
+  import { CANONICAL_EVIDENCE_RECORDS } from '../lib/spatial/spatial-evidence-overlay';
+  
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Blur-in reveals, triggered as each element reaches the centre
+  const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach((i) => i.setAttribute('data-shown', ''));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.setAttribute('data-shown', ''); io.unobserve(e.target); } }),
+      { rootMargin: '0px 0px -30% 0px', threshold: 0.1 }
+    );
+    items.forEach((i) => io.observe(i));
+  }
+
+  // Archival footage: swap the poster for the YouTube player only on click (fast first paint)
+  const player = document.querySelector<HTMLButtonElement>('[data-yt]');
+  if (player) {
+    player.addEventListener('click', () => {
+      const id = player.dataset.yt;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.title = 'Archival footage — the Bombing of Darwin';
+      iframe.className = 'film__iframe';
+      player.replaceWith(iframe);
+    });
+  }
+
+  // The morning's clock + the 09:58 moment.
+  const clock = document.querySelector<HTMLElement>('[data-clock]');
+  const clockT = document.querySelector<HTMLElement>('[data-clock-t]');
+  const flash = document.querySelector<HTMLElement>('[data-flash]');
+  const smoke = document.querySelector<HTMLElement>('[data-smoke]');
+  const events = Array.from(document.querySelectorAll<HTMLElement>('.tl__event'));
+
+  if (clock && clockT && events.length) {
+    const times = events.map((e) => e.querySelector('.tl__time')?.textContent?.trim() || '');
+    const bombIdx = times.indexOf('09:58');
+    let flashed = false;
+
+    const controller = new StoryStateController(beatsData.beats, events);
+    
+    // Spatial State Engine integration (Story beats govern camera presets)
+    const spatialAdapter = new SpatialStateAdapter(beatsData.beats);
+    let spatialViewer: SpatialViewer | null = null;
+    let spatialInitialized = false;
+
+    const cesiumContainer = document.querySelector<HTMLElement>('[data-cesium-container]');
+    const fallbackEl = document.querySelector<HTMLElement>('[data-spatial-fallback]');
+    const scopeEl = document.querySelector<HTMLElement>('[data-spatial-dock-scope], [data-spatial-scope]');
+    const classEl = document.querySelector<HTMLElement>('[data-spatial-dock-class], [data-spatial-class]');
+    const stateBtns = document.querySelectorAll<HTMLButtonElement>('.spatial-state-btn');
+
+    async function initSpatialEngine() {
+      if (spatialInitialized || !cesiumContainer) return;
+      spatialInitialized = true;
+
+      if (!SpatialViewer.isWebGLSupported()) {
+        fallbackEl?.classList.add('is-active');
+        return;
+      }
+
+      spatialViewer = new SpatialViewer({
+        container: cesiumContainer,
+        onStatusChange: (status) => {
+          if (!status.isSupported || status.errorMessage) {
+            fallbackEl?.classList.add('is-active');
+          }
+        }
+      });
+
+      const ok = await spatialViewer.initialize();
+      if (!ok) {
+        fallbackEl?.classList.add('is-active');
+        return;
+      }
+
+      // Subscribe adapter to viewer
+      spatialAdapter.subscribe(({ activeStateId, stateConfig, forceInstant }) => {
+        spatialViewer?.transitionToState(activeStateId, forceInstant);
+
+        stateBtns.forEach(btn => {
+          const isMatch = btn.dataset.stateId === activeStateId;
+          btn.setAttribute('aria-pressed', String(isMatch));
+        });
+
+        if (scopeEl && stateConfig?.geographicScope) scopeEl.textContent = stateConfig.geographicScope.toUpperCase();
+        if (classEl && stateConfig) {
+          const classificationLabel = (stateConfig as any).humanClassification || (stateConfig.classification ? stateConfig.classification.replace(/_/g, ' ') : 'ESTABLISHED FACT');
+          const confidenceLabel = (stateConfig as any).humanConfidence || stateConfig.confidence || 'VERIFIED';
+          classEl.textContent = `${classificationLabel.toUpperCase()} · ${confidenceLabel.toUpperCase()}`;
+        }
+      });
+
+      // Synchronize controller offsets after spatial stage is ready and render tree stabilized
+      requestAnimationFrame(() => {
+        controller.refresh();
+      });
+    }
+
+    // Teardown lifecycle listener
+    window.addEventListener('pagehide', () => {
+      spatialViewer?.destroy();
+      spatialAdapter.destroy();
+      controller.destroy();
+    });
+
+    // Lazy load spatial engine in advance before entering the story timeline section
+    const tlSection = document.querySelector('.s-tl-section');
+    const interstitialSection = document.querySelector('.c-interstitial');
+    if (tlSection && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            initSpatialEngine();
+            io.disconnect();
+          }
+        });
+      }, { rootMargin: '1200px 0px 0px 0px' });
+      io.observe(tlSection);
+      if (interstitialSection) {
+        io.observe(interstitialSection);
+      }
+    } else {
+      initSpatialEngine();
+    }
+
+    // Direct entry or restored scroll position
+    if (typeof window !== 'undefined' && window.scrollY > 150) {
+      initSpatialEngine();
+    }
+
+    // HUD demonstration state button listeners
+    stateBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const stateId = btn.dataset.stateId as SpatialDemonstrationStateId;
+        if (stateId) {
+          spatialAdapter.setState(stateId, true);
+        }
+      });
+    });
+
+    // Wire up Dock Evidence Ledger Button
+    const dockLedgerBtn = document.getElementById('open-evidence-index-btn');
+    if (dockLedgerBtn) {
+      dockLedgerBtn.addEventListener('click', () => {
+        const firstRecord = CANONICAL_EVIDENCE_RECORDS['timor-launch'] || Object.values(CANONICAL_EVIDENCE_RECORDS)[0];
+        if (firstRecord && (window as any).openEvidenceLedger) {
+          (window as any).openEvidenceLedger(firstRecord);
+        }
+      });
+    }
+
+    // Wire up Evidence Ledger triggers on each timeline beat
+    document.querySelectorAll<HTMLButtonElement>('.tl__evidence-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const targetId = trigger.dataset.openEvidence || trigger.dataset.evidenceTarget;
+        const record = targetId ? CANONICAL_EVIDENCE_RECORDS[targetId] : null;
+        if (record && (window as any).openEvidenceLedger) {
+          (window as any).openEvidenceLedger(record);
+        } else {
+          const beatIdxStr = trigger.closest('[data-beat-index]')?.getAttribute('data-beat-index');
+          const idx = beatIdxStr ? parseInt(beatIdxStr, 10) : -1;
+          const beat = idx >= 0 ? beatsData.beats[idx] : beatsData.beats.find(b => b.id === targetId);
+          if (beat && (window as any).openEvidenceLedger) {
+            (window as any).openEvidenceLedger({
+              title: `${beat.historicalTime || ''} — ${beat.headline || 'Historical Beat'}`,
+              classification: 'ESTABLISHED_FACT',
+              confidence: 'VERIFIED',
+              known: beat.description || '',
+              uncertain: '',
+              notes: '',
+              sources: []
+            });
+          }
+        }
+      });
+    });
+    
+    // Reverence Gating on Spatial Story (EXPERIENCE / DESIGN):
+    // Suppress the mobile commercial booking bar during Story Beats 03–07.
+    // Driven by canonical story state rather than viewport position.
+    // Restored at the Threshold, where the narrative transitions from history to visitation.
+    const bookbar = document.querySelector<HTMLElement>('.bookbar');
+    const thresholdSection = document.querySelector<HTMLElement>('.s-threshold');
+    let thresholdActive = false;
+    let currentStoryBeat = -1;
+    let currentInTl = false;
+
+    function updateReverenceGating(beatIdx: number, inTimeline: boolean) {
+      if (!bookbar) return;
+      if (thresholdActive) {
+        bookbar.classList.remove('is-gated');
+        return;
+      }
+      // Gated during Beats 03–07 (indices 3 to 7) and post-raid reflection prior to Threshold
+      const isRaidReverenceGated = (inTimeline && beatIdx >= 3) || (!inTimeline && beatIdx >= 7 && !thresholdActive);
+      bookbar.classList.toggle('is-gated', isRaidReverenceGated);
+    }
+
+    if (thresholdSection && 'IntersectionObserver' in window) {
+      const thresholdObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          thresholdActive = entry.isIntersecting;
+          updateReverenceGating(currentStoryBeat, currentInTl);
+        });
+      }, { threshold: 0.1 });
+      thresholdObserver.observe(thresholdSection);
+    }
+    
+    controller.subscribe(({ activeIndex: cur, anticipatoryIndex: antIdx, nearestDistance: nd, inTimeline: inTl }) => {
+      currentStoryBeat = cur;
+      currentInTl = inTl;
+      updateReverenceGating(cur, inTl);
+
+      // Synchronize Spatial Engine camera composition with anticipatory fluid transitions
+      spatialAdapter.onStoryStateChange(cur, inTl, antIdx);
+
+      clock.classList.toggle('is-on', inTl);
+
+      if (cur >= 0 && clockT.textContent !== times[cur]) {
+        clockT.textContent = times[cur];
+        if (!reduce) clockT.animate([{ opacity: 0.2 }, { opacity: 1 }], { duration: 500, easing: 'ease-out' });
+      }
+
+      const past958 = bombIdx >= 0 && cur >= bombIdx;
+      if (past958 && !flashed) {
+        flashed = true;
+        if (!reduce && flash) flash.classList.add('is-flash');
+      }
+      smoke?.classList.toggle('is-on', past958);
+    });
+  }
+
+  // The line draws itself as you descend the timeline
+  const tl = document.querySelector('.tl');
+  const progress = document.querySelector('.tl__progress');
+  if (tl && progress && !reduce) {
+    gsap.to(progress, {
+      scaleY: 1,
+      ease: 'none',
+      scrollTrigger: { trigger: tl, start: 'top center', end: 'bottom center', scrub: 0.6 },
+    });
+  } else if (progress && reduce) {
+    (progress as HTMLElement).style.transform = 'scaleY(1)';
+  }
+</script>

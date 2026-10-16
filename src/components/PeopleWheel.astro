@@ -1,0 +1,234 @@
+---
+import { PEOPLE } from '../data/people';
+---
+<section class="dossier" data-dossier>
+  <!-- Fallback: a readable stacked list (no JS / reduced motion) -->
+  <div class="dossier__fallback" data-fallback>
+    <div class="container">
+      <p class="eyebrow">The Experience</p>
+      <h2 class="dossier__h">Meet the People</h2>
+      <p class="dfl__cue record">Swipe to meet them →</p>
+      <div class="dfl">
+        {PEOPLE.map((p, i) => (
+          <article class="dfl__item">
+            <div class="dfl__plate">{p.image ? <img src={p.image} alt={p.name} /> : <span>{p.initials}</span>}<em class="record">Record 0{i + 1}</em></div>
+            <div class="dfl__text">
+              <p class="record dfl__faction">{p.faction}</p>
+              <h3 class="dfl__name">{p.name}</h3>
+              <p class="record dfl__role">{p.role}</p>
+              <p class="dfl__desc">{p.desc}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- The wheel (revealed by JS) -->
+  <div class="dossier__scroll" data-scroll hidden style={`height:${PEOPLE.length * 100}vh`}>
+    <div class="dossier__sticky">
+      <div class="container dossier__inner">
+        <header class="dossier__head">
+          <div>
+            <p class="eyebrow" style="margin-bottom:6px;">The Experience</p>
+            <h2 class="dossier__h">Meet the People</h2>
+          </div>
+          <span class="record dossier__cue">Scroll to inspect</span>
+        </header>
+
+        <div class="dossier__stage">
+          <div class="dossier__col dossier__left">
+            {PEOPLE.map((p, i) => (
+              <div class="dl" data-i={i}>
+                <p class="record dl__faction">{p.faction}</p>
+                <h3 class="dl__name">{p.name}</h3>
+                <p class="record dl__role">{p.role}</p>
+              </div>
+            ))}
+          </div>
+
+          <div class="dossier__wheel" data-wheel>
+            {PEOPLE.map((p, i) => (
+              <article class="wcard" data-i={i}>
+                <span class="wcard__rec record">Record 0{i + 1}</span>
+                <div class="wcard__frame"></div>
+                <div class="wcard__noise"></div>
+                <div class="wcard__figure" data-figure>
+                  {p.image ? <img src={p.image} alt={p.name} /> : <span class="wcard__initials">{p.initials}</span>}
+                </div>
+                <div class="wcard__vig" data-vig></div>
+                <div class="wcard__dark" data-dark></div>
+              </article>
+            ))}
+          </div>
+
+          <div class="dossier__col dossier__right">
+            {PEOPLE.map((p, i) => (
+              <div class="dr" data-i={i}>
+                <span class="dr__line"></span>
+                <p class="dr__desc">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dossier__h { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.8rem, 4vw, 3rem); color: var(--bone); margin: 0; letter-spacing: 0.01em; }
+
+  /* ---- fallback / mobile carousel ---- */
+  .dossier__fallback { padding-block: clamp(48px, 8vw, 96px); }
+  .dfl { margin-top: 40px; display: grid; gap: 48px; }
+  .dfl__item { display: grid; gap: 24px; align-items: start; }
+  @media (min-width: 720px) { .dfl__item { grid-template-columns: 280px 1fr; gap: 48px; } }
+  .dfl__plate { position: relative; aspect-ratio: 3 / 4; background: radial-gradient(120% 120% at 50% 30%, #1a1916, var(--ink)); border: 1px solid var(--line); display: grid; place-items: center; }
+
+  /* On mobile, present the people as a horizontal swipe carousel — every card
+     shows the full portrait and text, snapping one at a time. */
+  @media (max-width: 719px) {
+    .dfl {
+      margin-top: 28px; grid-auto-flow: column; grid-auto-columns: 82%;
+      display: grid; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      padding: 4px 0 18px; scroll-padding-inline: var(--gutter);
+      margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
+    }
+    .dfl::-webkit-scrollbar { height: 3px; }
+    .dfl::-webkit-scrollbar-thumb { background: var(--line-strong); }
+    .dfl__item {
+      scroll-snap-align: start; grid-template-columns: none; gap: 0;
+      background: linear-gradient(165deg, var(--char-2), var(--char));
+      border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+    }
+    .dfl__item .dfl__plate { aspect-ratio: 4 / 3; border: 0; border-bottom: 1px solid var(--line); }
+    .dfl__text { padding: 20px 20px 24px; }
+    .dfl__desc { font-size: 1.02rem; max-width: none; }
+  }
+  .dfl__cue { display: none; color: var(--gold); margin: 12px 0 0; }
+  @media (max-width: 719px) { .dfl__cue { display: block; } }
+  /* archival register — the people are of 1942; treat them as recovered records */
+  .dfl__plate img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.32) contrast(1.08) brightness(0.92); opacity: 0.9; }
+  .dfl__plate::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.1; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .dfl__plate span { font-family: var(--font-display-xl); font-size: 5rem; color: var(--bone-mute); }
+  .dfl__plate em { position: absolute; top: 10px; left: 12px; color: var(--bone-mute); font-style: normal; }
+  .dfl__faction { color: var(--gold); }
+  .dfl__name { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.6rem, 3vw, 2.4rem); color: var(--bone); margin: 8px 0; }
+  .dfl__role { color: var(--bone-mute); margin-bottom: 16px; }
+  .dfl__desc { font-family: var(--font-serif); font-size: 1.15rem; line-height: 1.7; color: var(--bone-dim); max-width: 46ch; }
+
+  /* ---- the wheel ---- */
+  .dossier__sticky { position: sticky; top: 0; height: 100svh; display: flex; align-items: center; overflow: hidden; }
+  .dossier__inner { width: 100%; display: flex; flex-direction: column; height: 100svh; justify-content: center; padding-block: clamp(72px, 12vh, 120px); }
+  .dossier__head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
+  .dossier__cue { color: var(--bone-mute); }
+
+  .dossier__stage { flex: 1; display: grid; grid-template-columns: 1fr; align-items: center; gap: 24px; margin-top: clamp(16px, 4vh, 48px); min-height: 0; }
+  @media (min-width: 900px) { .dossier__stage { grid-template-columns: 3fr 6fr 3fr; gap: 40px; } }
+
+  .dossier__col { position: relative; height: 300px; }
+  .dossier__left { order: 2; text-align: center; }
+  .dossier__wheel { order: 1; position: relative; height: 100%; min-height: 420px; perspective: 1300px; display: flex; align-items: center; justify-content: center; }
+  .dossier__right { order: 3; text-align: center; }
+  @media (min-width: 900px) {
+    .dossier__left { order: 1; text-align: right; display: flex; align-items: center; justify-content: flex-end; }
+    .dossier__wheel { order: 2; }
+    .dossier__right { order: 3; text-align: left; display: flex; align-items: center; }
+  }
+
+  .dl, .dr { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; will-change: opacity, filter; }
+  .dl__faction { color: var(--gold); margin-bottom: 12px; }
+  .dl__name { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.8rem, 3.4vw, 2.8rem); line-height: 0.98; color: var(--bone); margin: 0 0 12px; }
+  .dl__role { color: var(--bone-mute); }
+  .dr__line { display: none; width: 32px; height: 1px; background: var(--gold); margin-bottom: 20px; }
+  @media (min-width: 900px) { .dr__line { display: block; } }
+  .dr__desc { font-family: var(--font-serif); font-size: clamp(1rem, 1.3vw, 1.15rem); line-height: 1.7; color: var(--bone-dim); max-width: 30ch; margin: 0 auto; }
+  @media (min-width: 900px) { .dr__desc { margin: 0; } }
+
+  .wcard {
+    position: absolute; aspect-ratio: 3 / 4; width: min(72vw, 300px);
+    background: var(--ink); border: 1px solid var(--line); overflow: hidden;
+    transform-style: preserve-3d; will-change: transform, opacity, filter;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+  }
+  .wcard__rec { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); z-index: 6; padding: 3px 12px; background: var(--ink); border: 1px solid var(--line); border-top: 0; color: var(--bone-mute); font-size: 0.58rem; white-space: nowrap; }
+  .wcard__frame { position: absolute; inset: 16px; border: 1px solid var(--line); z-index: 4; mix-blend-mode: overlay; }
+  .wcard__noise { position: absolute; inset: 0; z-index: 2; opacity: 0.14; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='wn'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23wn)'/%3E%3C/svg%3E"); }
+  .wcard__figure { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; will-change: transform; }
+  .wcard__figure img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.32) contrast(1.08) brightness(0.92); opacity: 0.85; }
+  .wcard__initials { font-family: var(--font-display-xl); font-weight: 400; font-size: clamp(6rem, 16vw, 11rem); color: rgba(236, 231, 219, 0.8); mix-blend-mode: plus-lighter; letter-spacing: -0.02em; }
+  .wcard__vig { position: absolute; inset: 0; z-index: 5; pointer-events: none; background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.8) 100%); }
+  .wcard__dark { position: absolute; inset: 0; z-index: 5; pointer-events: none; background: #000; opacity: 0; }
+
+  @media (max-width: 899px) { .wcard { width: min(66vw, 230px); } .dossier__col { height: 130px; } }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const root = document.querySelector<HTMLElement>('[data-dossier]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isDesktop = matchMedia('(min-width: 900px)').matches;
+
+  // On mobile the scroll-driven 3D wheel is cramped; the horizontal card carousel
+  // (the default markup) shows every person's full detail instead.
+  if (root && !reduce && isDesktop) {
+    const scroll = root.querySelector<HTMLElement>('[data-scroll]')!;
+    const fallback = root.querySelector<HTMLElement>('[data-fallback]')!;
+    scroll.removeAttribute('hidden');
+    fallback.setAttribute('hidden', '');
+
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('.wcard'));
+    const lefts = Array.from(root.querySelectorAll<HTMLElement>('.dl'));
+    const rights = Array.from(root.querySelectorAll<HTMLElement>('.dr'));
+    const N = cards.length;
+
+    let targetP = 0, curP = 0;
+    ScrollTrigger.create({ trigger: scroll, start: 'top top', end: 'bottom bottom', onUpdate: (self) => { targetP = self.progress; } });
+
+    const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
+
+    gsap.ticker.add(() => {
+      curP += (targetP - curP) * 0.08; // spring-ish smoothing
+      const idx = curP * (N - 1);
+
+      cards.forEach((c, i) => {
+        const d = idx - i, ad = Math.abs(d);
+        c.style.transform = `translateY(${(-d * 220).toFixed(1)}px) translateZ(${(-ad * 100).toFixed(0)}px) rotateX(${(-d * 25).toFixed(1)}deg) scale(${Math.max(0.5, 1 - ad * 0.15).toFixed(3)})`;
+        c.style.opacity = String(Math.max(0, 1 - ad * 0.55));
+        c.style.zIndex = String(30 - Math.round(ad * 10));
+        c.style.filter = `blur(${(ad * 3).toFixed(1)}px)`;
+        const fig = c.querySelector<HTMLElement>('[data-figure]');
+        if (fig) fig.style.transform = `translateY(${(d * 70).toFixed(1)}px) scale(${(1 + ad * 0.3).toFixed(3)}) rotateZ(${(d * -5).toFixed(1)}deg)`;
+        const vig = c.querySelector<HTMLElement>('[data-vig]');
+        if (vig) vig.style.opacity = String(clamp01(0.5 + ad * 0.5));
+        const dark = c.querySelector<HTMLElement>('[data-dark]');
+        if (dark) dark.style.opacity = String(clamp01(ad * 0.6));
+      });
+
+      lefts.forEach((el, i) => {
+        const d = idx - i, ad = Math.abs(d);
+        el.style.opacity = String(Math.max(0, 1 - ad * 1.5));
+        el.style.filter = `blur(${(ad * 4).toFixed(1)}px)`;
+        el.style.pointerEvents = ad < 0.5 ? 'auto' : 'none';
+        const f = el.querySelector<HTMLElement>('.dl__faction'); if (f) f.style.transform = `translateY(${(-d * 60).toFixed(1)}px)`;
+        const n = el.querySelector<HTMLElement>('.dl__name'); if (n) n.style.transform = `translateY(${(-d * 40).toFixed(1)}px)`;
+        const r = el.querySelector<HTMLElement>('.dl__role'); if (r) r.style.transform = `translateY(${(-d * 20).toFixed(1)}px)`;
+      });
+
+      rights.forEach((el, i) => {
+        const d = idx - i, ad = Math.abs(d);
+        el.style.opacity = String(Math.max(0, 1 - ad * 1.5));
+        el.style.filter = `blur(${(ad * 4).toFixed(1)}px)`;
+        el.style.pointerEvents = ad < 0.5 ? 'auto' : 'none';
+        const ln = el.querySelector<HTMLElement>('.dr__line'); if (ln) ln.style.transform = `translateY(${(-d * 50).toFixed(1)}px)`;
+        const de = el.querySelector<HTMLElement>('.dr__desc'); if (de) de.style.transform = `translateY(${(-d * 30).toFixed(1)}px)`;
+      });
+    });
+  }
+</script>

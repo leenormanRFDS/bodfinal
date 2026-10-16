@@ -1,0 +1,17 @@
+---
+// Canonical Route Consolidation (TRUTH / EXPERIENCE / TECHNOLOGY)
+// /schools is the single canonical endpoint for curriculum-linked learning, groups, trade and venue hire.
+return Astro.redirect('/schools', 301);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting to Schools &amp; Groups</title>
+    <meta http-equiv="refresh" content="0; url=/schools" />
+    <link rel="canonical" href="https://thebombingofdarwin.com.au/schools" />
+  </head>
+  <body style="background:#07090b;color:#ece7db;font-family:system-ui;display:grid;place-items:center;min-height:100vh;margin:0;">
+    <p>This page has permanently moved to <a href="/schools" style="color:#e4c583;">Schools &amp; Groups</a>.</p>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+---
+interface Props {
+  record: string;   // the mono "record" line, e.g. "Plan your visit"
+  title: string;    // the monument
+  lede?: string;    // optional serif line
+}
+const { record, title, lede } = Astro.props;
+---
+<header class="pagehead">
+  <div class="container">
+    <p class="eyebrow ph-el" style="--i:0">{record}</p>
+    <h1 class="pagehead__monument ph-el" style="--i:1">{title}</h1>
+    <div class="rule rule--short ph-el" style="--i:2; margin-top: clamp(24px, 3vw, 40px);"></div>
+    {lede && <p class="pagehead__lede ph-el" style="--i:3">{lede}</p>}
+  </div>
+</header>
+
+<style>
+  .pagehead {
+    padding-top: calc(var(--nav-h) + clamp(72px, 14vh, 160px));
+    padding-bottom: clamp(40px, 7vw, 84px);
+    border-bottom: 1px solid var(--line);
+  }
+  .pagehead .eyebrow {
+    color: #bfaa6b;
+  }
+  .pagehead__monument {
+    font-family: var(--font-display-xl);
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    color: var(--bone);
+    font-size: clamp(3rem, 10vw, 7rem);
+    margin: 0;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(236,231,219,0.04), 0 0 12px rgba(236,231,219,0.05);
+  }
+  .pagehead__lede {
+    font-family: var(--font-serif);
+    font-size: clamp(1.2rem, 2.2vw, 1.7rem);
+    line-height: 1.5;
+    color: var(--bone-dim);
+    max-width: 46ch;
+    margin: clamp(24px, 3vw, 40px) 0 0;
+  }
+
+  .ph-el { opacity: 0; transform: translateY(34px); filter: blur(9px); animation: phRise 1.5s var(--ease-solemn) both; animation-delay: calc(var(--i) * 0.13s + 0.08s); }
+  @keyframes phRise { to { opacity: 1; transform: none; filter: blur(0); } }
+  @media (prefers-reduced-motion: reduce) { .ph-el { animation: none; opacity: 1; transform: none; filter: none; } }
+</style>

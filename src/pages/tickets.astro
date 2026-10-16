@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import BookingForm from '../components/BookingForm.astro';
+---
+<Base title="Tickets" description="Book the Bombing of Darwin Experience — General Entry, Aviation Combo, and Croc N History combination tickets. Every General Entry ticket includes the Royal Flying Doctor Service Experience.">
+  <PageHeader
+    record="Admission"
+    title="Tickets"
+    lede="Choose your experience, pick a date and time, and book. Every General Entry ticket includes both the Bombing of Darwin and the Royal Flying Doctor Service experiences."
+  />
+
+  <section class="section" data-reveal="none">
+    <div class="container">
+      <BookingForm />
+    </div>
+  </section>
+
+  <section class="section section--tight" data-reveal="none" style="border-top:1px solid var(--line);">
+    <div class="container">
+      <div class="facts" data-reveal="none">
+        <div>
+          <p class="eyebrow eyebrow--gold">Locals Boarding Pass</p>
+          <p class="prose">Territorians can enjoy unlimited entry for twelve months. Ask our team and present valid proof of residency.</p>
+        </div>
+        <div>
+          <p class="eyebrow eyebrow--gold">Concessions & Seniors</p>
+          <p class="prose">Valid for Australian and international seniors and eligible concession card holders, on presentation of proof.</p>
+        </div>
+        <div>
+          <p class="eyebrow eyebrow--gold">Groups & schools</p>
+          <p class="prose">Bespoke rates for schools, tour operators and groups — <a href="/schools" style="color:var(--gold-bright);">see Programs</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 4vw, 48px); }
+  @media (max-width: 760px) { .facts { grid-template-columns: 1fr; } }
+</style>
+
+<style is:global>
+  /* On the booking page itself, the Your Visit panel is the CTA — hide the generic bars */
+  .bookbar { display: none !important; }
+  /* Reserve room on mobile so the fixed persistent summary bar never covers page content */
+  @media (max-width: 979px) {
+    body { padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important; }
+  }
+
+  /* Transactional page: eliminate scroll-triggered fade/reveal delays and blur on this page specifically.
+     Content renders at full opacity as soon as a section becomes active. */
+  body:has([data-booking]) [data-areveal],
+  [data-booking],
+  [data-booking] .step,
+  .facts {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  .pagehead .ph-el {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+  }
+</style>

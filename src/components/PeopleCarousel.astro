@@ -1,0 +1,143 @@
+---
+import { PEOPLE } from '../data/people';
+---
+<div class="pc" data-pc>
+  <div class="pc__stage" data-stage tabindex="0" role="group" aria-roledescription="carousel" aria-label="The people behind 19 February 1942">
+    {PEOPLE.map((p, i) => (
+      <article class="pc__card" data-i={i} aria-label={p.name}>
+        <div class="pc__plate">
+          <span class="pc__initials">{p.initials}</span>
+          <span class="record pc__platetag">Portrait · Archive</span>
+          <i class="tk tl"></i><i class="tk tr"></i><i class="tk bl"></i><i class="tk br"></i>
+        </div>
+        <div class="pc__cmeta">
+          <span class="record pc__cside">{p.side}</span>
+          <h3 class="pc__cname">{p.name}</h3>
+          <span class="record pc__crole">{p.role}</span>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <div class="pc__controls">
+    <button class="pc__nav" data-prev type="button" aria-label="Previous person">←</button>
+    <span class="record pc__counter" data-counter aria-live="polite">1 / {PEOPLE.length}</span>
+    <button class="pc__nav" data-next type="button" aria-label="Next person">→</button>
+  </div>
+
+  <div class="pc__detail" data-detail aria-live="polite"></div>
+
+  <script type="application/json" data-people set:html={JSON.stringify(PEOPLE)}></script>
+</div>
+
+<style>
+  .pc { --card-w: 280px; }
+
+  /* Fallback (no JS / reduced): a readable column of cards */
+  .pc__stage { display: flex; flex-direction: column; align-items: center; gap: 20px; outline: none; }
+  .pc__card {
+    width: var(--card-w); background: var(--char-2); border: 1px solid var(--line);
+    border-radius: var(--radius); overflow: hidden; user-select: none;
+  }
+
+  /* Enhanced: coverflow */
+  .pc[data-enhanced] .pc__stage {
+    position: relative; height: 440px; display: block;
+    perspective: 1400px; cursor: grab; touch-action: pan-y;
+  }
+  .pc[data-enhanced] .pc__stage:active { cursor: grabbing; }
+  .pc[data-enhanced] .pc__card {
+    position: absolute; top: 50%; left: 50%; margin: -220px 0 0 calc(var(--card-w) / -2);
+    transition: transform 0.55s var(--ease), opacity 0.55s var(--ease);
+    will-change: transform, opacity; backface-visibility: hidden;
+  }
+  .pc[data-enhanced] .pc__card.is-active { border-color: var(--line-strong); }
+
+  .pc__plate {
+    position: relative; aspect-ratio: 4 / 3;
+    background: radial-gradient(120% 120% at 50% 20%, #221d18, var(--ink));
+    display: grid; place-items: center; border-bottom: 1px solid var(--line);
+  }
+  .pc__initials { font-family: var(--font-display-xl); font-size: 3.4rem; color: var(--bone-mute); letter-spacing: 0.04em; }
+  .pc__platetag { position: absolute; bottom: 10px; left: 12px; color: var(--bone-mute); font-size: 0.56rem; }
+  .tk { position: absolute; width: 12px; height: 12px; border: 1px solid var(--hud); opacity: 0.5; }
+  .tk.tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+  .tk.tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; }
+  .tk.bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; }
+  .tk.br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+
+  .pc__cmeta { padding: 16px 18px 20px; }
+  .pc__cside { color: var(--gold); font-size: 0.6rem; }
+  .pc__cname { font-family: var(--font-display); font-weight: 400; font-size: 1.25rem; line-height: 1.05; margin: 8px 0 4px; text-transform: none; letter-spacing: 0.01em; }
+  .pc__crole { color: var(--bone-mute); font-size: 0.62rem; }
+
+  .pc__controls { display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 26px; }
+  .pc__nav { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; color: var(--bone); font-size: 1.1rem; cursor: pointer; transition: border-color 0.2s var(--ease), color 0.2s var(--ease); }
+  .pc__nav:hover { border-color: var(--gold); color: var(--gold); }
+  .pc__counter { min-width: 54px; text-align: center; }
+
+  .pc__detail { max-width: 60ch; margin: 40px auto 0; text-align: center; min-height: 150px; }
+  .pc__detail .pc__d-side { color: var(--gold); margin-bottom: 12px; }
+  .pc__detail .pc__d-name { margin: 0 0 6px; }
+  .pc__detail .pc__d-role { color: var(--bone-mute); margin-bottom: 18px; }
+  .pc__detail .pc__d-bio { font-family: var(--font-serif); font-size: 1.14rem; line-height: 1.7; color: var(--bone-dim); }
+  .pc__draft { color: var(--signal); }
+
+  @media (max-width: 560px) { .pc { --card-w: 240px; } .pc[data-enhanced] .pc__stage { height: 400px; } }
+</style>
+
+<script>
+  const pc = document.querySelector<HTMLElement>('[data-pc]');
+  if (pc) {
+    const people = JSON.parse(pc.querySelector('[data-people]')!.textContent || '[]');
+    const stage = pc.querySelector<HTMLElement>('[data-stage]')!;
+    const cards = Array.from(pc.querySelectorAll<HTMLElement>('.pc__card'));
+    const detail = pc.querySelector<HTMLElement>('[data-detail]')!;
+    const counter = pc.querySelector<HTMLElement>('[data-counter]')!;
+    const N = cards.length;
+    let active = 0;
+
+    pc.setAttribute('data-enhanced', '');
+
+    function place() {
+      cards.forEach((c, i) => {
+        const o = i - active, ao = Math.abs(o);
+        const scale = o === 0 ? 1 : ao === 1 ? 0.82 : 0.68;
+        const opacity = ao > 2 ? 0 : o === 0 ? 1 : ao === 1 ? 0.5 : 0.16;
+        c.style.transform = `translateX(${o * 58}%) rotateY(${o * -26}deg) scale(${scale})`;
+        c.style.opacity = String(opacity);
+        c.style.zIndex = String(50 - ao);
+        c.style.pointerEvents = ao > 2 ? 'none' : 'auto';
+        c.classList.toggle('is-active', o === 0);
+        c.setAttribute('aria-hidden', ao > 2 ? 'true' : 'false');
+      });
+      const p = people[active];
+      detail.innerHTML =
+        `<p class="record pc__d-side">${p.side}${p.draft ? ' · <span class="pc__draft">copy to verify</span>' : ''}</p>` +
+        `<h3 class="pc__d-name monument monument--sm">${p.name}</h3>` +
+        `<p class="record pc__d-role">${p.role}${p.years && p.years !== '—' ? ' · ' + p.years : ''}</p>` +
+        `<p class="pc__d-bio">${p.bio}</p>`;
+      counter.textContent = `${active + 1} / ${N}`;
+    }
+    const go = (i: number) => { active = Math.max(0, Math.min(N - 1, i)); place(); };
+
+    pc.querySelector('[data-prev]')!.addEventListener('click', () => go(active - 1));
+    pc.querySelector('[data-next]')!.addEventListener('click', () => go(active + 1));
+    cards.forEach((c, i) => c.addEventListener('click', () => { if (i !== active) go(i); }));
+    stage.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(active - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(active + 1); }
+    });
+
+    // drag / swipe
+    let down = false, x0 = 0;
+    stage.addEventListener('pointerdown', (e) => { down = true; x0 = e.clientX; });
+    window.addEventListener('pointerup', (e) => {
+      if (!down) return; down = false;
+      const dx = e.clientX - x0;
+      if (Math.abs(dx) > 45) go(active + (dx < 0 ? 1 : -1));
+    });
+
+    place();
+  }
+</script>

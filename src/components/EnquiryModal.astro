@@ -1,0 +1,607 @@
+---
+import { CONTACT } from '../consts';
+---
+
+<div class="enquiry-modal" id="enquiry-modal" aria-hidden="true">
+  <div class="enquiry-modal__scrim" data-enquiry-close tabindex="-1" aria-hidden="true"></div>
+  
+  <div 
+    class="enquiry-modal__panel" 
+    id="enquiry-modal-panel"
+    role="dialog" 
+    aria-labelledby="enquiry-title" 
+    aria-describedby="enquiry-desc"
+    aria-modal="true"
+    tabindex="-1"
+  >
+    <!-- Header -->
+    <div class="enquiry-modal__header">
+      <div>
+        <p class="eyebrow eyebrow--gold" id="enquiry-eyebrow" data-enquiry-eyebrow>EDUCATION &amp; GROUPS</p>
+        <h2 id="enquiry-title" class="enquiry-modal__title" data-enquiry-title>School &amp; Group Bookings</h2>
+      </div>
+      <button 
+        type="button" 
+        class="enquiry-modal__close" 
+        data-enquiry-close 
+        aria-label="Close enquiry window"
+        id="enquiry-close-btn"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <p class="enquiry-modal__desc prose prose--serif" id="enquiry-desc" data-enquiry-desc>
+      To discuss your school's curriculum requirements, group rates, or schedule a tour, complete the details below or contact our Reservations Team.
+    </p>
+
+    <!-- Clean Form -->
+    <form class="enquiry-modal__form" id="enquiry-form">
+      <input type="hidden" id="enquiry-type" name="enquiryType" value="schools" />
+      <input type="hidden" id="enquiry-target-email" name="targetEmail" value="bookingsdrw@flyingdoctor.net.au" />
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="enquiry-name" class="form-label">Full Name <span class="req">*</span></label>
+          <input 
+            type="text" 
+            id="enquiry-name" 
+            name="name" 
+            required 
+            placeholder="e.g. Sarah Jenkins"
+            class="form-input" 
+            autocomplete="name"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="enquiry-contact-email" class="form-label">Your Email <span class="req">*</span></label>
+          <input 
+            type="email" 
+            id="enquiry-contact-email" 
+            name="email" 
+            required 
+            placeholder="e.g. sjenkins@school.edu.au"
+            class="form-input" 
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="enquiry-org" class="form-label" id="enquiry-org-label">School / Organisation</label>
+          <input 
+            type="text" 
+            id="enquiry-org" 
+            name="organization" 
+            placeholder="e.g. Darwin High School"
+            class="form-input" 
+            autocomplete="organization"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="enquiry-phone" class="form-label">Phone Number (Optional)</label>
+          <input 
+            type="tel" 
+            id="enquiry-phone" 
+            name="phone" 
+            placeholder="e.g. 0400 000 000"
+            class="form-input" 
+            autocomplete="tel"
+          />
+        </div>
+      </div>
+
+      <div class="form-field form-field--full">
+        <label for="enquiry-message" class="form-label">Enquiry Details &amp; Preferred Dates <span class="req">*</span></label>
+        <textarea 
+          id="enquiry-message" 
+          name="message" 
+          required 
+          rows="4" 
+          placeholder="Please share your estimated group size, proposed dates, and any requirements..."
+          class="form-textarea"
+        ></textarea>
+      </div>
+
+      <!-- Restrained, Dignified Actions -->
+      <div class="enquiry-modal__actions">
+        <a href="tel:+61889835700" class="btn-enquiry btn-enquiry--call" id="enquiry-call-btn" title="Call the Wharf Desk at (08) 8983 5700">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+          <span>Call (08) 8983 5700</span>
+        </a>
+        <button type="submit" class="btn-enquiry btn-enquiry--email" id="enquiry-submit-btn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <span>Send Enquiry</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Global Toast Notification -->
+<div class="enquiry-toast" id="enquiry-toast" role="status" aria-live="polite" aria-hidden="true">
+  <span class="enquiry-toast__dot" aria-hidden="true"></span>
+  <span class="enquiry-toast__text" id="enquiry-toast-text">Opening email client...</span>
+</div>
+
+<style>
+  .enquiry-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 3vw, 32px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s var(--ease), visibility 0.25s var(--ease);
+  }
+  .enquiry-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .enquiry-modal__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 9, 11, 0.84);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .enquiry-modal__panel {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--char-2, #111418);
+    border: 1px solid var(--line-strong, rgba(236, 231, 219, 0.18));
+    border-radius: var(--radius, 4px);
+    box-shadow: 0 24px 72px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    padding: clamp(24px, 4vw, 38px);
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.25s var(--ease);
+  }
+  .enquiry-modal.is-open .enquiry-modal__panel {
+    transform: translateY(0) scale(1);
+  }
+
+  .enquiry-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line, rgba(236, 231, 219, 0.1));
+    padding-bottom: 16px;
+  }
+  .enquiry-modal__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+    line-height: 1.1;
+    color: var(--bone);
+    margin: 4px 0 0;
+    letter-spacing: 0.01em;
+  }
+  .enquiry-modal__close {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--bone-dim);
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .enquiry-modal__close:hover {
+    color: var(--bone);
+    border-color: var(--gold);
+    background: rgba(198, 161, 91, 0.08);
+  }
+
+  .enquiry-modal__desc {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--bone-dim);
+    margin-bottom: 22px;
+  }
+
+  /* Form Layout */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 580px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-field--full {
+    margin-bottom: 22px;
+  }
+  .form-label {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--bone-mute);
+  }
+  .form-label .req {
+    color: var(--gold);
+  }
+  .form-input, .form-textarea {
+    width: 100%;
+    background: rgba(7, 9, 11, 0.6);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--bone);
+    font-family: var(--font-sans);
+    font-size: 0.92rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(198, 161, 91, 0.25);
+  }
+  .form-textarea {
+    resize: vertical;
+    min-height: 96px;
+    line-height: 1.5;
+  }
+
+  /* Exactly 2 CTA Buttons */
+  .enquiry-modal__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+  @media (max-width: 480px) {
+    .enquiry-modal__actions {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .btn-enquiry {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 13px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .btn-enquiry:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-enquiry--call {
+    background: rgba(236, 231, 219, 0.05);
+    border: 1px solid var(--line-strong, rgba(236, 231, 219, 0.2));
+    color: var(--bone);
+  }
+  .btn-enquiry--call:hover {
+    background: rgba(198, 161, 91, 0.14);
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    box-shadow: 0 0 20px rgba(198, 161, 91, 0.15);
+  }
+
+  .btn-enquiry--email {
+    background: radial-gradient(120% 150% at 50% -10%, #f7dc95 0%, #e6c281 42%, #c69a4f 100%);
+    border: 1px solid rgba(247, 220, 149, 0.85);
+    color: #2a1c08;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 0 0 0 1px rgba(0,0,0,0.25),
+      0 0 20px rgba(214,161,79,0.25), 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .btn-enquiry--email:hover {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 0 0 1px rgba(0,0,0,0.25),
+      0 0 30px rgba(231,196,132,0.48), 0 10px 28px rgba(0,0,0,0.5);
+  }
+
+  /* Global Toast */
+  .enquiry-toast {
+    position: fixed;
+    bottom: clamp(20px, 4vw, 36px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    background: rgba(17, 20, 24, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-pill, 9999px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 20px rgba(198, 161, 91, 0.2);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    color: var(--bone);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .enquiry-toast.is-active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .enquiry-toast__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 8px var(--gold-bright);
+  }
+</style>
+
+<script>
+  interface EnquiryContext {
+    eyebrow: string;
+    title: string;
+    email: string;
+    orgLabel: string;
+    orgPlaceholder: string;
+    desc: string;
+    defaultMessage: string;
+  }
+
+  const CONTEXTS: Record<string, EnquiryContext> = {
+    schools: {
+      eyebrow: 'EDUCATION & GROUPS',
+      title: 'School & Group Bookings',
+      email: 'bookingsdrw@flyingdoctor.net.au',
+      orgLabel: 'School / Institution',
+      orgPlaceholder: 'e.g. Darwin High School',
+      desc: 'To discuss curriculum integration, student group rates (up to 150 students), discovery trails, or step aboard PAPA the PC-12, complete your details below or call our team.',
+      defaultMessage: 'We would like to enquire about a group visit to the Bombing of Darwin & RFDS Experience.\nEstimated attendees: \nProposed dates / term: \nYear levels: ',
+    },
+    general: {
+      eyebrow: 'VISITOR SERVICES',
+      title: 'General Enquiries',
+      email: 'rfdsdarwin@flyingdoctor.net',
+      orgLabel: 'Organisation (Optional)',
+      orgPlaceholder: 'e.g. Individual / Family',
+      desc: 'For ticketing questions, facility hours, accessibility assistance, or feedback regarding your visit to Stokes Hill Wharf.',
+      defaultMessage: 'Hello, I have an enquiry regarding my upcoming visit to the facility: ',
+    },
+    trade: {
+      eyebrow: 'TRADE & INDUSTRY',
+      title: 'Tourism & Trade Desk',
+      email: 'bek.garrett@flyingdoctor.net',
+      orgLabel: 'Company / Tour Operator',
+      orgPlaceholder: 'e.g. Inbound Tour Services NT',
+      desc: 'For trade rates, product sheets, wholesaling agreements, and collaborative Northern Territory tourism promotion.',
+      defaultMessage: 'We are interested in contracting trade rates and exploring tourism partnerships with the Bombing of Darwin Experience: ',
+    },
+    venue: {
+      eyebrow: 'EXCLUSIVE VENUE HIRE',
+      title: 'Corporate Functions & Venue Hire',
+      email: 'bookingsdrw@flyingdoctor.net.au',
+      orgLabel: 'Company / Host',
+      orgPlaceholder: 'e.g. Australian Medical Association NT',
+      desc: 'Host your corporate function, cocktail reception, conference, or private evening tour on historic Stokes Hill Wharf overlooking Darwin Harbour.',
+      defaultMessage: 'We are enquiring about exclusive evening venue hire at Stokes Hill Wharf.\nTarget date / time: \nEstimated guest count: \nEvent format (cocktail / seated / presentation): ',
+    },
+  };
+
+  const modal = document.getElementById('enquiry-modal');
+  const toast = document.getElementById('enquiry-toast');
+  const toastText = document.getElementById('enquiry-toast-text');
+
+  const eyebrowEl = document.getElementById('enquiry-eyebrow');
+  const titleEl = document.getElementById('enquiry-title');
+  const descEl = document.getElementById('enquiry-desc');
+  const orgLabelEl = document.getElementById('enquiry-org-label');
+  const orgInputEl = document.getElementById('enquiry-org') as HTMLInputElement | null;
+  const messageInputEl = document.getElementById('enquiry-message') as HTMLTextAreaElement | null;
+  const typeInputEl = document.getElementById('enquiry-type') as HTMLInputElement | null;
+  const targetEmailInputEl = document.getElementById('enquiry-target-email') as HTMLInputElement | null;
+  const form = document.getElementById('enquiry-form') as HTMLFormElement | null;
+
+  let activeTrigger: HTMLElement | null = null;
+  let toastTimer: any = null;
+
+  function showToast(message: string) {
+    if (!toast || !toastText) return;
+    toastText.textContent = message;
+    toast.classList.add('is-active');
+    toast.setAttribute('aria-hidden', 'false');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('is-active');
+      toast.setAttribute('aria-hidden', 'true');
+    }, 3200);
+  }
+
+  function copyTextToClipboard(text: string, successMessage: string) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(successMessage);
+      }).catch(() => {
+        fallbackCopy(text, successMessage);
+      });
+    } else {
+      fallbackCopy(text, successMessage);
+    }
+  }
+
+  function fallbackCopy(text: string, successMessage: string) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(successMessage);
+    } catch {
+      showToast(`Selected: ${text}`);
+    }
+  }
+
+  function openEnquiryModal(type: string = 'schools', triggerEl?: HTMLElement) {
+    if (!modal) return;
+    activeTrigger = triggerEl || null;
+
+    const ctx = CONTEXTS[type] || CONTEXTS.schools;
+
+    if (eyebrowEl) eyebrowEl.textContent = ctx.eyebrow;
+    if (titleEl) titleEl.textContent = ctx.title;
+    if (descEl) descEl.textContent = ctx.desc;
+    if (orgLabelEl) orgLabelEl.textContent = ctx.orgLabel;
+    if (orgInputEl) orgInputEl.placeholder = ctx.orgPlaceholder;
+    if (typeInputEl) typeInputEl.value = type;
+    if (targetEmailInputEl) targetEmailInputEl.value = ctx.email;
+
+    if (messageInputEl && (!messageInputEl.value || messageInputEl.dataset.autoFilled === 'true')) {
+      messageInputEl.value = ctx.defaultMessage;
+      messageInputEl.dataset.autoFilled = 'true';
+    }
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    // Focus initial input
+    setTimeout(() => {
+      const nameInput = document.getElementById('enquiry-name') as HTMLInputElement | null;
+      if (nameInput) nameInput.focus();
+    }, 100);
+  }
+
+  function closeEnquiryModal() {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (activeTrigger) {
+      activeTrigger.focus();
+      activeTrigger = null;
+    }
+  }
+
+  // Keyboard navigation & Scrim close
+  modal?.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-enquiry-close]') || target === modal) {
+      closeEnquiryModal();
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('is-open')) {
+      closeEnquiryModal();
+    }
+  });
+
+  // CALL US Button handler
+  document.getElementById('enquiry-call-btn')?.addEventListener('click', (e) => {
+    // If on desktop, also copy phone number
+    if (!window.matchMedia('(max-width: 768px)').matches) {
+      copyTextToClipboard('(08) 8983 5700', 'Phone number copied: (08) 8983 5700');
+    }
+  });
+
+  function getDraftDetails() {
+    const name = (document.getElementById('enquiry-name') as HTMLInputElement)?.value.trim() || 'Visitor';
+    const email = (document.getElementById('enquiry-contact-email') as HTMLInputElement)?.value.trim() || '';
+    const org = (document.getElementById('enquiry-org') as HTMLInputElement)?.value.trim() || 'N/A';
+    const phone = (document.getElementById('enquiry-phone') as HTMLInputElement)?.value.trim() || 'N/A';
+    const message = (document.getElementById('enquiry-message') as HTMLTextAreaElement)?.value.trim() || '';
+    const type = typeInputEl?.value || 'schools';
+    const ctx = CONTEXTS[type] || CONTEXTS.schools;
+
+    const subject = `[${ctx.title}] Enquiry from ${name}`;
+    const body = `Name: ${name}\nEmail: ${email}\nOrganisation: ${org}\nPhone: ${phone}\nEnquiry Type: ${ctx.title}\n\nEnquiry Details:\n${message}\n\nSent via thebombingofdarwin.com.au`;
+
+    return { ctx, name, email, org, phone, message, subject, body };
+  }
+
+  // EMAIL US Button / Form Submission -> generates email straight to elected inbox
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const { ctx, subject, body } = getDraftDetails();
+
+    // 1. Copy draft to clipboard so visitor never loses it
+    copyTextToClipboard(body, `Enquiry drafted for ${ctx.email}`);
+
+    // 2. Open mailto link directly to elected inbox
+    const mailtoUrl = `mailto:${encodeURIComponent(ctx.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+
+    showToast(`Opening email to ${ctx.email}...`);
+  });
+
+  // Attach to global triggers across the site
+  function initGlobalEnquiryTriggers() {
+    document.querySelectorAll<HTMLElement>('[data-enquiry-trigger]').forEach((el) => {
+      if (el.dataset.enquiryBound === 'true') return;
+      el.dataset.enquiryBound = 'true';
+
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const type = el.getAttribute('data-enquiry-trigger') || 'schools';
+        openEnquiryModal(type, el);
+      });
+    });
+
+    // Smart phone handler: on mobile dials +61; on desktop copies to clipboard
+    document.querySelectorAll<HTMLAnchorElement>('[data-phone-trigger], a[href^="tel:"]').forEach((el) => {
+      if (el.dataset.phoneBound === 'true') return;
+      el.dataset.phoneBound = 'true';
+
+      if (!el.getAttribute('href')?.startsWith('tel:+61')) {
+        el.setAttribute('href', 'tel:+61889835700');
+      }
+
+      el.addEventListener('click', (e) => {
+        if (!window.matchMedia('(max-width: 768px)').matches) {
+          e.preventDefault();
+          copyTextToClipboard('(08) 8983 5700', 'Phone number copied: (08) 8983 5700');
+        }
+      });
+    });
+  }
+
+  initGlobalEnquiryTriggers();
+  document.addEventListener('astro:page-load', initGlobalEnquiryTriggers);
+
+  (window as any).__openEnquiry = openEnquiryModal;
+  (window as any).__copyToClipboard = copyTextToClipboard;
+</script>

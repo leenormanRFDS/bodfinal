@@ -1,0 +1,495 @@
+---
+import { CANONICAL_EVIDENCE_RECORDS } from '../lib/spatial/spatial-evidence-overlay';
+const evidenceItems = Object.values(CANONICAL_EVIDENCE_RECORDS);
+---
+<div class="evidence-ledger" id="evidence-ledger" aria-hidden="true">
+  <div class="evidence-ledger__scrim" data-ledger-close aria-hidden="true"></div>
+  <div 
+    class="evidence-ledger__panel" 
+    id="evidence-ledger-panel"
+    role="dialog" 
+    aria-labelledby="ledger-title" 
+    aria-modal="true"
+    tabindex="-1"
+  >
+    <div class="evidence-ledger__header">
+      <h2 id="ledger-title" class="evidence-ledger__title record" data-ledger-title>Historical Evidence</h2>
+      <button 
+        type="button" 
+        class="evidence-ledger__close" 
+        data-ledger-close 
+        aria-label="Close evidence ledger"
+        data-i18n-attr="aria-label:story.evidence.close"
+        id="ledger-close-btn"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="pointer-events: none;"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="evidence-ledger__content">
+      <div class="evidence-ledger__meta">
+        <span class="evidence-ledger__badge" data-ledger-classification>CLASSIFICATION</span>
+        <span class="evidence-ledger__badge evidence-ledger__badge--confidence" data-ledger-confidence>CONFIDENCE</span>
+      </div>
+      
+      <div class="evidence-ledger__section">
+        <h3 class="record" data-i18n="story.evidence.whatWeKnow">What We Know</h3>
+        <p class="evidence-ledger__text" data-ledger-known></p>
+      </div>
+
+      <div class="evidence-ledger__section" data-ledger-uncertain-section style="display:none;">
+        <h3 class="record">What Is Uncertain</h3>
+        <p class="evidence-ledger__text evidence-ledger__text--uncertain" data-ledger-uncertain></p>
+      </div>
+
+      <div class="evidence-ledger__section">
+        <h3 class="record">Sources & Provenance</h3>
+        <ul class="evidence-ledger__sources" data-ledger-sources>
+        </ul>
+      </div>
+
+      <div class="evidence-ledger__section" data-ledger-notes-section style="display:none;">
+        <h3 class="record">Historical Note</h3>
+        <p class="evidence-ledger__text" data-ledger-notes></p>
+      </div>
+
+      <!-- Comprehensive Evidence Directory / Index (Accessible within dialog) -->
+      <div class="evidence-ledger__section evidence-ledger__index-section">
+        <h3 class="record">Verified Evidence Index</h3>
+        <p class="evidence-ledger__index-desc">Examine primary documentation, confidence, and provenance across all 8 verified historical nodes.</p>
+        <div class="evidence-ledger__index-grid" role="list">
+          {evidenceItems.map(item => (
+            <button
+              type="button"
+              class="evidence-ledger__index-item"
+              data-ledger-index-btn={item.id}
+              aria-label={`Examine record: ${item.title} (${item.time || ''})`}
+            >
+              <span class="evidence-ledger__index-time record">{item.time || ''}</span>
+              <span class="evidence-ledger__index-title">{item.title}</span>
+              <span class="evidence-ledger__index-badge record">{item.badge}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .evidence-ledger {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .evidence-ledger.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .evidence-ledger__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(12, 10, 8, 0.65);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+  .evidence-ledger.is-open .evidence-ledger__scrim {
+    opacity: 1;
+  }
+  .evidence-ledger__panel {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    background: var(--ink-light);
+    border-left: 1px solid rgba(236, 231, 219, 0.1);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    z-index: 2;
+  }
+  .evidence-ledger.is-open .evidence-ledger__panel {
+    transform: translateX(0);
+  }
+  
+  @media (max-width: 768px) {
+    .evidence-ledger {
+      align-items: flex-end;
+    }
+    .evidence-ledger__panel {
+      max-width: 100%;
+      height: 85vh;
+      border-left: none;
+      border-top: 1px solid rgba(236, 231, 219, 0.1);
+      transform: translateY(100%);
+      border-radius: 12px 12px 0 0;
+    }
+    .evidence-ledger.is-open .evidence-ledger__panel {
+      transform: translateY(0);
+    }
+  }
+
+  .evidence-ledger__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid rgba(236, 231, 219, 0.1);
+  }
+  .evidence-ledger__title {
+    margin: 0;
+    color: var(--gold);
+    font-size: 0.9rem;
+  }
+  .evidence-ledger__close {
+    background: none;
+    border: none;
+    color: var(--bone);
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+  }
+  .evidence-ledger__close:hover {
+    background: rgba(236, 231, 219, 0.1);
+    color: var(--gold);
+  }
+  .evidence-ledger__close svg {
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+  }
+
+  .evidence-ledger__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .evidence-ledger__meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .evidence-ledger__badge {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 4px 8px;
+    border: 1px solid rgba(236, 231, 219, 0.2);
+    border-radius: 2px;
+    color: var(--bone);
+    text-transform: uppercase;
+  }
+  .evidence-ledger__badge--confidence {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .evidence-ledger__section {
+    margin-bottom: 32px;
+  }
+  .evidence-ledger__section h3 {
+    color: var(--bone-dim);
+    margin-bottom: 12px;
+  }
+  .evidence-ledger__text {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--bone);
+    margin: 0;
+  }
+  .evidence-ledger__text--uncertain {
+    color: #f7a69c;
+  }
+  .evidence-ledger__sources {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .evidence-ledger__sources li {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--bone-mute);
+    padding-left: 12px;
+    border-left: 1px solid rgba(236, 231, 219, 0.2);
+  }
+  .evidence-ledger__sources strong {
+    color: var(--bone);
+    font-weight: 500;
+    display: block;
+  }
+  .evidence-ledger__index-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(236, 231, 219, 0.12);
+  }
+  .evidence-ledger__index-desc {
+    font-size: 0.80rem;
+    color: var(--bone-mute);
+    margin: 6px 0 14px;
+    line-height: 1.4;
+    font-family: var(--font-sans);
+  }
+  .evidence-ledger__index-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .evidence-ledger__index-item {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(236, 231, 219, 0.03);
+    border: 1px solid rgba(236, 231, 219, 0.10);
+    border-radius: 3px;
+    color: var(--bone);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-sans);
+  }
+  .evidence-ledger__index-item:hover {
+    background: rgba(198, 161, 91, 0.10);
+    border-color: rgba(198, 161, 91, 0.4);
+  }
+  .evidence-ledger__index-item.is-active {
+    background: rgba(198, 161, 91, 0.15);
+    border-color: var(--gold);
+  }
+  .evidence-ledger__index-time {
+    font-size: 0.68rem;
+    color: var(--gold);
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .evidence-ledger__index-title {
+    font-size: 0.82rem;
+    color: var(--bone);
+    flex: 1;
+  }
+  .evidence-ledger__index-badge {
+    font-size: 0.60rem;
+    color: var(--bone-dim);
+    border-left: 1px solid rgba(236, 231, 219, 0.15);
+    padding-left: 8px;
+    flex-shrink: 0;
+  }
+</style>
+<script>
+  // Robust accessible modal logic for the Evidence Ledger
+  const ledger = document.getElementById('evidence-ledger');
+  const panel = document.getElementById('evidence-ledger-panel');
+  const closeBtn = document.getElementById('ledger-close-btn');
+  let lastFocus: HTMLElement | null = null;
+
+  function setBackgroundInert(inert: boolean) {
+    // Collect interactive root containers to mark inert/hidden while modal is active
+    const candidateRoots = document.querySelectorAll(
+      'body > :not(#evidence-ledger), main, aside, nav, header.nav, footer, .spatial-stage, .s-intro, .s-tl-section, .s-plot-mobile, .s-film, .s-plotbg, .s-clock, .bookbar, .bookfab'
+    );
+    candidateRoots.forEach((el) => {
+      // Must NOT mark the ledger, any child of the ledger, or any ANCESTOR of the ledger inert!
+      if (el && el !== ledger && !ledger?.contains(el) && !el.contains(ledger)) {
+        if (inert) {
+          el.setAttribute('inert', '');
+          el.setAttribute('aria-hidden', 'true');
+        } else {
+          el.removeAttribute('inert');
+          el.removeAttribute('aria-hidden');
+        }
+      }
+    });
+  }
+
+  function closeEvidenceLedger() {
+    if (!ledger) return;
+    ledger.classList.remove('is-open');
+    ledger.setAttribute('aria-hidden', 'true');
+    setBackgroundInert(false);
+    if (lastFocus && typeof lastFocus.focus === 'function') {
+      try {
+        lastFocus.focus();
+      } catch {
+        // Safe fallback
+      }
+    }
+    lastFocus = null;
+  }
+
+  // Expose on window for direct access
+  (window as any).closeEvidenceLedger = closeEvidenceLedger;
+
+  // Wire all close triggers (buttons, scrims, etc.)
+  document.querySelectorAll('[data-ledger-close]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeEvidenceLedger();
+    });
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeEvidenceLedger();
+    });
+  }
+
+  // Clicking on outer ledger backdrop
+  ledger?.addEventListener('click', (e) => {
+    if (e.target === ledger || (e.target as HTMLElement).hasAttribute('data-ledger-close')) {
+      e.preventDefault();
+      closeEvidenceLedger();
+    }
+  });
+
+  // Stop propagation inside panel
+  panel?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  // Keyboard navigation within modal:
+  // - Escape closes
+  // - Tab & Shift+Tab trap focus
+  document.addEventListener('keydown', (e) => {
+    if (!ledger?.classList.contains('is-open')) return;
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      closeEvidenceLedger();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusables = ledger.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first || !ledger.contains(document.activeElement)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last || !ledger.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+  });
+
+  (window as any).openEvidenceLedger = (data: any) => {
+    lastFocus = document.activeElement as HTMLElement | null;
+    if (!ledger || !data) return;
+
+    const titleEl = document.querySelector('[data-ledger-title]');
+    if (titleEl) titleEl.textContent = data.title || 'Historical Evidence';
+
+    const classEl = document.querySelector('[data-ledger-classification]');
+    if (classEl) classEl.textContent = (data.classification || 'UNKNOWN').replace(/_/g, ' ');
+
+    const confEl = document.querySelector('[data-ledger-confidence]');
+    if (confEl) confEl.textContent = data.confidence || 'UNKNOWN';
+    
+    const knownEl = document.querySelector('[data-ledger-known]');
+    if (knownEl) knownEl.innerHTML = data.known || '';
+    
+    const uncertSec = document.querySelector('[data-ledger-uncertain-section]') as HTMLElement;
+    const uncertEl = document.querySelector('[data-ledger-uncertain]');
+    if (uncertSec && uncertEl) {
+      if (data.uncertain) {
+        uncertSec.style.display = 'block';
+        uncertEl.innerHTML = data.uncertain;
+      } else {
+        uncertSec.style.display = 'none';
+      }
+    }
+
+    const notesSec = document.querySelector('[data-ledger-notes-section]') as HTMLElement;
+    const notesEl = document.querySelector('[data-ledger-notes]');
+    if (notesSec && notesEl) {
+      if (data.notes) {
+        notesSec.style.display = 'block';
+        notesEl.innerHTML = data.notes;
+      } else {
+        notesSec.style.display = 'none';
+      }
+    }
+
+    const sourcesUl = document.querySelector('[data-ledger-sources]');
+    if (sourcesUl) {
+      sourcesUl.innerHTML = '';
+      if (data.sources && Array.isArray(data.sources)) {
+        data.sources.forEach((s: any) => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${s.title}</strong>${s.institution ? s.institution + '<br/>' : ''}${s.reference || ''}`;
+          sourcesUl.appendChild(li);
+        });
+      }
+    }
+
+    // Update active highlight on index buttons
+    document.querySelectorAll('[data-ledger-index-btn]').forEach(btn => {
+      btn.classList.toggle('is-active', btn.getAttribute('data-ledger-index-btn') === data.id);
+    });
+
+    // Set background inert & show modal dialog
+    setBackgroundInert(true);
+    ledger.classList.add('is-open');
+    ledger.setAttribute('aria-hidden', 'false');
+
+    // Move initial focus into modal
+    requestAnimationFrame(() => {
+      if (closeBtn) {
+        closeBtn.focus();
+      } else if (panel) {
+        panel.focus();
+      }
+    });
+  };
+
+  // Wire up index buttons within the modal dialog
+  document.querySelectorAll<HTMLButtonElement>('[data-ledger-index-btn]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-ledger-index-btn');
+      if (id) {
+        const { CANONICAL_EVIDENCE_RECORDS } = await import('../lib/spatial/spatial-evidence-overlay');
+        if (CANONICAL_EVIDENCE_RECORDS[id] && (window as any).openEvidenceLedger) {
+          (window as any).openEvidenceLedger(CANONICAL_EVIDENCE_RECORDS[id]);
+        }
+      }
+    });
+  });
+</script>

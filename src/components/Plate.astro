@@ -1,0 +1,52 @@
+---
+// Plate — any image, catalogued as an archival exhibit.
+// Corner ticks, register treatment (archival = warm monochrome, present = held),
+// grain, and an artifact-style caption. The site's core image primitive.
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  record?: string;          // e.g. "Plate 03" or an accession no.
+  register?: 'archival' | 'present';
+  ratio?: string;           // CSS aspect-ratio, e.g. "3 / 2"
+}
+const { src, alt, caption, record, register = 'present', ratio = '3 / 2' } = Astro.props;
+---
+<figure class={`plate plate--${register}`} style={`--plate-ratio:${ratio}`} data-reveal>
+  <div class="plate__frame">
+    <img src={src} alt={alt} loading="lazy" decoding="async" />
+    <span class="plate__grain" aria-hidden="true"></span>
+    <span class="plate__tone" aria-hidden="true"></span>
+    <span class="tk tl"></span><span class="tk tr"></span><span class="tk bl"></span><span class="tk br"></span>
+    {record && <span class="plate__rec record">{record}</span>}
+  </div>
+  {caption && <figcaption class="plate__cap record">{caption}</figcaption>}
+</figure>
+
+<style>
+  .plate { margin: 0; }
+  .plate__frame { position: relative; aspect-ratio: var(--plate-ratio); overflow: hidden; border: 1px solid var(--line-strong); background: var(--ink); }
+  .plate__frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  /* register treatments — this is what makes disparate sources feel one-authored */
+  .plate--archival img { filter: grayscale(1) sepia(0.32) contrast(1.08) brightness(0.92); }
+  .plate--present img { filter: saturate(0.62) contrast(1.03); }
+
+  .plate__tone { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply;
+    background: radial-gradient(120% 120% at 50% 30%, transparent 55%, rgba(12,12,11,0.5) 100%); }
+  .plate--archival .plate__tone { background:
+    radial-gradient(120% 120% at 50% 30%, transparent 50%, rgba(12,12,11,0.62) 100%),
+    linear-gradient(180deg, rgba(198,161,91,0.06), transparent 40%); }
+
+  .plate__grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.10; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .tk { position: absolute; width: 14px; height: 14px; border: 1px solid var(--bone); opacity: 0.5; z-index: 3; pointer-events: none; }
+  .tk.tl { top: 9px; left: 9px; border-right: 0; border-bottom: 0; }
+  .tk.tr { top: 9px; right: 9px; border-left: 0; border-bottom: 0; }
+  .tk.bl { bottom: 9px; left: 9px; border-right: 0; border-top: 0; }
+  .tk.br { bottom: 9px; right: 9px; border-left: 0; border-top: 0; }
+
+  .plate__rec { position: absolute; top: 12px; left: 14px; z-index: 4; color: var(--bone); font-size: 0.6rem; background: rgba(12,12,11,0.55); padding: 3px 8px; border: 1px solid var(--line); backdrop-filter: blur(3px); }
+  .plate__cap { display: block; margin-top: 12px; color: var(--bone-mute); font-size: 0.68rem; letter-spacing: 0.04em; }
+</style>

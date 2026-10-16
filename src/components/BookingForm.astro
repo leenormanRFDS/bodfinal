@@ -1,0 +1,1263 @@
+---
+import { PACKAGES } from '../consts';
+
+const ICONS: Record<string, string> = {
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/>',
+  family: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.2"/><path d="M4 20c0-3 2.2-5 5-5s5 2 5 5M14.5 20c.2-2.4 1.6-4 3.5-4 1.4 0 2.6.8 3 2.4"/>',
+  plane: '<path d="M10.5 13.5 3 11l1.5-2 6.5 1 5-6.5L18 3l-1.5 7.5 4 2.5-1.5 2-4.5-1.5-2 4.5-2-.5.5-4.5z"/>',
+  headset: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  bus: '<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 21v-2M16 21v-2"/><circle cx="8.5" cy="14.5" r="0.8"/><circle cx="15.5" cy="14.5" r="0.8"/>',
+  ticket: '<path d="M4 8a2 2 0 0 0 2-2h12a2 2 0 0 0 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 0-2 2H6a2 2 0 0 0-2-2v-3a2 2 0 0 0 0-4z"/><path d="M12 7v2M12 11v2M12 15v2" stroke-dasharray="1 3"/>',
+};
+const icon = (n: string) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+---
+<section class="bflow" aria-label="Book tickets" data-booking data-reveal="none">
+  <div class="bflow__steps">
+    <!-- 01 · Choose experience -->
+    <div class="step" id="step-exp" data-step="1" data-state="open">
+      <div class="step__compact" data-step-toggle="1" role="button" tabindex="0" aria-expanded="true" aria-controls="step-exp-body">
+        <div class="step__c-main">
+          <span class="step__n">01</span>
+          <span class="step__c-title">Experience</span>
+          <span class="step__c-sep" aria-hidden="true">·</span>
+          <span class="step__c-val" data-step-val="1">General Entry · Family Pass</span>
+        </div>
+        <div class="step__c-action">
+          <button type="button" class="step__edit-btn" data-step-edit="1" aria-label="Edit 01 Choose Experience">Edit</button>
+          <span class="step__pending-badge">Pending</span>
+        </div>
+      </div>
+
+      <div class="step__body" id="step-exp-body">
+        <div class="step__head"><span class="step__n">01</span><h2 class="step__t" data-i18n="tickets.title">Choose your experience</h2></div>
+        <div class="packs">
+          {PACKAGES.map((p) => (
+            <button type="button" class={`pack ${p.slug === 'general-entry' ? 'pack--family-pass' : (p.glow ? 'pack--glow' : '')}`} data-pkg={p.slug} aria-pressed={p.slug === 'general-entry' ? 'true' : 'false'}>
+              <span class="pack__media">
+                <img src={p.image} alt="" width="1000" height="620" loading="lazy" decoding="async" />
+                {p.flag && <span class="pack__flag">{p.flag}</span>}
+              </span>
+              <span class="pack__body">
+                <span class="pack__name">{p.name}</span>
+                <span class="pack__pricewrap">
+                  <span class="pack__pricelabel">{p.lead.label}</span>
+                  <span class="pack__price"><em>$</em><span data-pkg-lead={p.slug}>{p.lead.price}</span></span>
+                  {p.lead.label.toLowerCase().includes('family') ? <span class="pack__per">per family</span> : <span class="pack__per">per person</span>}
+                </span>
+                <span class="pack__includes">
+                  <span class="pack__inclabel" data-i18n="tickets.includes">Includes</span>
+                  {p.includes.map((x) => (
+                    <span class="pack__inc"><b>✓</b> {x}</span>
+                  ))}
+                </span>
+                <span class="pack__meta">
+                  {p.meta.map((m) => (
+                    <span class="pack__m"><span class="pack__mi" set:html={icon(m.icon)} /> {m.label}</span>
+                  ))}
+                </span>
+                <span class="pack__go">Select <i>→</i></span>
+              </span>
+            </button>
+          ))}
+        </div>
+        <div class="step__nav">
+          <button type="button" class="btn-step-next" data-step-next="1">
+            <span>Continue to Tickets</span> <i>→</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 · Who's coming -->
+    <div class="step" id="step-who" data-step="2" data-state="pending">
+      <div class="step__compact" data-step-toggle="2" role="button" tabindex="0" aria-expanded="false" aria-controls="step-who-body">
+        <div class="step__c-main">
+          <span class="step__n">02</span>
+          <span class="step__c-title">Tickets</span>
+          <span class="step__c-sep" aria-hidden="true">·</span>
+          <span class="step__c-val" data-step-val="2">—</span>
+        </div>
+        <div class="step__c-action">
+          <button type="button" class="step__edit-btn" data-step-edit="2" aria-label="Edit 02 Select Tickets">Edit</button>
+          <span class="step__pending-badge">Pending</span>
+        </div>
+      </div>
+
+      <div class="step__body" id="step-who-body">
+        <div class="step__head"><span class="step__n">02</span><h2 class="step__t" data-i18n="tickets.selectTickets">Who's coming?</h2></div>
+        <div class="tickets" data-tickets></div>
+        <div class="step__nav">
+          <button type="button" class="btn-step-next" data-step-next="2">
+            <span>Continue to Date</span> <i>→</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 · Date -->
+    <div class="step" id="step-date" data-step="3" data-state="pending">
+      <div class="step__compact" data-step-toggle="3" role="button" tabindex="0" aria-expanded="false" aria-controls="step-date-body">
+        <div class="step__c-main">
+          <span class="step__n">03</span>
+          <span class="step__c-title">Date</span>
+          <span class="step__c-sep" aria-hidden="true">·</span>
+          <span class="step__c-val" data-step-val="3">—</span>
+        </div>
+        <div class="step__c-action">
+          <button type="button" class="step__edit-btn" data-step-edit="3" aria-label="Edit 03 Select Date">Edit</button>
+          <span class="step__pending-badge">Pending</span>
+        </div>
+      </div>
+
+      <div class="step__body" id="step-date-body">
+        <div class="step__head"><span class="step__n">03</span><h2 class="step__t" data-i18n="tickets.selectDate">Select a date</h2></div>
+        <div class="cal" data-dates><p class="hint" data-loading data-i18n="tickets.availability.checking">Loading availability…</p></div>
+        <p class="hint" data-mocknote hidden>Example times shown — live availability connects once Rezdy is linked.</p>
+      </div>
+    </div>
+
+    <!-- 04 · Time -->
+    <div class="step" id="step-time" data-step="4" data-state="pending">
+      <div class="step__compact" data-step-toggle="4" role="button" tabindex="0" aria-expanded="false" aria-controls="step-time-body">
+        <div class="step__c-main">
+          <span class="step__n">04</span>
+          <span class="step__c-title">Time</span>
+          <span class="step__c-sep" aria-hidden="true">·</span>
+          <span class="step__c-val" data-step-val="4">—</span>
+        </div>
+        <div class="step__c-action">
+          <button type="button" class="step__edit-btn" data-step-edit="4" aria-label="Edit 04 Select Time">Edit</button>
+          <span class="step__pending-badge">Pending</span>
+        </div>
+      </div>
+
+      <div class="step__body" id="step-time-body">
+        <div class="step__head"><span class="step__n">04</span><h2 class="step__t" data-i18n="tickets.selectTime">Select a time</h2></div>
+        <div class="sessions" data-sessions></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Your Visit — always visible, sticky -->
+  <aside class="bsum" data-summary aria-label="Your visit summary">
+    <p class="bsum__title" data-i18n="tickets.summary">Your Visit</p>
+    <div class="bsum__rows">
+      <div class="bsum__row"><span class="bsum__k" data-i18n="confirmation.package">Experience</span><span class="bsum__v" data-sum-pkg>General Entry</span></div>
+      <div class="bsum__row"><span class="bsum__k" data-i18n="confirmation.tickets">Tickets</span><span class="bsum__v" data-sum-qty>1 × Family</span></div>
+      <div class="bsum__row"><span class="bsum__k" data-i18n="confirmation.date">Date</span><span class="bsum__v" data-sum-date>—</span></div>
+      <div class="bsum__row"><span class="bsum__k" data-i18n="confirmation.time">Time</span><span class="bsum__v" data-sum-time>—</span></div>
+    </div>
+    <div class="bsum__foot">
+      <div class="bsum__total"><span data-i18n="tickets.total">Total</span><strong data-total>$90</strong></div>
+      <button class="btn-book bsum__cta" data-book>Book 1 Ticket • $90</button>
+    </div>
+    <div class="bsum__alert" data-verifyalert hidden role="alert"></div>
+    <p class="bsum__secure" data-i18n="tickets.checkout.secure">Secure payment via Rezdy</p>
+  </aside>
+
+  <script type="application/json" data-packages set:html={JSON.stringify(PACKAGES)}></script>
+</section>
+
+<style>
+  /* Base is a single constrained column (minmax(0,1fr) stops the track growing
+     to the images' intrinsic width — the mobile horizontal-overflow bug). */
+  .bflow { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
+  .bflow__steps { min-width: 0; }
+  @media (min-width: 980px) { .bflow { grid-template-columns: minmax(0, 1fr) 330px; } }
+
+  /* Progressive Accordion Step Containers */
+  .step {
+    padding: 0;
+    margin: 0 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(18, 16, 13, 0.6);
+    overflow: hidden;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  }
+  .step + .step { margin-top: 14px; border-top: 1px solid var(--line); }
+
+  /* Open active step */
+  .step[data-state='open'] {
+    border-color: rgba(212, 175, 55, 0.45);
+    background: rgba(20, 18, 14, 0.95);
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.4);
+  }
+  .step[data-state='open'] .step__compact { display: none; }
+  .step[data-state='open'] .step__body {
+    display: block;
+    padding: clamp(20px, 3.5vw, 32px);
+  }
+
+  /* Collapsed answered step */
+  .step[data-state='collapsed'] {
+    border-color: var(--line);
+    background: linear-gradient(170deg, var(--char-2), var(--char));
+  }
+  .step[data-state='collapsed'] .step__body { display: none; }
+  .step[data-state='collapsed'] .step__compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.18s ease;
+  }
+  .step[data-state='collapsed'] .step__compact:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .step[data-state='collapsed']:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+  }
+  .step[data-state='collapsed'] .step__pending-badge { display: none; }
+  .step[data-state='collapsed'] .step__edit-btn { display: inline-flex; }
+
+  /* Pending not-yet-reached step */
+  .step[data-state='pending'] {
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(14, 13, 10, 0.4);
+    opacity: 0.55;
+  }
+  .step[data-state='pending'] .step__body { display: none; }
+  .step[data-state='pending'] .step__compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 20px;
+    cursor: not-allowed;
+    user-select: none;
+  }
+  .step[data-state='pending'] .step__c-sep,
+  .step[data-state='pending'] .step__c-val,
+  .step[data-state='pending'] .step__edit-btn { display: none; }
+  .step[data-state='pending'] .step__pending-badge { display: inline-block; }
+
+  /* Compact summary row typography & alignment */
+  .step__c-main {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .step__c-title {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bone-mute);
+    white-space: nowrap;
+  }
+  .step__c-sep {
+    color: var(--bone-dim);
+    opacity: 0.5;
+  }
+  .step__c-val {
+    font-size: 0.94rem;
+    color: var(--bone);
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .step__c-action {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .step__edit-btn {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.32);
+    border-radius: 4px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .step__edit-btn:hover {
+    color: var(--gold-bright);
+    background: rgba(212, 175, 55, 0.18);
+    border-color: var(--gold);
+    transform: translateY(-1px);
+  }
+
+  .step__pending-badge {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--bone-dim);
+    opacity: 0.6;
+  }
+
+  .step__nav {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: flex-end;
+  }
+  .btn-step-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'museo-sans', system-ui, -apple-system, sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0b0a08;
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 11px 24px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.18s ease;
+  }
+  .btn-step-next:hover:not(:disabled) {
+    background: var(--gold-bright);
+    color: #000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(212, 175, 55, 0.3);
+  }
+  .btn-step-next:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: var(--char-3);
+    border-color: var(--line);
+    color: var(--bone-dim);
+  }
+  .btn-step-next i { font-style: normal; }
+
+  .step__head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; }
+  .step__n { font-family: var(--font-mono); font-size: 0.82rem; letter-spacing: 0.1em; color: var(--gold); }
+  .step__t { font-family: var(--font-display-reg); font-weight: normal; text-transform: none; font-size: clamp(1.3rem, 2.4vw, 1.65rem); margin: 0; letter-spacing: 0; }
+  .hint { font-size: 0.9rem; color: var(--bone-mute); }
+
+  /* ---------- 01 · vertical package cards with images ---------- */
+  .packs { display: grid; gap: 22px; }
+  .pack {
+    position: relative; display: grid; text-align: left; padding: 0; overflow: hidden; cursor: pointer;
+    background: linear-gradient(165deg, var(--char-2) 0%, var(--char) 70%);
+    border: 1px solid var(--line); border-radius: 6px; color: var(--bone); font-family: inherit;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
+  }
+  @media (min-width: 640px) { .pack { grid-template-columns: 42% 1fr; } }
+  .pack:hover { transform: translateY(-4px); border-color: var(--line-strong); }
+  .pack[aria-pressed='true'] { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold), 0 26px 60px rgba(0, 0, 0, 0.5), 0 0 44px rgba(198, 161, 91, 0.15); }
+  .pack[aria-pressed='true'] .pack__go { color: var(--gold-bright); }
+  .pack[aria-pressed='true'] .pack__go::before { content: '✓ Selected'; }
+  .pack[aria-pressed='true'] .pack__go i, .pack[aria-pressed='true'] .pack__go b { display: none; }
+
+  /* the glowing best-value panel */
+  .pack--glow { border-color: rgba(198, 161, 91, 0.65); box-shadow: 0 0 0 1px rgba(198, 161, 91, 0.35), 0 0 42px rgba(198, 161, 91, 0.16), 0 20px 50px rgba(0, 0, 0, 0.45); }
+  @media (prefers-reduced-motion: no-preference) {
+    .pack--glow { animation: packGlow 4.5s ease-in-out infinite; }
+    @keyframes packGlow {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(198, 161, 91, 0.35), 0 0 38px rgba(198, 161, 91, 0.14), 0 20px 50px rgba(0, 0, 0, 0.45); }
+      50% { box-shadow: 0 0 0 1px rgba(228, 197, 131, 0.55), 0 0 64px rgba(198, 161, 91, 0.28), 0 20px 50px rgba(0, 0, 0, 0.45); }
+    }
+  }
+
+  /* ---------- Family Pass: Featured Hero Card ---------- */
+  .pack--family-pass {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(165deg, var(--char-2) 0%, var(--char) 70%) padding-box,
+      linear-gradient(145deg, rgba(228, 197, 131, 0.75) 0%, rgba(198, 161, 91, 0.35) 38%, rgba(198, 161, 91, 0.12) 65%, rgba(228, 197, 131, 0.55) 100%) border-box;
+    box-shadow:
+      0 0 0 1px rgba(198, 161, 91, 0.18),
+      0 8px 32px -6px rgba(198, 161, 91, 0.18),
+      0 22px 55px rgba(0, 0, 0, 0.48);
+  }
+  .pack--family-pass:hover {
+    transform: translateY(-4px);
+    background:
+      linear-gradient(165deg, var(--char-3) 0%, var(--char-2) 70%) padding-box,
+      linear-gradient(145deg, rgba(228, 197, 131, 0.9) 0%, rgba(198, 161, 91, 0.45) 38%, rgba(198, 161, 91, 0.2) 65%, rgba(228, 197, 131, 0.7) 100%) border-box;
+    box-shadow:
+      0 0 0 1px rgba(228, 197, 131, 0.3),
+      0 12px 40px -4px rgba(198, 161, 91, 0.26),
+      0 26px 60px rgba(0, 0, 0, 0.52);
+  }
+  .pack--family-pass[aria-pressed='true'] {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(165deg, var(--char-2) 0%, var(--char) 70%) padding-box,
+      linear-gradient(145deg, var(--gold-bright) 0%, var(--gold) 45%, rgba(228, 197, 131, 0.8) 100%) border-box;
+    box-shadow:
+      0 0 0 1px var(--gold),
+      0 14px 44px -4px rgba(198, 161, 91, 0.32),
+      0 28px 64px rgba(0, 0, 0, 0.55);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pack--family-pass {
+      animation: familyGlow 5s ease-in-out infinite;
+    }
+    @keyframes familyGlow {
+      0%, 100% {
+        box-shadow:
+          0 0 0 1px rgba(198, 161, 91, 0.18),
+          0 8px 30px -6px rgba(198, 161, 91, 0.16),
+          0 22px 55px rgba(0, 0, 0, 0.48);
+      }
+      50% {
+        box-shadow:
+          0 0 0 1px rgba(228, 197, 131, 0.32),
+          0 12px 44px -4px rgba(198, 161, 91, 0.25),
+          0 24px 58px rgba(0, 0, 0, 0.52);
+      }
+    }
+    .pack--family-pass:hover {
+      animation: none;
+    }
+  }
+
+  /* BEST VALUE BADGE on Family Pass — First visual cue, elevated prominence */
+  .pack--family-pass .pack__flag {
+    top: 14px;
+    left: 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    padding: 6px 13px;
+    background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 100%);
+    color: var(--ink);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 18px rgba(198, 161, 91, 0.3);
+  }
+
+  /* FAMILY PASS + $90 as unified pricing lockup */
+  .pack--family-pass .pack__pricewrap {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    justify-content: start;
+    gap: 2px 10px;
+  }
+  .pack--family-pass .pack__pricelabel {
+    grid-column: 1 / -1;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--bone);
+    line-height: 1.1;
+    margin-bottom: 2px;
+  }
+  .pack--family-pass .pack__price {
+    font-family: var(--font-display-xl);
+    font-size: 2.7rem;
+    font-weight: 400;
+    color: var(--gold-bright);
+    line-height: 0.9;
+  }
+  .pack--family-pass .pack__per {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.9;
+  }
+
+  .pack__media { position: relative; display: block; min-height: 200px; overflow: hidden; }
+  /* present register — held desaturation so cards cohere with the site palette */
+  .pack__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.62) contrast(1.03); transition: filter 0.5s var(--ease), transform 0.6s var(--ease); }
+  .pack:hover .pack__media img { filter: saturate(0.82) contrast(1.04); transform: scale(1.03); }
+  .pack__media::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.09; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  @media (max-width: 639px) { .pack__media { aspect-ratio: 16 / 9; min-height: 0; } .pack__media img { position: absolute; } }
+  .pack__flag { position: absolute; top: 12px; left: 12px; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); background: var(--gold); padding: 5px 10px; border-radius: 2px; }
+
+  .pack__body { display: flex; flex-direction: column; gap: 14px; padding: 26px 26px 22px; }
+  .pack__name { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1; letter-spacing: 0.01em; }
+  .pack__pricewrap { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .pack__pricelabel { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bone-dim); }
+  .pack__price { font-family: var(--font-display-xl); font-weight: 400; font-size: 2.7rem; color: var(--gold-bright); line-height: 0.9; }
+  .pack__price em { font-style: normal; font-size: 0.55em; vertical-align: 0.5em; color: var(--gold); }
+  .pack__per { font-size: 0.85rem; color: var(--bone-mute); }
+
+  .pack__includes { display: flex; flex-direction: column; gap: 7px; }
+  .pack__inclabel { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--bone-mute); margin-bottom: 2px; }
+  .pack__inc { font-size: 0.98rem; color: var(--bone); line-height: 1.4; }
+  .pack__inc b { color: var(--gold); font-weight: 600; margin-right: 6px; }
+
+  .pack__meta { display: flex; flex-wrap: wrap; gap: 8px 18px; padding-top: 4px; border-top: 1px solid var(--line); }
+  .pack__m { display: inline-flex; align-items: center; gap: 7px; font-size: 0.85rem; color: var(--bone-dim); padding-top: 8px; }
+  .pack__mi { display: inline-flex; width: 17px; height: 17px; color: var(--gold); flex: 0 0 auto; }
+  .pack__mi :global(svg) { width: 100%; height: 100%; }
+
+  .pack__go { display: inline-flex; align-items: center; gap: 8px; margin-top: 2px; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone-mute); transition: color 0.3s var(--ease); }
+  .pack__go i { font-style: normal; transition: transform 0.3s var(--ease); }
+  .pack:hover .pack__go { color: var(--gold-bright); }
+  .pack:hover .pack__go i { transform: translateX(5px); }
+
+  /* NB: steppers, date tiles and time chips are built in JS, so their styles
+     live in the is:global block below (scoped styles can't reach JS-made nodes). */
+
+  /* ---------- Your Visit ---------- */
+  .bsum {
+    position: sticky; top: calc(var(--nav-h) + 20px);
+    background: linear-gradient(170deg, var(--char-2), var(--char));
+    border: 1px solid var(--line-strong); border-radius: 6px;
+    padding: 26px 24px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+  .bsum__title { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold); margin: 0 0 18px; }
+  .bsum__rows { display: grid; gap: 0; margin-bottom: 18px; }
+  .bsum__row { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .bsum__k { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bone-mute); padding-top: 3px; }
+  .bsum__v { font-size: 0.95rem; color: var(--bone); text-align: right; line-height: 1.45; }
+  .bsum__foot { display: flex; flex-direction: column; }
+  .bsum__total { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0 20px; }
+  .bsum__total span { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--bone-dim); }
+  .bsum__total strong { font-family: var(--font-display-xl); font-weight: 400; font-size: 2.3rem; color: var(--bone); line-height: 1; }
+  .bsum__cta { width: 100%; justify-content: center; text-align: center; }
+  .bsum__alert {
+    margin: 12px 0 0;
+    padding: 10px 14px;
+    background: rgba(185, 28, 28, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 4px;
+    color: #fca5a5;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    text-align: left;
+  }
+  .bsum__secure { text-align: center; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bone-mute); margin: 14px 0 0; }
+
+  /* Mobile: persistent bar fixed to bottom of viewport matching Story page bookbar pattern */
+  @media (max-width: 979px) {
+    .bflow { padding-bottom: 115px; } /* reserve room for the fixed persistent bar */
+    .bsum {
+      position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 90;
+      border-radius: 0; border-left: 0; border-right: 0;
+      border-top: 1px solid var(--line);
+      background: rgba(11, 10, 8, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.65);
+      display: flex; flex-direction: column; gap: 7px;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    }
+    .bsum__title, .bsum__secure { display: none; }
+    .bsum__rows {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3px 12px;
+      margin: 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(236, 231, 219, 0.08);
+    }
+    .bsum__row {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-start;
+      gap: 6px;
+      padding: 0;
+      border-bottom: 0;
+      min-width: 0;
+    }
+    .bsum__k {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bone-mute);
+      padding-top: 0;
+      flex-shrink: 0;
+    }
+    .bsum__v {
+      font-size: 0.78rem;
+      color: var(--bone);
+      text-align: left;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .bsum__foot {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .bsum__total {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .bsum__total span {
+      font-size: 0.56rem;
+      letter-spacing: 0.14em;
+    }
+    .bsum__total strong {
+      font-size: 1.45rem;
+      color: var(--gold-bright);
+      line-height: 1;
+    }
+    .bsum__cta {
+      flex: 1;
+      max-width: 240px;
+      padding: 0.65em 1.25em;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+  }
+</style>
+
+<!-- Global styles for JS-built controls (scoped CSS can't reach dynamic nodes).
+     These are the premium date tiles, steppers and time chips. -->
+<style is:global>
+  /* ---------- Who's coming — steppers ---------- */
+  .bflow .trow { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 0; border-top: 1px solid var(--line); }
+  .bflow .trow:first-child { border-top: 0; padding-top: 4px; }
+  .bflow .trow__info { display: flex; flex-direction: column; gap: 4px; }
+  .bflow .trow__label { color: var(--bone); font-weight: 500; font-size: 1.12rem; font-family: var(--font-display-reg); letter-spacing: 0.01em; }
+  .bflow .trow__sub { color: var(--bone-mute); font-size: 0.86rem; font-family: var(--font-serif); }
+  .bflow .trow__sub b { color: var(--gold-bright); font-weight: 500; font-family: var(--font-mono); font-size: 0.8rem; }
+  .bflow .trow__subtotal { color: var(--gold-bright); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; margin-left: 4px; }
+
+  .bflow .allday-banner {
+    display: flex; flex-direction: column; gap: 8px; padding: 20px 24px; border-radius: 8px;
+    background: linear-gradient(165deg, var(--char-3), var(--char-2));
+    border: 1px solid var(--line-strong); max-width: 560px;
+  }
+  .bflow .allday-badge {
+    align-self: flex-start; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold-bright); background: rgba(198, 161, 91, 0.14);
+    padding: 3px 8px; border-radius: 3px; border: 1px solid rgba(198, 161, 91, 0.28);
+  }
+  .bflow .allday-text { margin: 0; font-size: 0.94rem; color: var(--bone-dim); line-height: 1.5; }
+  .bflow .allday-text strong { color: var(--bone); }
+
+  .bflow .stepper {
+    display: flex; align-items: center; gap: 0; border-radius: 100px;
+    background: linear-gradient(180deg, var(--char-3), var(--char-2));
+    border: 1px solid var(--line-strong);
+    box-shadow: inset 0 1px 0 rgba(236,231,219,0.05), 0 6px 18px rgba(0,0,0,0.35);
+  }
+  .bflow .stepper__b {
+    width: 46px; height: 46px; border: 0; background: transparent; color: var(--bone);
+    font-size: 1.4rem; line-height: 1; cursor: pointer; display: grid; place-items: center;
+    border-radius: 50%; transition: color 0.2s var(--ease), background 0.2s var(--ease), transform 0.1s var(--ease);
+  }
+  .bflow .stepper__b:hover { color: var(--ink); background: var(--gold); }
+  .bflow .stepper__b:active { transform: scale(0.92); }
+  .bflow .stepper__b:disabled { opacity: 0.28; cursor: default; background: transparent; color: var(--bone); }
+  .bflow .stepper__n {
+    min-width: 46px; text-align: center; font-family: var(--font-display-reg); font-weight: 500;
+    font-size: 1.3rem; color: var(--bone); font-variant-numeric: tabular-nums;
+  }
+  .bflow .stepper__n[data-count]:not([data-count='0']) { color: var(--gold-bright); }
+
+  /* ---------- Select a date — premium tiles ---------- */
+  .bflow .cal { display: flex; gap: 12px; overflow-x: auto; padding: 6px 2px 16px; scrollbar-width: thin; scroll-snap-type: x proximity; scroll-padding-left: 2px; }
+  .bflow .cal::-webkit-scrollbar { height: 4px; }
+  .bflow .cal::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 2px; }
+  .bflow .day {
+    flex: 0 0 auto; width: 104px; scroll-snap-align: start;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 18px 10px 15px; border-radius: 10px; cursor: pointer; font-family: inherit;
+    color: var(--bone-dim); position: relative; overflow: hidden;
+    background: linear-gradient(165deg, var(--char-3) 0%, var(--char) 78%);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 0 rgba(236,231,219,0.04), 0 10px 26px rgba(0,0,0,0.3);
+    transition: border-color 0.28s var(--ease), color 0.28s var(--ease), transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
+  }
+  .bflow .day::before {
+    content: ''; position: absolute; left: 14px; right: 14px; bottom: 0; height: 1px;
+    background: var(--gold); transform: scaleX(0); transform-origin: center; transition: transform 0.3s var(--ease);
+  }
+  .bflow .day:hover:not(:disabled) { border-color: rgba(198,161,91,0.6); color: var(--bone); transform: translateY(-3px); box-shadow: inset 0 1px 0 rgba(236,231,219,0.06), 0 16px 34px rgba(0,0,0,0.42); }
+  .bflow .day:hover:not(:disabled)::before { transform: scaleX(1); }
+  .bflow .day:disabled { opacity: 0.26; cursor: default; }
+  .bflow .day[aria-pressed='true'] {
+    color: var(--ink); border-color: var(--gold-bright);
+    background: linear-gradient(165deg, var(--gold-bright), var(--gold));
+    box-shadow: 0 0 0 1px var(--gold), 0 0 38px rgba(198,161,91,0.4), 0 16px 34px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+  }
+  .bflow .day__wd { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.75; }
+  .bflow .day__num { font-family: var(--font-display); font-weight: 400; font-size: 2.1rem; line-height: 1; letter-spacing: 0.01em; }
+  .bflow .day[aria-pressed='true'] .day__wd, .bflow .day[aria-pressed='true'] .day__mo { opacity: 0.85; }
+  .bflow .day__mo { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; }
+
+  /* ---------- Select a time — premium chips ---------- */
+  .bflow .sessions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .bflow .slot {
+    display: inline-flex; align-items: center; gap: 11px; padding: 15px 24px; cursor: pointer; font-family: inherit;
+    color: var(--bone-dim); border-radius: 100px; border: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--char-3), var(--char-2));
+    box-shadow: inset 0 1px 0 rgba(236,231,219,0.04), 0 8px 20px rgba(0,0,0,0.28);
+    transition: border-color 0.25s var(--ease), color 0.25s var(--ease), transform 0.2s var(--ease);
+  }
+  .bflow .slot:hover { border-color: rgba(198,161,91,0.6); color: var(--bone); transform: translateY(-2px); }
+  .bflow .slot[aria-pressed='true'] {
+    color: var(--ink); border-color: var(--gold-bright);
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    box-shadow: 0 0 30px rgba(198,161,91,0.35);
+  }
+  .bflow .slot__t { font-family: var(--font-mono); font-size: 1.02rem; letter-spacing: 0.04em; }
+  .bflow .slot__seats { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--signal); }
+  .bflow .slot[aria-pressed='true'] .slot__seats { color: rgba(12,12,11,0.65); }
+
+  /* ---------- In-site checkout modal (Rezdy embed, stays on our domain) ---------- */
+  .co-modal { position: fixed; inset: 0; z-index: 200; display: none; }
+  .co-modal.is-open { display: block; }
+  .co-modal__scrim { position: absolute; inset: 0; background: rgba(8,8,7,0.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .co-modal__panel {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: min(760px, 94vw); height: min(88vh, 900px); display: flex; flex-direction: column;
+    background: var(--char); border: 1px solid var(--line-strong); border-radius: 10px; overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+  }
+  .co-modal__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex: 0 0 auto; }
+  .co-modal__brand { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .co-modal__brand b { font-family: var(--font-display-reg); font-weight: 500; font-size: 0.98rem; color: var(--bone); letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .co-modal__brand span { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bone-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .co-modal__actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .co-modal__ext {
+    font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--bone-dim); text-decoration: none; padding: 7px 11px; border-radius: 4px;
+    border: 1px solid var(--line-strong); transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .co-modal__ext:hover { color: var(--gold-bright); border-color: var(--gold); }
+  .co-modal__close { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; color: var(--bone); font-size: 1.3rem; line-height: 1; cursor: pointer; display: grid; place-items: center; transition: border-color 0.2s var(--ease), color 0.2s var(--ease); }
+  .co-modal__close:hover { border-color: var(--gold); color: var(--gold-bright); }
+  .co-modal__frame { flex: 1; position: relative; background: #fff; }
+  .co-modal__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .co-modal__load {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    background: var(--char); color: var(--bone); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .co-modal__spinner {
+    width: 28px; height: 28px; border: 2px solid var(--line-strong); border-top-color: var(--gold);
+    border-radius: 50%; animation: coSpin 0.9s linear infinite;
+  }
+  @keyframes coSpin { to { transform: rotate(360deg); } }
+  body.co-open { overflow: hidden; }
+  @media (max-width: 560px) { .co-modal__panel { width: 100vw; height: 100dvh; border-radius: 0; top: 0; left: 0; transform: none; } }
+</style>
+
+<!-- In-site checkout: the Rezdy booking widget in a branded overlay -->
+<div class="co-modal" data-comodal aria-hidden="true" role="dialog" aria-modal="true" aria-label="Secure checkout">
+  <div class="co-modal__scrim" data-coclose></div>
+  <div class="co-modal__panel">
+    <div class="co-modal__bar">
+      <span class="co-modal__brand"><b data-cotitle>Complete your booking</b><span data-codesc>Secure checkout · Royal Flying Doctor Service</span></span>
+      <div class="co-modal__actions">
+        <a class="co-modal__ext" data-coext target="_blank" rel="noopener noreferrer" href="#">New window ↗</a>
+        <button class="co-modal__close" data-coclose aria-label="Close checkout">×</button>
+      </div>
+    </div>
+    <div class="co-modal__frame">
+      <div class="co-modal__load" data-coload>
+        <span class="co-modal__spinner" aria-hidden="true"></span>
+        <span>Loading secure checkout…</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { t, bindTranslations } from '../i18n/client';
+
+  const root = document.querySelector<HTMLElement>('[data-booking]');
+  if (root) {
+    const PACKAGES = JSON.parse(root.querySelector('[data-packages]')!.textContent || '[]');
+    const el = (s: string) => root.querySelector(s) as HTMLElement;
+
+    const state: any = { pkg: null, byDate: {}, date: null, session: null, qty: {}, loaded: false };
+
+    const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const money = (n: number) => '$' + n.toLocaleString();
+    const count = () => (state.pkg ? state.pkg.tiers.reduce((s: number, t: any) => s + (state.qty[t.code] || 0), 0) : 0);
+    const total = () => (state.pkg ? state.pkg.tiers.reduce((s: number, t: any) => s + t.price * (state.qty[t.code] || 0), 0) : 0);
+
+    /* ---- Dynamic product hydration: fetch latest pricing & tiers from server ---- */
+    fetch('/api/products')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && data.products) {
+          Object.keys(data.products).forEach((slug) => {
+            const p = data.products[slug];
+            const pkg = PACKAGES.find((x: any) => x.slug === slug);
+            if (pkg && p) {
+              if (p.lead) {
+                pkg.lead = p.lead;
+                const leadEl = root.querySelector(`[data-pkg-lead="${slug}"]`);
+                if (leadEl) leadEl.textContent = String(p.lead.price);
+              }
+              if (Array.isArray(p.tiers) && p.tiers.length > 0) {
+                pkg.tiers = p.tiers;
+              }
+              if (p.checkoutUrl) {
+                pkg.checkoutUrl = p.checkoutUrl;
+              }
+            }
+          });
+          if (state.pkg) {
+            renderTickets();
+            sync();
+          }
+        }
+      })
+      .catch(() => {});
+
+    /* ---- Progressive Accordion State & Management ---- */
+    let openStepIndex = 1;
+
+    function isStepAnswered(stepNum: number): boolean {
+      if (stepNum === 1) return Boolean(state.pkg);
+      if (stepNum === 2) return Boolean(state.pkg && count() > 0);
+      if (stepNum === 3) return Boolean(state.date);
+      if (stepNum === 4) return Boolean(state.allDay || (state.session && state.session.time));
+      return false;
+    }
+
+    function openStep(stepNum: number) {
+      openStepIndex = stepNum;
+      syncAccordion();
+    }
+
+    function syncAccordion() {
+      const stepIds = ['step-exp', 'step-who', 'step-date', 'step-time'];
+
+      // 01 Experience summary
+      const val1 = root.querySelector('[data-step-val="1"]');
+      if (val1 && state.pkg) {
+        const hasFamily = (state.qty && state.qty['family'] > 0) || (state.pkg.slug === 'general-entry' && count() === 0);
+        val1.textContent = hasFamily ? `${state.pkg.name} · Family Pass` : state.pkg.name;
+      }
+
+      // 02 Tickets summary
+      const val2 = root.querySelector('[data-step-val="2"]');
+      if (val2) {
+        if (state.pkg && count() > 0) {
+          const parts = state.pkg.tiers
+            .filter((t: any) => (state.qty[t.code] || 0) > 0)
+            .map((t: any) => {
+              const qty = state.qty[t.code];
+              const isFam = t.code === 'family' || t.label.toLowerCase().includes('family');
+              if (isFam) return `${qty} × Family Pass`;
+              const plural = qty > 1 && t.label === 'Adult' ? 'Adults' : (qty > 1 && t.label === 'Child' ? 'Children' : t.label);
+              return `${qty} ${plural}`;
+            });
+          val2.textContent = `${parts.join(' + ')} · ${money(total())}`;
+        } else {
+          val2.textContent = '—';
+        }
+      }
+
+      // 03 Date summary
+      const val3 = root.querySelector('[data-step-val="3"]');
+      if (val3) {
+        if (state.date) {
+          const d = new Date(state.date + 'T00:00:00');
+          val3.textContent = `${WD[d.getDay()]} ${d.getDate()} ${MO[d.getMonth()]}`;
+        } else {
+          val3.textContent = '—';
+        }
+      }
+
+      // 04 Time summary
+      const val4 = root.querySelector('[data-step-val="4"]');
+      if (val4) {
+        if (state.allDay) val4.textContent = 'Flexible Entry · Valid all day';
+        else if (state.session && state.session.time) val4.textContent = state.session.time;
+        else val4.textContent = '—';
+      }
+
+      // Next buttons state
+      const nextBtn2 = root.querySelector('[data-step-next="2"]') as HTMLButtonElement;
+      if (nextBtn2) {
+        nextBtn2.disabled = count() === 0;
+      }
+
+      stepIds.forEach((id, idx) => {
+        const stepEl = root.querySelector(`#${id}`) as HTMLElement;
+        if (!stepEl) return;
+        const stepNum = idx + 1;
+        const compact = stepEl.querySelector('.step__compact') as HTMLElement;
+        const body = stepEl.querySelector('.step__body') as HTMLElement;
+
+        if (openStepIndex === stepNum) {
+          stepEl.setAttribute('data-state', 'open');
+          if (compact) compact.setAttribute('aria-expanded', 'true');
+          if (body) body.hidden = false;
+        } else if (isStepAnswered(stepNum)) {
+          stepEl.setAttribute('data-state', 'collapsed');
+          if (compact) compact.setAttribute('aria-expanded', 'false');
+          if (body) body.hidden = true;
+        } else {
+          stepEl.setAttribute('data-state', 'pending');
+          if (compact) compact.setAttribute('aria-expanded', 'false');
+          if (body) body.hidden = true;
+        }
+      });
+    }
+
+    // Step navigation buttons
+    const nextBtn1 = root.querySelector('[data-step-next="1"]');
+    if (nextBtn1) nextBtn1.addEventListener('click', () => openStep(2));
+
+    const nextBtn2 = root.querySelector('[data-step-next="2"]');
+    if (nextBtn2) nextBtn2.addEventListener('click', () => {
+      if (count() > 0) openStep(3);
+    });
+
+    // Edit buttons & compact row toggles
+    root.querySelectorAll<HTMLButtonElement>('[data-step-edit]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const s = Number(btn.dataset.stepEdit);
+        if (s) openStep(s);
+      });
+    });
+
+    root.querySelectorAll<HTMLElement>('[data-step-toggle]').forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const s = Number(toggle.dataset.stepToggle);
+        if (s && isStepAnswered(s)) openStep(s);
+      });
+      toggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const s = Number(toggle.dataset.stepToggle);
+          if (s && isStepAnswered(s)) openStep(s);
+        }
+      });
+    });
+
+    /* ---- 01 · package select ---- */
+    const packBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-pkg]'));
+    function selectPkg(slug: string, advance = false, initFamily = false) {
+      const pkg = PACKAGES.find((p: any) => p.slug === slug);
+      if (!pkg) return;
+      state.pkg = pkg; state.date = null; state.session = null; state.qty = {}; state.loaded = false;
+      pkg.tiers.forEach((t: any) => (state.qty[t.code] = 0));
+      if (initFamily || slug === 'general-entry') {
+        const fam = pkg.tiers.find((t: any) => t.code === 'family' || t.label.toLowerCase().includes('family'));
+        if (fam) state.qty[fam.code] = 1;
+      }
+      packBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pkg === slug)));
+      renderTickets();
+      load(pkg);
+      sync();
+      if (advance) {
+        openStep(2);
+      } else {
+        syncAccordion();
+      }
+    }
+    packBtns.forEach((b) => b.addEventListener('click', () => selectPkg(b.dataset.pkg!, true)));
+    const want = new URLSearchParams(location.search).get('pkg') || 'general-entry';
+    setTimeout(() => selectPkg(want, false, want === 'general-entry'), 30);
+
+    /* ---- 02 · steppers ---- */
+    function renderTickets() {
+      const c = el('[data-tickets]'); c.innerHTML = '';
+      state.pkg.tiers.forEach((tData: any) => {
+        const row = document.createElement('div'); row.className = 'trow';
+        const currentQty = state.qty[tData.code] || 0;
+        const subtotalText = currentQty > 0 ? ` · ${money(tData.price * currentQty)}` : '';
+        const tierKey = tData.code === 'adult' ? 'tickets.tiers.adult' :
+          tData.code === 'child' ? 'tickets.tiers.child' :
+          tData.code === 'concession' ? 'tickets.tiers.concession' :
+          tData.code === 'family' ? 'tickets.tiers.family' : null;
+        const displayLabel = tierKey ? t(tierKey) : tData.label;
+
+        row.innerHTML =
+          `<div class="trow__info"><span class="trow__label">${displayLabel}</span><span class="trow__sub"><b>${money(tData.price)}</b>${tData.note ? ' · ' + tData.note : ''}<span class="trow__subtotal" data-subtotal>${subtotalText}</span></span></div>` +
+          `<div class="stepper"><button type="button" class="stepper__b" data-dec aria-label="Fewer ${displayLabel}">−</button><span class="stepper__n" data-count aria-live="polite">${currentQty}</span><button type="button" class="stepper__b" data-inc aria-label="More ${displayLabel}">+</button></div>`;
+        const cnt = row.querySelector('[data-count]') as HTMLElement;
+        const dec = row.querySelector('[data-dec]') as HTMLButtonElement;
+        const sub = row.querySelector('[data-subtotal]') as HTMLElement;
+        const upd = () => {
+          cnt.textContent = String(state.qty[tData.code]);
+          dec.disabled = state.qty[tData.code] === 0;
+          if (sub) {
+            sub.textContent = state.qty[tData.code] > 0 ? ` · ${money(tData.price * state.qty[tData.code])}` : '';
+          }
+          sync();
+        };
+        dec.addEventListener('click', () => { state.qty[tData.code] = Math.max(0, state.qty[tData.code] - 1); upd(); });
+        row.querySelector('[data-inc]')!.addEventListener('click', () => { state.qty[tData.code] = Math.min(tData.max || 20, state.qty[tData.code] + 1); upd(); });
+        dec.disabled = currentQty === 0;
+        c.appendChild(row);
+      });
+    }
+
+    /* ---- 03 · date timeline (28 days, unavailable greyed) ---- */
+    async function load(pkg: any) {
+      const c = el('[data-dates]');
+      c.innerHTML = '<p class="hint">Loading availability…</p>';
+      let data: any = null;
+      try {
+        const r = await fetch(`/api/availability?product=${encodeURIComponent(pkg.slug)}`);
+        data = await r.json();
+      } catch {
+        data = null;
+      }
+      if (!data || !data.sessions) data = { mock: true, sessions: [] };
+      el('[data-mocknote]').hidden = !data.mock;
+
+      // Update tiers & checkout URL dynamically from product query if provided
+      if (Array.isArray(data.tiers) && data.tiers.length > 0) {
+        pkg.tiers = data.tiers;
+        data.tiers.forEach((t: any) => {
+          if (state.qty[t.code] == null) {
+            state.qty[t.code] = (t.code === 'family' || t.label.toLowerCase().includes('family')) ? 1 : 0;
+          }
+        });
+        renderTickets();
+      }
+      if (data.checkoutUrl) {
+        pkg.checkoutUrl = data.checkoutUrl;
+      }
+      if (data.lead) {
+        pkg.lead = data.lead;
+        const leadEl = root.querySelector(`[data-pkg-lead="${pkg.slug}"]`);
+        if (leadEl) leadEl.textContent = String(data.lead.price);
+      }
+
+      state.byDate = {};
+      data.sessions.forEach((s: any) => { if (s.seatsAvailable === 0) return; (state.byDate[s.date] = state.byDate[s.date] || []).push(s); });
+      // all-day products (combos): every session starts 00:00 — no time to choose
+      state.allDay = data.sessions.length > 0 && data.sessions.every((s: any) => !s.time || s.time === '00:00');
+      state.loaded = true;
+      renderCal();
+      sync();
+    }
+    function renderCal() {
+      const c = el('[data-dates]'); c.innerHTML = '';
+      const today = new Date();
+      for (let i = 0; i < 28; i++) {
+        const d = new Date(today); d.setDate(today.getDate() + i);
+        const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const has = !!state.byDate[iso];
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'day'; b.disabled = !has; b.setAttribute('aria-pressed', 'false');
+        b.innerHTML = `<span class="day__wd">${WD[d.getDay()]}</span><span class="day__num">${d.getDate()}</span><span class="day__mo">${MO[d.getMonth()]}`;
+        if (has) b.addEventListener('click', () => {
+          state.date = iso;
+          c.querySelectorAll('.day').forEach((x) => x.setAttribute('aria-pressed', 'false'));
+          b.setAttribute('aria-pressed', 'true');
+          if (state.allDay) {
+            state.session = state.byDate[iso][0];
+            renderSessions();
+            openStep(4);
+          } else {
+            state.session = null;
+            renderSessions();
+            openStep(4);
+          }
+          sync();
+        });
+        c.appendChild(b);
+      }
+    }
+
+    /* ---- 04 · time ---- */
+    function renderSessions() {
+      const c = el('[data-sessions]'); c.innerHTML = '';
+      if (state.allDay) {
+        c.innerHTML = `
+          <div class="allday-banner">
+            <span class="allday-badge">Flexible Entry</span>
+            <p class="allday-text">Your ticket is valid anytime between <strong>9:00 AM – 4:00 PM</strong> on your selected date. No time reservation required.</p>
+            <div class="step__nav" style="margin-top:16px;padding-top:16px;border-top:none;justify-content:flex-start;">
+              <button type="button" class="btn-step-next" data-confirm-time>
+                <span>Confirm Selection</span> <i>✓</i>
+              </button>
+            </div>
+          </div>
+        `;
+        const cfm = c.querySelector('[data-confirm-time]');
+        if (cfm) cfm.addEventListener('click', () => {
+          openStep(0);
+          sync();
+        });
+        return;
+      }
+      (state.byDate[state.date] || []).sort((a: any, b: any) => a.time.localeCompare(b.time)).forEach((s: any) => {
+        const low = s.seatsAvailable != null && s.seatsAvailable <= 8;
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'slot'; b.setAttribute('aria-pressed', 'false');
+        b.innerHTML = `<span class="slot__t">${s.time}</span>${low ? `<span class="slot__seats">${s.seatsAvailable} left</span>` : ''}`;
+        b.addEventListener('click', () => {
+          state.session = s;
+          c.querySelectorAll('.slot').forEach((x) => x.setAttribute('aria-pressed', 'false'));
+          b.setAttribute('aria-pressed', 'true');
+          openStep(0);
+          sync();
+        });
+        c.appendChild(b);
+      });
+    }
+
+    /* ---- Your Visit ---- */
+    const cta = el('[data-book]') as HTMLButtonElement;
+    function sync() {
+      el('[data-sum-pkg]').textContent = state.pkg ? state.pkg.name : '—';
+      const parts = state.pkg ? state.pkg.tiers.filter((t: any) => state.qty[t.code] > 0).map((t: any) => `${state.qty[t.code]} × ${t.label}`) : [];
+      el('[data-sum-qty]').textContent = parts.length ? parts.join(', ') : '—';
+      if (state.date) {
+        const d = new Date(state.date + 'T00:00:00');
+        el('[data-sum-date]').textContent = `${WD[d.getDay()]} ${d.getDate()} ${MO[d.getMonth()]}`;
+      } else el('[data-sum-date]').textContent = '—';
+      el('[data-sum-time]').textContent = state.session ? (state.allDay ? 'Valid all day' : state.session.time) : '—';
+      el('[data-total]').textContent = money(total());
+
+      const n = count();
+      if (!state.pkg || n === 0) { cta.textContent = t('tickets.continue'); cta.disabled = !state.pkg; }
+      else if (!state.date || !state.session) { cta.textContent = `${t('nav.bookTickets')} (${n}) • ${money(total())}`; cta.disabled = false; }
+      else { cta.textContent = `${t('tickets.continue')} • ${money(total())}`; cta.disabled = false; }
+
+      syncAccordion();
+    }
+
+    window.addEventListener('bod:locale_changed', () => {
+      bindTranslations(root);
+      if (state.pkg) {
+        renderTickets();
+        sync();
+      }
+    });
+    /* ---- In-site checkout modal (Rezdy embed — the visitor never leaves us) ---- */
+    const modal = document.querySelector<HTMLElement>('[data-comodal]')!;
+    const frame = modal.querySelector<HTMLElement>('.co-modal__frame')!;
+    const coTitle = modal.querySelector<HTMLElement>('[data-cotitle]')!;
+    let lenisPaused = false;
+
+    function openCheckout() {
+      const returnTarget = `${window.location.origin}/tickets/confirmation?product=${encodeURIComponent(state.pkg.slug)}&date=${encodeURIComponent(state.date || '')}&time=${encodeURIComponent(state.session ? (state.allDay ? 'Flexible Entry' : state.session.time) : '')}`;
+      const params = new URLSearchParams({
+        iframe: 'true',
+        redirectUrl: returnTarget,
+        returnUrl: returnTarget,
+      });
+      if (state.date) params.set('date', state.date);
+      if (state.session && state.session.time && !state.allDay) params.set('time', state.session.time);
+      state.pkg.tiers.forEach((t: any) => {
+        if (state.qty[t.code]) params.set(t.code, String(state.qty[t.code]));
+      });
+      // fresh iframe each open so availability is current
+      frame.querySelectorAll('iframe').forEach((f) => f.remove());
+      const load = modal.querySelector<HTMLElement>('[data-coload]');
+      if (load) load.style.display = 'flex';
+      const iframe = document.createElement('iframe');
+      const baseCheckout = state.pkg.checkoutUrl || 'https://rfdsdarwin1.rezdy.com';
+      const sep = baseCheckout.includes('?') ? '&' : '?';
+      const checkoutUrl = `${baseCheckout}${sep}${params.toString()}`;
+      iframe.src = checkoutUrl;
+      iframe.title = 'Secure checkout';
+      iframe.allow = 'payment';
+      iframe.addEventListener('load', () => {
+        if (load) load.style.display = 'none';
+      });
+      frame.appendChild(iframe);
+
+      const extLink = modal.querySelector<HTMLAnchorElement>('[data-coext]');
+      if (extLink) extLink.href = checkoutUrl;
+
+      coTitle.textContent = state.pkg.name;
+      const descEl = modal.querySelector<HTMLElement>('[data-codesc]');
+      if (descEl) {
+        const timeStr = state.allDay ? 'Flexible Entry' : (state.session ? state.session.time : '');
+        descEl.textContent = `${state.date || ''} ${timeStr ? '· ' + timeStr : ''} · Royal Flying Doctor Service`;
+      }
+
+      modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('co-open');
+      const lenis = (window as any).__lenis; if (lenis) { lenis.stop(); lenisPaused = true; }
+    }
+    function closeCheckout() {
+      modal.classList.remove('is-open'); modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('co-open');
+      const lenis = (window as any).__lenis; if (lenis && lenisPaused) { lenis.start(); lenisPaused = false; }
+    }
+    modal.querySelectorAll('[data-coclose]').forEach((b) => b.addEventListener('click', closeCheckout));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('is-open')) closeCheckout(); });
+
+    // Listen for Rezdy booking confirmation postMessage
+    window.addEventListener('message', (event) => {
+      try {
+        const d = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (d && (d.action === 'rezdy:orderConfirmed' || d.event === 'order_confirmed' || d.type === 'rezdy:bookingComplete' || d.orderNumber)) {
+          const orderNum = d.orderNumber || d.bookingNumber || '';
+          window.location.href = `/tickets/confirmation?orderNumber=${encodeURIComponent(orderNum)}&product=${encodeURIComponent(state.pkg.slug)}&date=${encodeURIComponent(state.date || '')}&time=${encodeURIComponent(state.session ? (state.allDay ? 'Flexible Entry' : state.session.time) : '')}`;
+        }
+      } catch {}
+    });
+
+    cta.addEventListener('click', async () => {
+      if (!state.pkg) { openStep(1); return; }
+      if (count() === 0) { openStep(2); return; }
+      if (!state.date) { openStep(3); return; }
+      if (!state.session && !state.allDay) { openStep(4); return; }
+
+      const alertEl = root.querySelector<HTMLElement>('[data-verifyalert]');
+      if (alertEl) alertEl.hidden = true;
+
+      // Enter pre-flight verification state
+      const origText = cta.textContent;
+      cta.disabled = true;
+      cta.textContent = 'Verifying Availability…';
+
+      try {
+        const verifyRes = await fetch('/api/rezdy/verify-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            productSlug: state.pkg.slug,
+            date: state.date,
+            time: state.session ? state.session.time : undefined,
+            sessionId: state.session ? state.session.id : undefined,
+            qty: state.qty,
+          }),
+        });
+        const verifyData = await verifyRes.json();
+
+        if (verifyData && verifyData.available) {
+          sync();
+          openCheckout();
+        } else {
+          sync();
+          if (alertEl) {
+            alertEl.textContent = verifyData?.message || 'The selected session is no longer available. Please choose another time or date.';
+            alertEl.hidden = false;
+          }
+          const targetStep = state.allDay ? 3 : 4;
+          openStep(targetStep);
+        }
+      } catch (err) {
+        // Resilient fallback: if network probe times out, allow proceeding to Rezdy hosted checkout
+        sync();
+        openCheckout();
+      }
+    });
+    sync();
+  }
+</script>

@@ -1,0 +1,153 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { SITE } from '../consts';
+const groupEmail = 'bookingsdrw@flyingdoctor.net.au';
+---
+<Base title="Schools & Groups" description="Curriculum-linked immersive learning at the Bombing of Darwin Experience — history, STEM, aviation and innovation. Step inside 'PAPA', a decommissioned RFDS Pilatus PC-12.">
+  <PageHeader
+    record="Education & groups"
+    title="Schools & Groups"
+    lede="Bring history to life through immersive learning experiences."
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="prose prose--serif measure" style="margin-bottom: clamp(40px, 6vw, 64px);">
+        <p>The 1942 Bombing of Darwin Experience offers students a powerful opportunity to explore the events of 19 February 1942 through immersive technology, authentic storytelling and interactive learning.</p>
+        <p>Students then continue into the Royal Flying Doctor Service Experience, where they discover how aviation, communication and innovation have transformed healthcare across remote Australia.</p>
+        <p>Together, in one location, the two experiences support learning across Australian history, wartime studies, STEM, geography, aviation and innovation.</p>
+      </div>
+
+      <div class="grid">
+        <div>
+          <p class="eyebrow">The visit</p>
+          <dl class="deflist">
+            <div><dt>Suitable for</dt><dd>Primary, secondary and tertiary students</dd></div>
+            <div><dt>Duration</dt><dd>Approximately 2 hours</dd></div>
+            <div><dt>Group capacity</dt><dd>Up to 150 students</dd></div>
+            <div><dt>Rates</dt><dd>School group rates are available on request.</dd></div>
+            <div>
+              <dt>Funding<br />Assistance</dt>
+              <dd>Eligible schools may also be able to access funding assistance through the <a href="https://northernterritory.com/tours/school-excursions" target="_blank" rel="noopener noreferrer" class="link-inline">NT Learning Adventures Save &amp; Learn Program</a>.</dd>
+            </div>
+          </dl>
+        </div>
+        <div>
+          <p class="eyebrow">Learning highlights</p>
+          <ul class="curric">
+            <li>Stand in the place where the Bombing of Darwin air raids swept across Darwin Harbour.</li>
+            <li>Experience virtual reality, holographic presentations and immersive storytelling.</li>
+            <li>Step inside PAPA, a decommissioned RFDS Pilatus PC-12 aircraft that once supported healthcare across remote Australia.</li>
+            <li>Discover local stories and perspectives connected to the Northern Territory and wartime history.</li>
+            <li>Complete an interactive discovery trail during your visit.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Decommissioned RFDS Pilatus PC-12 'PAPA' -->
+      <article class="papa card">
+        <div class="papa__media">
+          <img src="/images/BOD_PC12.webp" alt="PAPA, a decommissioned RFDS Pilatus PC-12 aircraft on display at Stokes Hill Wharf" loading="lazy" decoding="async" />
+        </div>
+        <div class="papa__body">
+          <p class="eyebrow eyebrow--gold">ON-SITE AIRCRAFT</p>
+          <h3 class="papa__h">STEP INSIDE 'PAPA'.</h3>
+          <p class="prose prose--serif">
+            Step inside PAPA, a decommissioned RFDS Pilatus PC-12 aircraft that once flew life-saving aeromedical missions across remote Australia. Students can sit in the cockpit, explore the medical cabin, and discover the technology and human dedication behind the Royal Flying Doctor Service.
+          </p>
+        </div>
+      </article>
+
+      <div class="cta">
+        <p class="prose prose--serif measure" style="margin-bottom:26px;">
+          To discuss your school's requirements or make a booking, please contact our Reservations Team.
+        </p>
+        <a class="btn-book" href={`mailto:${groupEmail}`} data-enquiry-trigger="schools" role="button">ENQUIRE ABOUT GROUP BOOKINGS</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section One: Trade Partnerships -->
+  <section class="section trade" style="border-top:1px solid var(--line);">
+    <div class="container">
+      <p class="eyebrow eyebrow--gold">TRADE PARTNERSHIPS</p>
+      <h2 class="trade__h">WORK WITH US.</h2>
+
+      <div class="trade__col" style="max-width: 720px;">
+        <h3 class="trade__t">Tourism Operators</h3>
+        <p class="prose prose--serif">
+          Great visitor experiences are built through great partnerships. We value the relationships we have with tourism operators and industry partners, working together to showcase the very best of the Northern Territory while delivering memorable visitor experiences.
+        </p>
+        <p class="prose prose--serif" style="margin-top: 14px;">
+          Trade rates, product information and marketing resources are available on request. If we aren't already connected, please get in touch. We'd love to explore how we can work together.
+        </p>
+        <a class="btn-book" style="margin-top: 24px;" href="mailto:bek.garrett@flyingdoctor.net" data-enquiry-trigger="trade" role="button">CONTACT THE TRADE DESK</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Two: Corporate Venue Hire -->
+  <section class="section venue-hire" style="border-top:1px solid var(--line);">
+    <div class="container">
+      <p class="eyebrow eyebrow--gold">CORPORATE VENUE HIRE</p>
+      <h2 class="trade__h">HOST AN UNFORGETTABLE EVENT.</h2>
+
+      <div class="trade__col" style="max-width: 720px;">
+        <h3 class="trade__t">Exclusive Venue Hire</h3>
+        <p class="prose prose--serif">
+          Create an event your guests will remember. Located on historic Stokes Hill Wharf overlooking Darwin Harbour, we offer one of Darwin's most unique event settings.
+        </p>
+        <p class="prose prose--serif" style="margin-top: 14px;">
+          Iconic harbour views, flexible event spaces and two remarkable visitor experiences come together to create a truly memorable backdrop for your next event. Whether you're hosting a corporate function, networking event, cocktail reception, conference, or looking to add an exclusive pre or post tour experience, our team can help create an unforgettable experience for your guests.
+        </p>
+        <p class="prose prose--serif" style="margin-top: 14px;">
+          A range of flexible event spaces are available for intimate gatherings through to larger functions. Talk to us about the best option for your event. Every event is different. Talk to us about your ideas and we'll work with you to create a memorable experience tailored to your event.
+        </p>
+        <a class="btn-book" style="margin-top: 24px;" href="mailto:bookingsdrw@flyingdoctor.net.au" data-enquiry-trigger="venue" role="button">ENQUIRE ABOUT VENUE HIRE</a>
+      </div>
+    </div>
+
+    <figure class="venue" data-reveal>
+      <img src="/images/BOD_Wharf.webp" alt="The Bombing of Darwin venue on Stokes Hill Wharf, lit at dusk over Darwin Harbour" width="1280" height="720" loading="lazy" decoding="async" />
+      <figcaption class="venue__cap">
+        <span class="record">Stokes Hill Wharf · Darwin Harbour</span>
+        <p>An address the harbour remembers — yours for an evening.</p>
+      </figcaption>
+    </figure>
+  </section>
+</Base>
+
+<style>
+  .papa { display: grid; overflow: hidden; margin-bottom: clamp(44px, 7vw, 80px); }
+  @media (min-width: 820px) { .papa { grid-template-columns: 52% 1fr; } }
+  .papa__media { position: relative; aspect-ratio: 16 / 10; }
+  @media (min-width: 820px) { .papa__media { aspect-ratio: auto; min-height: 320px; } }
+  .papa__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.62) contrast(1.03); }
+  .papa__body { padding: clamp(26px, 4vw, 44px); display: flex; flex-direction: column; justify-content: center; }
+  .papa__h { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.05; margin: 0 0 18px; color: var(--bone); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 80px); margin-bottom: clamp(40px, 7vw, 72px); }
+  .curric { list-style: none; padding: 0; margin: 0; }
+  .curric li { font-family: var(--font-serif); font-size: 1.08rem; color: var(--bone); padding: 14px 0; border-top: 1px solid var(--line); }
+  .curric li:last-child { border-bottom: 1px solid var(--line); }
+  .curric li::before { content: '—'; color: var(--gold); margin-right: 12px; }
+
+  .cta { padding-top: clamp(32px, 5vw, 56px); border-top: 1px solid var(--line); }
+
+  /* ---- Trade & Venue Hire ---- */
+  .trade__h { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.7rem, 3.4vw, 2.6rem); line-height: 1; margin: 12px 0 clamp(32px, 5vw, 52px); color: var(--bone); }
+  .trade__grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 72px); }
+  .trade__t { font-family: var(--font-display-reg); font-weight: 500; font-size: 1.3rem; margin: 0 0 14px; color: var(--bone); letter-spacing: 0; text-transform: none; }
+  .link-gold { display: inline-block; margin-top: 16px; font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-bright); border-bottom: 1px solid var(--line-strong); padding-bottom: 3px; transition: border-color 0.25s var(--ease); }
+  .link-gold:hover { border-color: var(--gold); }
+
+  .venue { position: relative; margin: clamp(40px, 6vw, 72px) 0 0; height: clamp(340px, 52vw, 620px); overflow: hidden; }
+  .venue img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.04); filter: saturate(0.62) contrast(1.03); }
+  .venue::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,12,11,0.15) 0%, rgba(12,12,11,0) 32%, rgba(12,12,11,0.72) 100%); }
+  .venue__cap { position: absolute; left: clamp(20px, 5vw, 64px); bottom: clamp(20px, 4vw, 48px); z-index: 2; max-width: 30ch; }
+  .venue__cap .record { color: var(--gold-bright); }
+  .venue__cap p { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.2rem, 2.4vw, 1.7rem); line-height: 1.3; color: var(--bone); margin: 8px 0 0; text-shadow: 0 2px 24px rgba(0,0,0,0.7); }
+
+  @media (max-width: 760px) { .grid, .trade__grid { grid-template-columns: 1fr; } }
+</style>

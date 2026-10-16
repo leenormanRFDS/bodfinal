@@ -1,0 +1,59 @@
+/* ============================================================
+   Design tokens — the memorial system.
+   Ink & bone. One gold hairline. Type is architecture.
+   Cyan has been retired from the interface; warmth lives only
+   inside the photography.
+   ============================================================ */
+:root {
+  /* --- ink & surfaces --- */
+  --ink: #0c0c0b;      /* Archival Void — bruised charcoal that absorbs light, never pure black */
+  --char: #141110;     /* raised surface */
+  --char-2: #1c1815;   /* card / panel */
+  --char-3: #241e1a;   /* hover / inset */
+
+  /* --- text: bone / parchment --- */
+  --bone: #ece7db;
+  --bone-dim: rgba(236, 231, 219, 0.66);
+  --bone-mute: rgba(236, 231, 219, 0.40);
+
+  /* --- accent: gold, hairline & emphasis ONLY (never a fill of scale) --- */
+  --gold: #c6a15b;
+  --gold-bright: #e4c583;
+
+  /* --- the red string / restricted stamp --- */
+  --signal: #9e3b2e;
+
+  /* --- photographic warmth (grades only, never UI) --- */
+  --ember: #cf5a1e;
+
+  /* --- functional cue: a restrained steel for focus, not the old game-cyan --- */
+  --focus: #6fa8b5;
+  --hud: #6fa8b5;      /* legacy alias so nothing breaks */
+
+  --line: rgba(236, 231, 219, 0.12);
+  --line-strong: rgba(236, 231, 219, 0.22);
+
+  /* --- type roles: each earns its place by function --- */
+  --font-display: 'guildhall-condensed', 'Oswald', system-ui, sans-serif;     /* titles */
+  --font-display-xl: 'guildhall-compressed', 'Oswald', system-ui, sans-serif; /* monuments */
+  --font-display-reg: 'guildhall', 'Oswald', system-ui, sans-serif;           /* display, regular width */
+  --font-serif: 'museo-sans', Georgia, 'Times New Roman', serif;  /* the human voice */
+  --font-sans: 'museo-sans', system-ui, -apple-system, sans-serif; /* UI / logistics */
+  --font-mono: 'IBM Plex Mono', monospace; /* evidence / provenance typography */
+
+  /* --- layout --- */
+  --container: 1180px;
+  --measure: 64ch;
+  --gutter: clamp(22px, 5vw, 64px);
+  --nav-h: 64px;
+
+  /* --- radii & shadow (museum crispness, not app softness) --- */
+  --radius: 4px;
+  --radius-pill: 100px;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+
+  /* --- motion: memory. measured, weighted. --- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-solemn: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 0.6s;
+}

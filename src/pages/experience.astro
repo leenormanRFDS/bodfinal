@@ -1,0 +1,185 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Interstitial from '../components/Interstitial.astro';
+import CulturalWarning from '../components/CulturalWarning.astro';
+import PeopleWheel from '../components/PeopleWheel.astro';
+import { SITE } from '../consts';
+
+---
+<Base title="The Experience" description="Step into the day the war reached Australia — immersive theatre, virtual reality, the Window to Darwin Harbour, and the people behind 19 February 1942.">
+  <PageHeader
+    record="Stokes Hill Wharf · Darwin"
+    title="The Experience"
+    lede="You don't read about 19 February 1942. You're placed inside it — through immersive theatre, virtual reality, and the people who lived it."
+  />
+
+  <CulturalWarning />
+
+  <Interstitial
+    src="/images/experience/gallery-floor.png"
+    alt="Visitors on the exhibition floor — VR stations and a suspended aircraft under the wharf's steel roof"
+    record="Inside the experience"
+    line="Step onto the floor where history is standing."
+    register="present"
+    align="left"
+  />
+
+  <PeopleWheel />
+
+  <!-- the page's one heartbeat -->
+  <section class="section beat" aria-label="You will stand where they stood">
+    <div class="container">
+      <p class="beat__line">You will stand where they stood.</p>
+    </div>
+  </section>
+
+  <!-- Included: the RFDS Experience -->
+  <section class="section rfds">
+    <div class="container rfds__grid">
+      <div class="rfds__intro">
+        <p class="eyebrow eyebrow--gold">Included Experience</p>
+        <h2 class="rfds__h">Another<br />Australian<br />Icon</h2>
+        <p class="prose prose--serif rfds__lede">
+          Your ticket includes access to the Royal Flying Doctor Service Experience. Discover the history
+          and operations of one of the largest and most comprehensive aeromedical organisations in the world.
+        </p>
+        <a class="btn-book" href={SITE.bookPath}>Step Inside</a>
+      </div>
+
+      <div class="rfds__cards">
+        <article class="rfds__card rfds__card--wide">
+          <div class="rfds__media">
+            <img src="/images/BOD_PC12.webp" alt="A genuine RFDS Pilatus PC-12 inside the museum, visitors climbing aboard" loading="lazy" decoding="async" />
+          </div>
+          <div class="rfds__body">
+            <span class="rfds__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 13.5 3 11l1.5-2 6.5 1 5-6.5L18 3l-1.5 7.5 4 2.5-1.5 2-4.5-1.5-2 4.5-2-.5.5-4.5z"/></svg>
+            </span>
+            <h3 class="rfds__t">Pilatus PC-12</h3>
+            <p class="rfds__d">Explore a genuine RFDS Pilatus PC-12, step into the cockpit, walk through the medical cabin, and discover how these aircraft connect some of Australia's most remote communities.</p>
+          </div>
+        </article>
+
+        <article class="rfds__card">
+          <div class="rfds__media rfds__media--sm">
+            <img src="/images/VR_RFDSPC-12.webp" alt="A young visitor wearing a VR headset inside the PC-12 medical cabin" loading="lazy" decoding="async" />
+          </div>
+          <div class="rfds__body">
+            <span class="rfds__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg>
+            </span>
+            <h3 class="rfds__t">Aeromedical VR</h3>
+            <p class="rfds__d">Ride along on an aeromedical retrieval with a real RFDS crew, through immersive VR technology.</p>
+          </div>
+        </article>
+
+        <article class="rfds__card">
+          <div class="rfds__body rfds__body--pad">
+            <span class="rfds__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8V7a6 6 0 0 1 12 0v1"/><path d="M4 8h16l-1.2 12a2 2 0 0 1-2 1.8H7.2a2 2 0 0 1-2-1.8z"/></svg>
+            </span>
+            <h3 class="rfds__t">Museum &amp; Shop</h3>
+            <p class="rfds__d">Explore the extensive RFDS museum and take home a memory from the merchandise shop — every purchase supports the Flying Doctor.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight" style="border-top:1px solid var(--line);">
+    <div class="container" style="text-align:center; padding-block: clamp(48px,7vw,84px);">
+      <a class="btn-book" href={SITE.bookPath}>Book Your Visit</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 52px); }
+  .pillar__t { margin-top: 20px; font-size: clamp(1.3rem, 2.4vw, 1.7rem); }
+  @media (max-width: 760px) { .pillars { grid-template-columns: 1fr; gap: 40px; } }
+
+  /* ---- the heartbeat ---- */
+  .beat { padding-block: clamp(90px, 18vh, 200px); border-top: 1px solid var(--line); text-align: center; }
+  .beat__line {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: clamp(1.6rem, 3.6vw, 2.7rem); line-height: 1.4;
+    color: var(--bone); margin: 0;
+  }
+
+  /* ---- Included: RFDS ---- */
+  .rfds {
+    position: relative;
+    padding-block: clamp(90px, 14vw, 160px);
+    background:
+      radial-gradient(
+        ellipse 90% 60% at 50% 50%,
+        rgba(0, 141, 199, 0.07) 0%,
+        rgba(0, 141, 199, 0.025) 45%,
+        transparent 75%
+      ),
+      linear-gradient(
+        180deg,
+        #0c0c0b 0%,
+        #041525 14%,
+        #022649 28%,
+        #004684 42%,
+        #004684 58%,
+        #022649 72%,
+        #041525 86%,
+        #0c0c0b 100%
+      );
+  }
+
+  .rfds__grid { display: grid; gap: clamp(32px, 5vw, 72px); align-items: start; }
+  @media (min-width: 920px) { .rfds__grid { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); } }
+
+  .rfds__h {
+    font-family: var(--font-display-xl); font-weight: 400; text-transform: uppercase;
+    line-height: 0.92; letter-spacing: 0.01em; color: var(--bone);
+    font-size: clamp(2.6rem, 6.5vw, 4.6rem); margin: 0 0 26px;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(236,231,219,0.04), 0 0 12px rgba(236,231,219,0.05);
+  }
+  .rfds__lede { font-size: 1.18rem; line-height: 1.65; margin-bottom: 34px; max-width: 40ch; }
+
+  .rfds__cards { display: grid; gap: 18px; }
+  @media (min-width: 640px) { .rfds__cards { grid-template-columns: 1fr 1fr; } .rfds__card--wide { grid-column: 1 / -1; } }
+
+  .rfds__card {
+    display: flex; flex-direction: column; overflow: hidden;
+    background: linear-gradient(175deg, rgba(6, 24, 44, 0.72) 0%, rgba(3, 15, 29, 0.82) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 32px rgba(0, 8, 20, 0.35);
+    transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+  .rfds__card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.22);
+    background: linear-gradient(175deg, rgba(8, 30, 56, 0.78) 0%, rgba(4, 18, 36, 0.86) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 36px rgba(0, 8, 20, 0.45);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rfds__card:hover { transform: none; }
+  }
+
+  .rfds__card--wide { flex-direction: column; }
+  @media (min-width: 640px) { .rfds__card--wide { display: grid; grid-template-columns: 48% 1fr; } .rfds__card--wide .rfds__media { min-height: 260px; } }
+
+  .rfds__media { position: relative; aspect-ratio: 16 / 9; }
+  .rfds__card--wide .rfds__media { aspect-ratio: auto; }
+  @media (max-width: 639px) { .rfds__card--wide .rfds__media { aspect-ratio: 16 / 9; } }
+  .rfds__media { overflow: hidden; }
+  .rfds__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.62) contrast(1.03); transition: filter 0.5s var(--ease), transform 0.6s var(--ease); }
+  .rfds__card:hover .rfds__media img { filter: saturate(0.82) contrast(1.04); transform: scale(1.03); }
+  .rfds__media--sm { aspect-ratio: 16 / 9; }
+
+  .rfds__body { display: flex; flex-direction: column; gap: 12px; padding: 24px 26px 26px; }
+  .rfds__body--pad { padding-top: 30px; }
+  .rfds__icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 4px; background: rgba(198, 161, 91, 0.1); border: 1px solid rgba(198, 161, 91, 0.3); color: var(--gold); }
+  .rfds__icon svg { width: 21px; height: 21px; }
+  .rfds__t { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: 1.35rem; letter-spacing: 0.01em; margin: 0; color: var(--bone); }
+  .rfds__d { font-size: 0.98rem; line-height: 1.65; color: var(--bone-dim); margin: 0; }
+</style>

@@ -1,0 +1,938 @@
+---
+// src/pages/tickets/confirmation.astro
+// Authoritative booking confirmation screen.
+// Status is strictly verified via /api/rezdy/booking-status against Rezdy API/webhooks.
+// Never shows "Admission Confirmed" from query params, postMessage, or client storage.
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+---
+
+<Base title="Booking Status — The Bombing of Darwin" description="Authoritative ticketing verification for The Bombing of Darwin & Royal Flying Doctor Service experience at Stokes Hill Wharf.">
+  <PageHeader
+    record="Stokes Hill Wharf Ticketing"
+    title="Ticketing & Admission"
+    lede="Authoritative reservation verification for The Bombing of Darwin & Royal Flying Doctor Service Tourist Facility."
+  />
+
+  <section class="section" id="confirm-section">
+    <div class="container">
+      <div class="confirm-grid">
+        <!-- Main State Container -->
+        <div class="confirm-card" id="confirm-card">
+          <!-- 1. PENDING STATE (Default on load with orderNumber) -->
+          <div id="state-pending" class="view-state">
+            <div class="confirm-card__badge badge-pending">
+              <span class="dot dot-pulse"></span>
+              <span>Verifying with Ticketing Authority</span>
+            </div>
+            <h2 class="state-title">Finalising Your Booking…</h2>
+            <p class="state-desc">
+              Communicating directly with the Royal Flying Doctor Service reservation system. Confirming seat allocation and payment settlement…
+            </p>
+            <div class="loader-bar"><div class="loader-bar__fill"></div></div>
+            <div class="ref-preview" id="pending-ref-preview">
+              <span>Checking reference:</span> <strong id="pending-ref-text">Checking…</strong>
+            </div>
+          </div>
+
+          <!-- 2. CONFIRMED STATE (Only rendered upon verified status === 'CONFIRMED') -->
+          <div id="state-confirmed" class="view-state is-hidden">
+            <div class="confirm-card__badge badge-confirmed">
+              <span class="dot"></span>
+              <span data-i18n="confirmation.title">Admission Confirmed</span>
+            </div>
+
+            <div class="confirm-card__header">
+              <div>
+                <p class="confirm-label" data-i18n="confirmation.orderRef">Booking Reference</p>
+                <h2 class="confirm-ref" id="order-ref">—</h2>
+              </div>
+              <button type="button" class="btn-copy" id="btn-copy" aria-label="Copy booking reference">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
+
+            <hr class="confirm-divider" />
+
+            <!-- Genuine Barcode Container (Only rendered if Rezdy returns a real barcode string) -->
+            <div id="barcode-container" class="barcode-box is-hidden">
+              <p class="barcode-label">Entry Barcode</p>
+              <div class="barcode-display" id="barcode-code"></div>
+              <p class="barcode-hint">Scan this code at the wharf entry turnstiles</p>
+            </div>
+
+            <dl class="confirm-details">
+              <div class="detail-row">
+                <dt data-i18n="confirmation.package">Experience</dt>
+                <dd id="confirm-pkg">—</dd>
+              </div>
+              <div class="detail-row">
+                <dt data-i18n="confirmation.date">Date</dt>
+                <dd id="confirm-date">—</dd>
+              </div>
+              <div class="detail-row">
+                <dt data-i18n="confirmation.time">Time</dt>
+                <dd id="confirm-time">—</dd>
+              </div>
+              <div class="detail-row">
+                <dt data-i18n="confirmation.tickets">Tickets</dt>
+                <dd id="confirm-tickets">—</dd>
+              </div>
+              <div class="detail-row">
+                <dt data-i18n="confirmation.totalPaid">Total Paid</dt>
+                <dd id="confirm-paid">—</dd>
+              </div>
+              <div class="detail-row">
+                <dt data-i18n="visitor.location.title">Location</dt>
+                <dd>Stokes Hill Wharf, Darwin NT</dd>
+              </div>
+            </dl>
+
+            <div class="confirm-actions">
+              <button type="button" class="btn-cal" id="btn-ics">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>Add to Calendar (.ics)</span>
+              </button>
+              <a href="/visit" class="btn-directions">
+                <span data-i18n="confirmation.directions">Wharf Directions & Map</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- 3. MANUAL / PROCESSING / TIMEOUT STATE ("WE'RE CHECKING YOUR BOOKING") -->
+          <div id="state-checking" class="view-state is-hidden">
+            <div class="confirm-card__badge badge-warning">
+              <span class="dot dot-amber"></span>
+              <span>Verification In Progress</span>
+            </div>
+            <h2 class="state-title">We're Checking Your Booking</h2>
+            <p class="state-desc" id="checking-msg">
+              Your booking reference has been registered, but final banking or supplier confirmation is still settling. A confirmation email with full entry details will be dispatched as soon as the ticketing system completes processing.
+            </p>
+            <div class="ref-box">
+              <span class="ref-box__label">Your Reference</span>
+              <span class="ref-box__val" id="checking-ref">—</span>
+            </div>
+            <div class="state-actions">
+              <button type="button" class="btn-action" id="btn-recheck">Check Status Again</button>
+              <a href="tel:0889812056" class="btn-secondary">Call Wharf Desk: (08) 8981 2056</a>
+            </div>
+          </div>
+
+          <!-- 4. CANCELLED STATE -->
+          <div id="state-cancelled" class="view-state is-hidden">
+            <div class="confirm-card__badge badge-danger">
+              <span class="dot dot-red"></span>
+              <span>Booking Inactive</span>
+            </div>
+            <h2 class="state-title">Booking Cancelled</h2>
+            <p class="state-desc">
+              Ticketing authority records indicate that booking <strong id="cancelled-ref">—</strong> has been cancelled or refunded.
+            </p>
+            <div class="state-actions">
+              <a href="/tickets" class="btn-action">Book New Tickets</a>
+              <a href="mailto:rfdsdarwin@rfds.org.au" class="btn-secondary">Contact Customer Support</a>
+            </div>
+          </div>
+
+          <!-- 5. NOT FOUND STATE (e.g. forged URL or unknown order) -->
+          <div id="state-notfound" class="view-state is-hidden">
+            <div class="confirm-card__badge badge-warning">
+              <span class="dot dot-amber"></span>
+              <span>Reference Not Found</span>
+            </div>
+            <h2 class="state-title">Booking Reference Not Found</h2>
+            <p class="state-desc">
+              No reservation was found matching reference <code id="notfound-ref">—</code> in the Rezdy ticketing registry. Please verify the code in your confirmation email or re-enter it below.
+            </p>
+            <form id="lookup-form" class="lookup-form">
+              <input type="text" id="lookup-input" placeholder="e.g. R11NS1R" class="lookup-input" required />
+              <button type="submit" class="lookup-btn">Verify Reference</button>
+            </form>
+          </div>
+
+          <!-- 6. NO REFERENCE STATE (when visited directly without query params) -->
+          <div id="state-noref" class="view-state is-hidden">
+            <div class="confirm-card__badge badge-neutral">
+              <span>Reference Required</span>
+            </div>
+            <h2 class="state-title">Look Up Your Booking</h2>
+            <p class="state-desc">
+              Enter your booking reference or order number to verify ticket status, view arrival details, or download your calendar pass.
+            </p>
+            <form id="lookup-form-direct" class="lookup-form">
+              <input type="text" id="lookup-input-direct" placeholder="e.g. R11NS1R" class="lookup-input" required />
+              <button type="submit" class="lookup-btn">Verify Reference</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Sidebar: Arrival & Orientation Guide -->
+        <aside class="guide-card">
+          <div class="guide-block">
+            <h3 class="guide-title">Arrival on the Wharf</h3>
+            <p class="guide-text">
+              Located at the historic <strong>Stokes Hill Wharf</strong>, right on Darwin harbour. Free 2-hour parking is available along the wharf approach, with drop-off zones directly at the entrance.
+            </p>
+          </div>
+
+          <div class="guide-block">
+            <h3 class="guide-title">Entry Verification</h3>
+            <p class="guide-text">
+              Show your booking reference on your phone upon arrival. Physical printing is not required. If you booked concession, student, or senior rates, please present your eligible ID card at the desk.
+            </p>
+          </div>
+
+          <div class="guide-block">
+            <h3 class="guide-title">Same Wharf. Same Sky.</h3>
+            <p class="guide-text">
+              The facility stands on the exact wharf bombed at 09:58 AM on 19 February 1942. We recommend allocating 75 to 90 minutes to experience both the Bombing of Darwin and Royal Flying Doctor Service exhibits.
+            </p>
+          </div>
+
+          <div class="guide-footer">
+            <p class="guide-help">Questions about your booking?</p>
+            <p class="guide-contact">Call <strong>(08) 8981 2056</strong> or email <a href="mailto:rfdsdarwin@rfds.org.au">rfdsdarwin@rfds.org.au</a></p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .confirm-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(24px, 4vw, 48px);
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .confirm-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .confirm-card {
+    background: #121211;
+    border: 1px solid rgba(228, 197, 131, 0.25);
+    padding: clamp(24px, 4vw, 40px);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
+    min-height: 380px;
+  }
+
+  .view-state.is-hidden {
+    display: none !important;
+  }
+
+  .confirm-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 24px;
+    border-radius: 2px;
+  }
+
+  .badge-confirmed {
+    background: rgba(46, 125, 50, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.35);
+    color: #81c784;
+  }
+  .badge-confirmed .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4caf50;
+    box-shadow: 0 0 8px #4caf50;
+  }
+
+  .badge-pending {
+    background: rgba(217, 119, 6, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #fcd34d;
+  }
+  .dot-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  .badge-warning {
+    background: rgba(217, 119, 6, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #fcd34d;
+  }
+  .dot-amber {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #f59e0b;
+  }
+
+  .badge-danger {
+    background: rgba(185, 28, 28, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+  }
+  .dot-red {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ef4444;
+  }
+
+  .badge-neutral {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #d1cbbd;
+  }
+
+  .state-title {
+    margin: 0 0 12px 0;
+    font-family: var(--font-display, Georgia, serif);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: #ece7db;
+    font-weight: 400;
+  }
+
+  .state-desc {
+    margin: 0 0 24px 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #b8b2a5;
+  }
+
+  .loader-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px;
+    border-radius: 2px;
+  }
+  .loader-bar__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 40%;
+    background: #e4c583;
+    animation: loaderMove 1.8s infinite ease-in-out;
+  }
+  @keyframes loaderMove {
+    0% { left: -40%; }
+    50% { left: 50%; width: 50%; }
+    100% { left: 100%; width: 30%; }
+  }
+
+  .ref-preview {
+    font-size: 0.8125rem;
+    color: #9a9486;
+  }
+  .ref-preview strong {
+    color: #e4c583;
+    font-family: var(--font-mono, monospace);
+  }
+
+  .confirm-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .confirm-label {
+    margin: 0 0 6px 0;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9a9486;
+  }
+
+  .confirm-ref {
+    margin: 0;
+    font-family: var(--font-display, Georgia, serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    color: #e4c583;
+    letter-spacing: 0.04em;
+    word-break: break-word;
+  }
+
+  .btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1c1b18;
+    color: #ece7db;
+    border: 1px solid #2e2b26;
+    padding: 8px 14px;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .btn-copy:hover {
+    background: #272522;
+    border-color: #e4c583;
+    color: #e4c583;
+  }
+
+  .confirm-divider {
+    border: 0;
+    border-top: 1px solid #23221e;
+    margin: 0 0 24px 0;
+  }
+
+  /* Barcode Display */
+  .barcode-box {
+    background: #0a0a09;
+    border: 1px solid #2e2b26;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .barcode-box.is-hidden { display: none; }
+  .barcode-label {
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9a9486;
+    margin: 0 0 8px 0;
+  }
+  .barcode-display {
+    font-family: var(--font-mono, monospace);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: #ece7db;
+    padding: 8px 0;
+    background: #141413;
+    border: 1px dashed #3a3731;
+    margin: 0 0 6px 0;
+  }
+  .barcode-hint {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #8a857a;
+  }
+
+  .confirm-details {
+    margin: 0 0 32px 0;
+    display: grid;
+    gap: 16px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 16px;
+  }
+  .detail-row dt {
+    font-size: 0.875rem;
+    color: #9a9486;
+    font-weight: 500;
+  }
+  .detail-row dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: #ece7db;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .confirm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .btn-cal {
+    flex: 1;
+    min-width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #e4c583;
+    color: #0c0c0b;
+    border: none;
+    padding: 14px 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn-cal:hover {
+    background: #f0d8a5;
+  }
+
+  .btn-directions {
+    flex: 1;
+    min-width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #1c1b18;
+    color: #ece7db;
+    border: 1px solid #2e2b26;
+    padding: 14px 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .btn-directions:hover {
+    border-color: #e4c583;
+    color: #e4c583;
+  }
+
+  /* Manual lookup form */
+  .lookup-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .lookup-input {
+    flex: 1;
+    background: #1c1b18;
+    border: 1px solid #3a3731;
+    color: #ece7db;
+    padding: 12px 14px;
+    font-size: 0.875rem;
+    font-family: var(--font-mono, monospace);
+    text-transform: uppercase;
+  }
+  .lookup-input:focus {
+    outline: none;
+    border-color: #e4c583;
+  }
+  .lookup-btn {
+    background: #e4c583;
+    color: #0c0c0b;
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .lookup-btn:hover { background: #f0d8a5; }
+
+  .ref-box {
+    background: #181714;
+    border: 1px solid #2a2823;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ref-box__label { font-size: 0.75rem; color: #9a9486; text-transform: uppercase; }
+  .ref-box__val { font-family: var(--font-mono, monospace); color: #e4c583; font-weight: 600; font-size: 1.1rem; }
+
+  .state-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e4c583;
+    color: #0c0c0b;
+    border: none;
+    padding: 12px 18px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .btn-action:hover { background: #f0d8a5; }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1c1b18;
+    color: #ece7db;
+    border: 1px solid #2e2b26;
+    padding: 12px 18px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { border-color: #e4c583; color: #e4c583; }
+
+  /* Guide card */
+  .guide-card {
+    background: #121211;
+    border: 1px solid #23221e;
+    padding: clamp(24px, 3vw, 32px);
+    display: grid;
+    gap: 24px;
+  }
+
+  .guide-title {
+    margin: 0 0 8px 0;
+    font-size: 0.9375rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #e4c583;
+    font-weight: 600;
+  }
+
+  .guide-text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #b8b2a5;
+  }
+  .guide-text strong {
+    color: #ece7db;
+  }
+
+  .guide-footer {
+    padding-top: 16px;
+    border-top: 1px solid #23221e;
+  }
+  .guide-help {
+    margin: 0 0 4px 0;
+    font-size: 0.8125rem;
+    color: #9a9486;
+  }
+  .guide-contact {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #ece7db;
+  }
+  .guide-contact a {
+    color: #e4c583;
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  import { bindTranslations } from '../../i18n/client';
+
+  // Authoritative status resolution logic.
+  // Polling bounded to 8 attempts (every 2.5s -> max 20s).
+  // Fires analytics ONLY upon confirmed server verification.
+  const params = new URLSearchParams(window.location.search);
+  const rawOrderParam = params.get('orderNumber') ||
+    params.get('orderRef') ||
+    params.get('bookingNumber') ||
+    params.get('reference') ||
+    '';
+
+  const orderNumber = rawOrderParam.trim().toUpperCase().replace(/^#/, '');
+
+  window.addEventListener('bod:locale_changed', () => bindTranslations(document));
+
+  // DOM Elements
+  const statePending = document.getElementById('state-pending');
+  const stateConfirmed = document.getElementById('state-confirmed');
+  const stateChecking = document.getElementById('state-checking');
+  const stateCancelled = document.getElementById('state-cancelled');
+  const stateNotFound = document.getElementById('state-notfound');
+  const stateNoRef = document.getElementById('state-noref');
+
+  const pendingRefText = document.getElementById('pending-ref-text');
+  const checkingRef = document.getElementById('checking-ref');
+  const cancelledRef = document.getElementById('cancelled-ref');
+  const notfoundRef = document.getElementById('notfound-ref');
+
+  const orderRefEl = document.getElementById('order-ref');
+  const pkgEl = document.getElementById('confirm-pkg');
+  const dateEl = document.getElementById('confirm-date');
+  const timeEl = document.getElementById('confirm-time');
+  const ticketsEl = document.getElementById('confirm-tickets');
+  const paidEl = document.getElementById('confirm-paid');
+  const barcodeBox = document.getElementById('barcode-container');
+  const barcodeDisplay = document.getElementById('barcode-code');
+
+  function hideAllStates() {
+    [statePending, stateConfirmed, stateChecking, stateCancelled, stateNotFound, stateNoRef].forEach((el) => {
+      if (el) el.classList.add('is-hidden');
+    });
+  }
+
+  function showState(el: HTMLElement | null) {
+    hideAllStates();
+    if (el) el.classList.remove('is-hidden');
+  }
+
+  let analyticsFired = false;
+  function triggerAnalytics(data: any) {
+    if (analyticsFired) return;
+    analyticsFired = true;
+
+    // GA4 deduplicates web purchase events sharing the same unique transaction_id.
+    // transaction_id is set to the authoritative Rezdy orderNumber.
+    const payload = {
+      event: 'booking_confirmed',
+      transaction_id: data.orderNumber,
+      orderNumber: data.orderNumber,
+      productSlug: data.productSlug || 'general-entry',
+      ticketCount: data.totalQuantity || 1,
+      value: data.totalAmount || 0,
+      currency: data.totalCurrency || 'AUD',
+      verifiedAt: data.verifiedAt,
+    };
+
+    // Standard dataLayer push (GTM / GA4)
+    if (Array.isArray((window as any).dataLayer)) {
+      (window as any).dataLayer.push(payload);
+    }
+
+    // Custom window event for listener integrations
+    window.dispatchEvent(new CustomEvent('bod:booking_confirmed', { detail: payload }));
+  }
+
+  let verifiedBookingData: any = null;
+
+  function renderConfirmedUI(data: any) {
+    verifiedBookingData = data;
+    showState(stateConfirmed);
+
+    if (orderRefEl) orderRefEl.textContent = '#' + data.orderNumber;
+    if (pkgEl) pkgEl.textContent = data.productName || 'The Bombing of Darwin Experience';
+
+    if (dateEl) {
+      if (data.date) {
+        try {
+          const d = new Date(data.date + 'T00:00:00');
+          dateEl.textContent = d.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        } catch {
+          dateEl.textContent = data.date;
+        }
+      } else {
+        dateEl.textContent = 'Valid from Date of Issue';
+      }
+    }
+
+    if (timeEl) {
+      if (data.time && data.time !== '00:00') {
+        timeEl.textContent = data.time;
+      } else {
+        timeEl.textContent = 'Flexible All-Day Entry (09:00 – 16:00)';
+      }
+    }
+
+    if (ticketsEl) {
+      if (Array.isArray(data.ticketSummary) && data.ticketSummary.length > 0) {
+        ticketsEl.textContent = data.ticketSummary.map((t: any) => `${t.label} × ${t.quantity}`).join(', ');
+      } else {
+        ticketsEl.textContent = `${data.totalQuantity || 1} Admission${data.totalQuantity === 1 ? '' : 's'}`;
+      }
+    }
+
+    if (paidEl) {
+      paidEl.textContent = `$${Number(data.totalAmount || 0).toFixed(2)} ${data.totalCurrency || 'AUD'}`;
+    }
+
+    // Barcode rendering: only if Rezdy returned a genuine barcode string
+    if (barcodeBox && barcodeDisplay) {
+      if (data.barcode) {
+        barcodeDisplay.textContent = String(data.barcode);
+        barcodeBox.classList.remove('is-hidden');
+      } else {
+        barcodeBox.classList.add('is-hidden');
+      }
+    }
+
+    // Fire analytics strictly on confirmed verification
+    triggerAnalytics(data);
+  }
+
+  async function pollStatus(targetOrder: string) {
+    if (!targetOrder) {
+      showState(stateNoRef);
+      return;
+    }
+
+    showState(statePending);
+    if (pendingRefText) pendingRefText.textContent = '#' + targetOrder;
+
+    let attempts = 0;
+    const maxAttempts = 8;
+    const intervalMs = 2500;
+
+    async function checkOnce(): Promise<boolean> {
+      attempts++;
+      try {
+        const res = await fetch(`/api/rezdy/booking-status?orderNumber=${encodeURIComponent(targetOrder)}`);
+        const data = await res.json().catch(() => ({}));
+
+        if (res.status === 404 || data.status === 'NOT_FOUND') {
+          if (attempts < maxAttempts) {
+            // Might be a brief race condition before Rezdy creates order record; retry
+            return false;
+          }
+          if (notfoundRef) notfoundRef.textContent = '#' + targetOrder;
+          showState(stateNotFound);
+          return true;
+        }
+
+        if (data && data.isConfirmed && data.status === 'CONFIRMED') {
+          renderConfirmedUI(data);
+          return true;
+        }
+
+        if (data && (data.status === 'CANCELLED' || data.status === 'CANCELED')) {
+          if (cancelledRef) cancelledRef.textContent = '#' + targetOrder;
+          showState(stateCancelled);
+          return true;
+        }
+
+        if (data && (data.status === 'PROCESSING' || data.status === 'PENDING_SUPPLIER' || data.status === 'PENDING_CUSTOMER')) {
+          if (attempts >= maxAttempts) {
+            if (checkingRef) checkingRef.textContent = '#' + targetOrder;
+            showState(stateChecking);
+            return true;
+          }
+          return false;
+        }
+
+        if (attempts >= maxAttempts) {
+          if (checkingRef) checkingRef.textContent = '#' + targetOrder;
+          showState(stateChecking);
+          return true;
+        }
+
+        return false;
+      } catch {
+        if (attempts >= maxAttempts) {
+          if (checkingRef) checkingRef.textContent = '#' + targetOrder;
+          showState(stateChecking);
+          return true;
+        }
+        return false;
+      }
+    }
+
+    const resolvedImmediately = await checkOnce();
+    if (resolvedImmediately) return;
+
+    const timer = setInterval(async () => {
+      const done = await checkOnce();
+      if (done) clearInterval(timer);
+    }, intervalMs);
+  }
+
+  // Initial Boot
+  if (orderNumber) {
+    pollStatus(orderNumber);
+  } else {
+    showState(stateNoRef);
+  }
+
+  // Re-check button in manual checking state
+  const btnRecheck = document.getElementById('btn-recheck');
+  if (btnRecheck) {
+    btnRecheck.addEventListener('click', () => {
+      const activeOrder = orderNumber || (checkingRef?.textContent || '').replace(/^#/, '');
+      if (activeOrder) pollStatus(activeOrder);
+    });
+  }
+
+  // Lookup forms for manual reference entry
+  ['lookup-form', 'lookup-form-direct'].forEach((formId) => {
+    const f = document.getElementById(formId);
+    if (f) {
+      f.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = f.querySelector<HTMLInputElement>('input');
+        const val = input?.value.trim().toUpperCase().replace(/^#/, '');
+        if (val) {
+          window.location.href = `/tickets/confirmation?orderNumber=${encodeURIComponent(val)}`;
+        }
+      });
+    }
+  });
+
+  // Copy reference button
+  const btnCopy = document.getElementById('btn-copy');
+  if (btnCopy && orderRefEl) {
+    btnCopy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(orderRefEl.textContent || '');
+        const span = btnCopy.querySelector('span');
+        if (span) {
+          span.textContent = 'Copied!';
+          setTimeout(() => { span.textContent = 'Copy'; }, 2000);
+        }
+      } catch {}
+    });
+  }
+
+  // Add to Calendar (.ics) Generator
+  const btnIcs = document.getElementById('btn-ics');
+  if (btnIcs) {
+    btnIcs.addEventListener('click', () => {
+      const data = verifiedBookingData || {};
+      const title = data.productName || 'The Bombing of Darwin & RFDS Experience';
+      const loc = 'Stokes Hill Wharf, Darwin NT 0800, Australia';
+      const ref = data.orderNumber ? `Booking Reference: #${data.orderNumber}` : '';
+      const desc = `Stokes Hill Wharf. Same wharf. Same sky. 09:35 → 09:58. Admission includes Bombing of Darwin & Royal Flying Doctor Service experiences. ${ref}`;
+
+      const dateStr = data.date || new Date().toISOString().slice(0, 10);
+      const timeStr = data.time || '09:30';
+
+      let startIso = dateStr.replace(/-/g, '');
+      let endIso = startIso;
+
+      if (timeStr && timeStr !== '00:00') {
+        const [hh, mm] = timeStr.split(':');
+        const startH = (hh || '09').padStart(2, '0');
+        const startM = (mm || '30').padStart(2, '0');
+        const endH = String(Number(startH) + 2).padStart(2, '0');
+        startIso += `T${startH}${startM}00`;
+        endIso += `T${endH}${startM}00`;
+      } else {
+        startIso += 'T090000';
+        endIso += 'T110000';
+      }
+
+      const icsData = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//The Bombing of Darwin//Stokes Hill Wharf//EN',
+        'BEGIN:VEVENT',
+        `SUMMARY:${title}`,
+        `DESCRIPTION:${desc}`,
+        `LOCATION:${loc}`,
+        `DTSTART:${startIso}`,
+        `DTEND:${endIso}`,
+        'STATUS:CONFIRMED',
+        'END:VEVENT',
+        'END:VCALENDAR',
+      ].join('\r\n');
+
+      const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `bombing-of-darwin-${data.orderNumber || 'booking'}.ics`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+  }
+</script>

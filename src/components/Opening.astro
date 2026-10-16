@@ -1,0 +1,157 @@
+---
+// Opening — the cinematic title sequence for the landing page.
+// The narrative spine is the verified 09:35 Bathurst Island radio warning
+// (Father John McGrath, Sacred Heart Mission) that was discounted, followed
+// 23 minutes later by the first bombs. Plays once per session; skippable;
+// reduced-motion visitors go straight to the hero. Silent by design.
+const MESSAGE = 'An unusually large air formation bearing south, heading south, observed over Bathurst Island.';
+---
+<div class="opening" data-opening aria-hidden="true" data-msg={MESSAGE}>
+  <div class="opening__grain" aria-hidden="true"></div>
+
+  <div class="opening__stage">
+    <!-- Beat 1 · the transmission -->
+    <div class="opening__beat" data-o-radio>
+      <p class="opening__rec record" data-o-rec1>09:35 · Sacred Heart Mission, Bathurst Island</p>
+      <p class="opening__msg"><span data-o-msg></span><span class="opening__cursor" data-o-cursor aria-hidden="true"></span></p>
+      <p class="opening__attr record" data-o-attr>— Father John McGrath, mission radio</p>
+    </div>
+
+    <!-- Beat 2 · the dismissal -->
+    <p class="opening__line" data-o-dismiss>The warning was discounted —<br />thought to be returning American fighters.</p>
+
+    <!-- Beat 3 · the interval -->
+    <p class="opening__rec record opening__interval" data-o-interval>Twenty-three minutes passed.</p>
+
+    <!-- Beat 4 · the monument -->
+    <div class="opening__beat" data-o-final>
+      <p class="opening__rec record" data-o-rec2>19 February 1942 — 09:58</p>
+      <span class="opening__rule" data-o-rule></span>
+      <p class="opening__mon" data-o-mon>WW2<br />Happened<br />Here</p>
+    </div>
+  </div>
+
+  <button class="opening__skip record" data-o-skip>Skip</button>
+</div>
+
+<style>
+  .opening {
+    position: fixed; inset: 0; z-index: 300; background: var(--ink);
+    display: none; align-items: center; justify-content: center; text-align: center;
+    cursor: pointer;
+  }
+  .opening.is-live { display: flex; }
+  .opening.is-leaving { pointer-events: none; }
+
+  .opening__grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.09; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .opening__stage { position: relative; padding: 0 clamp(20px, 5vw, 48px); max-width: 940px; display: grid; }
+  .opening__stage > * { grid-area: 1 / 1; align-self: center; }
+
+  .opening__beat { opacity: 1; }
+  .opening__rec { color: var(--bone-dim); letter-spacing: 0.26em; margin: 0 0 30px; opacity: 0; }
+
+  .opening__msg {
+    font-family: var(--font-mono); font-size: clamp(1rem, 2.4vw, 1.5rem); line-height: 1.8;
+    letter-spacing: 0.06em; color: var(--gold-bright); margin: 0 auto 26px; max-width: 34ch;
+    min-height: 3.6em; text-transform: uppercase;
+  }
+  .opening__cursor { display: inline-block; width: 0.55em; height: 1.1em; background: var(--gold); vertical-align: -0.15em; margin-left: 2px; animation: oBlink 0.85s steps(1) infinite; }
+  @keyframes oBlink { 50% { opacity: 0; } }
+  .opening__attr { color: var(--bone-mute); margin: 0; opacity: 0; letter-spacing: 0.2em; }
+
+  .opening__line { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 1.5; color: var(--bone-dim); margin: 0; opacity: 0; }
+  .opening__interval { margin: 0; opacity: 0; letter-spacing: 0.3em; }
+
+  .opening__rule { display: block; width: 0; max-width: 120px; height: 1px; background: var(--gold); margin: 0 auto 30px; }
+  .opening__mon {
+    font-family: var(--font-display-xl); font-weight: 400; text-transform: uppercase;
+    font-size: clamp(3rem, 11vw, 7.5rem); line-height: 0.92; letter-spacing: 0.02em;
+    color: var(--bone); margin: 0; opacity: 0;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(236,231,219,0.04), 0 0 18px rgba(236,231,219,0.07);
+  }
+
+  .opening__skip {
+    position: absolute; bottom: clamp(22px, 4vh, 44px); right: clamp(22px, 4vw, 48px);
+    background: transparent; border: 1px solid var(--line-strong); border-radius: 100px;
+    color: var(--bone-mute); padding: 9px 20px; cursor: pointer; letter-spacing: 0.22em;
+    transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
+  }
+  .opening__skip:hover { color: var(--gold-bright); border-color: var(--gold); }
+  /* short viewports: keep Skip clear of the monument's descenders */
+  @media (max-height: 700px) {
+    .opening__skip { bottom: auto; top: clamp(16px, 3vh, 28px); }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+
+  const el = document.querySelector<HTMLElement>('[data-opening]');
+  if (el) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const seen = sessionStorage.getItem('bod-opening');
+
+    if (reduce || seen) {
+      el.remove();
+    } else {
+      sessionStorage.setItem('bod-opening', '1');
+      el.classList.add('is-live');
+      el.setAttribute('aria-hidden', 'false');
+      document.documentElement.style.overflow = 'hidden';
+
+      const q = (s: string) => el.querySelector<HTMLElement>(s)!;
+      const radio = q('[data-o-radio]'), rec1 = q('[data-o-rec1]'), msgEl = q('[data-o-msg]'),
+        cursor = q('[data-o-cursor]'), attr = q('[data-o-attr]'), dismiss = q('[data-o-dismiss]'),
+        interval = q('[data-o-interval]'), final_ = q('[data-o-final]'), rec2 = q('[data-o-rec2]'),
+        rule = q('[data-o-rule]'), mon = q('[data-o-mon]');
+
+      const MSG = el.dataset.msg || '';
+      gsap.set([dismiss, interval, final_], { autoAlpha: 0 });
+
+      let done = false;
+      const leave = () => {
+        if (done) return;
+        done = true;
+        el.classList.add('is-leaving');
+        gsap.to(el, {
+          autoAlpha: 0, duration: 1.1, ease: 'power2.inOut', delay: 0.05,
+          onComplete: () => { el.remove(); document.documentElement.style.overflow = ''; },
+        });
+      };
+
+      const type = { n: 0 };
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' }, onComplete: leave });
+
+      // Beat 1 — the transmission types itself out
+      tl.to(rec1, { opacity: 1, duration: 1.1, ease: 'power1.inOut' }, 0.4)
+        .to(type, {
+          n: MSG.length, duration: MSG.length * 0.032, ease: 'none',
+          onUpdate: () => { msgEl.textContent = MSG.slice(0, Math.round(type.n)); },
+        }, 1.4)
+        .to(attr, { opacity: 1, duration: 0.9 }, '>0.2')
+        .set(cursor, { display: 'none' }, '>0.6')
+        // Beat 2 — the dismissal
+        .to(radio, { autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, '>0.5')
+        .to(dismiss, { autoAlpha: 1, duration: 1.2 }, '<0.7')
+        .to(dismiss, { autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, '>1.6')
+        // Beat 3 — the interval
+        .to(interval, { autoAlpha: 1, duration: 1.1 }, '<0.6')
+        .to(interval, { autoAlpha: 0, duration: 0.8, ease: 'power1.in' }, '>1.2')
+        // Beat 4 — the monument
+        .set(final_, { autoAlpha: 1 }, '>0.2')
+        .to(rec2, { opacity: 1, duration: 1.0, ease: 'power1.inOut' }, '<')
+        .to(rule, { width: 120, duration: 1.0, ease: 'power2.inOut' }, '<0.5')
+        .fromTo(mon,
+          { opacity: 0, scale: 0.97, filter: 'blur(10px)' },
+          { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.5, ease: 'power3.out' }, '<0.7')
+        .to({}, { duration: 1.3 }); // hold
+
+      const skip = () => { tl.kill(); leave(); };
+      el.addEventListener('click', skip);
+      q('[data-o-skip]').addEventListener('click', (e) => { e.stopPropagation(); skip(); });
+      window.addEventListener('keydown', skip, { once: true });
+    }
+  }
+</script>

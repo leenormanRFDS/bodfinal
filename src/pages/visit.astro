@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Interstitial from '../components/Interstitial.astro';
+import { CONTACT, SITE } from '../consts';
+const directions = 'https://www.google.com/maps/dir/?api=1&destination=Stokes+Hill+Wharf+Darwin+NT';
+---
+<Base title="Visit" description="Plan your visit to the Bombing of Darwin Experience at Stokes Hill Wharf — hours, parking, the Waterfront Shuttle, and what to know before you arrive.">
+  <PageHeader
+    record="Plan your visit"
+    title="Visit"
+    lede="Your ticket includes entry to both the 1942 Bombing of Darwin Experience and the Royal Flying Doctor Service Experience, allowing you to explore two remarkable Australian stories in one location."
+  />
+
+  <Interstitial
+    src="/images/story/gallery-plane.webp"
+    alt="Inside the facility — a suspended aircraft above the exhibition floor at Stokes Hill Wharf"
+    record="The facility · Stokes Hill Wharf"
+    line="Two Territory stories, under one roof on the wharf."
+    register="present"
+    align="left"
+    height="clamp(360px, 56vh, 620px)"
+  />
+
+  <section class="section">
+    <div class="container grid">
+      <div class="col">
+        <p class="eyebrow">Opening hours</p>
+        <dl class="deflist">
+          <div><dt>Dry season</dt><dd>April – September · 9:00am – 5:00pm<br /><span class="record">Last entry 4:00pm</span></dd></div>
+          <div><dt>Wet season</dt><dd>October – March · 9:00am – 4:00pm<br /><span class="record">Last entry 3:00pm</span></dd></div>
+          <div><dt>Christmas Day</dt><dd>Closed</dd></div>
+        </dl>
+        <p class="prose" style="margin-top:20px;font-size:0.9rem;">Public holiday hours may vary — check the booking calendar before you travel.</p>
+      </div>
+
+      <div class="col">
+        <p class="eyebrow">Location</p>
+        <p class="prose--serif prose" style="font-size:1.15rem;">
+          {CONTACT.address}
+        </p>
+        <p class="record" style="margin:6px 0 22px;">12°27′S · 130°50′E</p>
+        <a class="btn-quiet" href={directions} target="_blank" rel="noopener">Get directions</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" style="border-top:1px solid var(--line);">
+    <div class="container">
+      <p class="eyebrow">Getting here</p>
+      <div class="facts">
+        <div>
+          <h3 class="title" style="font-size:1.15rem;">Parking</h3>
+          <p class="prose">Free for the first three hours at Stokes Hill Wharf with a valid PayStay session.</p>
+        </div>
+        <div>
+          <h3 class="title" style="font-size:1.15rem;">Waterfront Shuttle</h3>
+          <p class="prose">The free Darwin Waterfront Shuttle stops directly at Stokes Hill Wharf.</p>
+        </div>
+        <div>
+          <h3 class="title" style="font-size:1.15rem;">Cruise terminal</h3>
+          <p class="prose">A short, direct walk from the Darwin Cruise Ship Terminal — an easy shore excursion.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" style="border-top:1px solid var(--line);">
+    <div class="container">
+      <p class="eyebrow">Before you visit</p>
+      <div class="facts">
+        <div><h3 class="title" style="font-size:1.15rem;">Around two hours</h3><p class="prose">Time to experience both the Bombing of Darwin and the Royal Flying Doctor Service Experience at your own pace.</p></div>
+        <div><h3 class="title" style="font-size:1.15rem;">Indoors & cool</h3><p class="prose">The facility is entirely indoors and fully air-conditioned. Comfortable footwear is recommended.</p></div>
+        <div><h3 class="title" style="font-size:1.15rem;">Every purchase gives back</h3><p class="prose">Books, souvenirs and gifts from the on-site store directly support the Royal Flying Doctor Service.</p></div>
+      </div>
+      <a class="btn-book" href="/tickets" style="margin-top:48px;">Book Your Visit</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 80px); }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 4vw, 48px); }
+  @media (max-width: 760px) { .grid, .facts { grid-template-columns: 1fr; } }
+</style>

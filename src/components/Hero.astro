@@ -1,0 +1,183 @@
+---
+import { SITE } from '../consts';
+---
+<section class="whero" id="top" aria-label="The Bombing of Darwin, 19 February 1942 — then and now">
+  <div class="whero__grid container">
+    <div class="whero__void">
+      <p class="record whero__rec">19 February 1942 — 09:58 (Darwin Local Time)</p>
+      <img class="whero__logo" src="/brand/logo-1942.svg" alt={SITE.name} width="820" height="260" fetchpriority="high" />
+      <h1 class="whero__tagline">WW2 Happened Here</h1>
+      <p class="whero__lede">
+        The same wharf. The same sky. Draw back the morning of <em>19 February 1942</em> —
+        then stand there yourself, in immersive VR, holograms and theatre, with the Royal Flying Doctor Service.
+      </p>
+      <div class="whero__cta">
+        <a class="btn-book" href="/experience">Start Your Experience</a>
+        <img class="whero__trip" src="/images/badges/tripadvisor-2025.webp" alt="Tripadvisor Travelers' Choice Awards 2025" width="500" height="500" loading="lazy" decoding="async" />
+      </div>
+    </div>
+
+    <figure class="whero__window" data-reveal-window>
+      <div class="rv" data-rv>
+        <!-- Present day (base) -->
+        <img class="rv__img" src="/images/hero/then-now.webp" alt="A family walks toward the visitor pavilion on Stokes Hill Wharf today" width="1500" height="1898" loading="eager" fetchpriority="high" decoding="async" />
+        <!-- 1942 (clipped reveal) -->
+        <div class="rv__then" data-then>
+          <img class="rv__img" src="/images/hero/then-1942.webp" alt="The same wharf on 19 February 1942, under attack" width="1500" height="1898" loading="eager" fetchpriority="high" decoding="async" />
+        </div>
+
+        <div class="rv__bar" data-bar aria-hidden="true">
+          <span class="rv__stem"></span>
+          <span class="rv__knob"><i>←</i><i>→</i></span>
+        </div>
+
+        <span class="rv__tag rv__tag--then record" data-tag-then>19 · 02 · 1942</span>
+        <span class="rv__tag rv__tag--now record" data-tag-now>Today</span>
+
+        <input class="rv__range" data-range type="range" min="0" max="100" step="1" value="50"
+          aria-label="Reveal 1942 — drag between today and the morning of the raid" />
+      </div>
+
+      <span class="tk tl"></span><span class="tk tr"></span><span class="tk bl"></span><span class="tk br"></span>
+      <figcaption class="whero__plate record">Plate 01 · Stokes Hill Wharf · 12°27′S 130°50′E</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .whero { position: relative; min-height: 100svh; background: var(--ink); display: flex; align-items: center; }
+  .whero__grid {
+    display: grid; gap: clamp(28px, 4vw, 64px); align-items: center; width: 100%;
+    padding-block: calc(var(--nav-h) + 28px) 40px;
+  }
+  @media (min-width: 920px) {
+    .whero__grid { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); min-height: 100svh; }
+  }
+
+  /* ---- the void: centred brand column ---- */
+  .whero__void { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .whero__rec { color: var(--bone-dim); margin: 0 0 26px; }
+  .whero__logo { width: min(78%, 420px); height: auto; margin: 0 0 30px; filter: drop-shadow(0 14px 44px rgba(0, 0, 0, 0.7)); }
+  .whero__tagline {
+    margin: 0 0 22px; font-family: var(--font-display-xl); font-weight: 400; text-transform: uppercase;
+    line-height: 0.95; letter-spacing: 0.05em; color: var(--bone);
+    font-size: clamp(1.6rem, 3.4vw, 2.5rem); text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(236,231,219,0.04), 0 0 12px rgba(236,231,219,0.05);
+  }
+  .whero__lede {
+    font-family: var(--font-serif); font-size: clamp(1.02rem, 1.4vw, 1.18rem); line-height: 1.6;
+    color: var(--bone-dim); margin: 0 0 32px; max-width: 46ch;
+  }
+  .whero__lede em { color: var(--gold-bright); font-style: italic; }
+  .whero__cta { display: flex; align-items: center; justify-content: center; gap: 26px; flex-wrap: wrap; }
+  .whero__trip { width: 84px; height: 84px; border-radius: 50%; box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5); }
+
+  /* ---- the reveal window ---- */
+  .whero__window {
+    position: relative; margin: 0; width: 100%; aspect-ratio: 15 / 17; max-height: 78svh;
+    border: 1px solid var(--line-strong); overflow: hidden; justify-self: end;
+  }
+  .rv { position: absolute; inset: 0; cursor: ew-resize; --p: 50%; touch-action: pan-y; }
+  .rv__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; user-select: none; -webkit-user-drag: none; }
+  /* explicit paint order — some engines composite the base image above the clipped layer */
+  .rv > .rv__img { z-index: 1; }
+  .rv__then { position: absolute; inset: 0; z-index: 2; clip-path: inset(0 calc(100% - var(--p)) 0 0); }
+
+  .rv__bar { position: absolute; top: 0; bottom: 0; left: var(--p); z-index: 5; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; pointer-events: none; }
+  .rv__stem { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(236, 231, 219, 0.85); box-shadow: 0 0 14px rgba(0, 0, 0, 0.8); }
+  .rv__knob {
+    position: relative; display: flex; align-items: center; gap: 7px;
+    padding: 9px 13px; border-radius: 100px;
+    background: rgba(12, 12, 11, 0.72); border: 1px solid rgba(236, 231, 219, 0.5);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+  }
+  .rv__knob i { font-style: normal; font-size: 0.72rem; color: var(--bone); line-height: 1; }
+
+  .rv__tag { position: absolute; bottom: 44px; z-index: 4; padding: 5px 10px; background: rgba(12, 12, 11, 0.62); border: 1px solid var(--line-strong); color: var(--bone); font-size: 0.6rem; backdrop-filter: blur(4px); transition: opacity 0.35s var(--ease); }
+  .rv__tag--then { left: 14px; }
+  .rv__tag--now { right: 14px; }
+
+  .rv__range { position: absolute; inset: 0; z-index: 6; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; -webkit-appearance: none; appearance: none; background: transparent; }
+  .rv__range::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 100%; }
+
+  .whero__window .tk { position: absolute; width: 15px; height: 15px; border: 1px solid var(--bone); opacity: 0.55; z-index: 7; pointer-events: none; }
+  .tk.tl { top: 9px; left: 9px; border-right: 0; border-bottom: 0; }
+  .tk.tr { top: 9px; right: 9px; border-left: 0; border-bottom: 0; }
+  .tk.bl { bottom: 9px; left: 9px; border-right: 0; border-top: 0; }
+  .tk.br { bottom: 9px; right: 9px; border-left: 0; border-top: 0; }
+  .whero__plate { position: absolute; bottom: 12px; left: 15px; z-index: 7; color: var(--bone-dim); font-size: 0.66rem; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.85); pointer-events: none; }
+
+  /* Mobile hierarchy: LOGO · TAGLINE · SLIDER · COPY · CTA+badge.
+     The void becomes display:contents so its children + the window share one
+     flex column and can be reordered; the window is in normal flow (always renders). */
+  @media (max-width: 919px) {
+    .whero { align-items: start; }
+    .whero__grid { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .whero__void { display: contents; }
+    .whero__logo    { order: 1; margin-bottom: 18px; }
+    .whero__tagline { order: 2; margin-bottom: 20px; }
+    .whero__window  { order: 3; width: 100%; align-self: stretch; aspect-ratio: 4 / 5; max-height: none; margin-bottom: 26px; }
+    .whero__rec     { order: 4; margin: 0 0 14px; }
+    .whero__lede    { order: 5; margin-left: auto; margin-right: auto; }
+    .whero__cta     { order: 6; }
+    .whero__trip { width: 72px; height: 72px; }
+  }
+
+  /* entrance */
+  .whero__void > * { opacity: 0; transform: translateY(24px); filter: blur(6px); animation: wRise 1.3s var(--ease-solemn) both; }
+  .whero__void > *:nth-child(1) { animation-delay: 0.05s; }
+  .whero__void > *:nth-child(2) { animation-delay: 0.16s; }
+  .whero__void > *:nth-child(3) { animation-delay: 0.28s; }
+  .whero__void > *:nth-child(4) { animation-delay: 0.4s; }
+  .whero__void > *:nth-child(5) { animation-delay: 0.52s; }
+  @keyframes wRise { to { opacity: 1; transform: none; filter: blur(0); } }
+  .whero__window { opacity: 0; animation: wIn 1.2s var(--ease-solemn) 0.25s both; }
+  @keyframes wIn { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    .whero__void > *, .whero__window { animation: none; opacity: 1; transform: none; filter: none; }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+
+  const rv = document.querySelector<HTMLElement>('[data-rv]');
+  if (rv) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const range = rv.querySelector<HTMLInputElement>('[data-range]')!;
+    const tagThen = rv.querySelector<HTMLElement>('[data-tag-then]')!;
+    const tagNow = rv.querySelector<HTMLElement>('[data-tag-now]')!;
+
+    let target = 50, cur = 50;
+    const apply = () => {
+      rv.style.setProperty('--p', cur.toFixed(2) + '%');
+      tagThen.style.opacity = String(Math.min(1, cur / 24));
+      tagNow.style.opacity = String(Math.min(1, (100 - cur) / 24));
+    };
+    const set = (v: number) => { target = Math.max(0, Math.min(100, v)); if (reduce) { cur = target; apply(); } };
+
+    const fromEvent = (e: PointerEvent) => {
+      const r = rv.getBoundingClientRect();
+      set(((e.clientX - r.left) / r.width) * 100);
+    };
+    let dragging = false;
+    rv.addEventListener('pointerdown', (e) => { dragging = true; fromEvent(e); });
+    window.addEventListener('pointermove', (e) => { if (dragging) fromEvent(e); });
+    window.addEventListener('pointerup', () => { dragging = false; });
+    range.addEventListener('input', () => set(parseFloat(range.value)));
+
+    if (!reduce) {
+      gsap.ticker.add(() => {
+        cur += (target - cur) * 0.12;
+        range.value = String(Math.round(cur));
+        apply();
+      });
+      // one slow wipe to 1942 and back to half — teaches the gesture wordlessly
+      const tl = gsap.timeline({ delay: 1.0 });
+      tl.fromTo({ v: 50 }, { v: 50 }, { v: 100, duration: 1.5, ease: 'power2.inOut', onUpdate() { target = this.targets()[0].v; } })
+        .to({ v: 100 }, { v: 50, duration: 1.0, ease: 'power3.out', onUpdate() { target = this.targets()[0].v; } });
+    } else {
+      cur = target = 50; apply();
+    }
+  }
+</script>

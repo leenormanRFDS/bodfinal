@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+import TvWitness from '../components/TvWitness.astro';
+import { SITE } from '../consts';
+---
+<Base title="The Witness" description="Beyond the immersive experiences — the people, places and artefacts that bring the story of 19 February 1942 to life.">
+  <PageHeader
+    record="The Witness"
+    title="The Witness"
+    lede="Beyond the immersive experiences, discover the people, places and artefacts that bring the story of 19 February 1942 to life."
+  />
+
+  <section class="section">
+    <div class="container">
+      <TvWitness />
+
+      <div class="witness__copy">
+        <p class="prose prose--serif measure">
+          A short montage plays on the set — the faces, the harbour, the objects left behind. What survives of a
+          morning eighty years gone is fragments: a photograph, a fragment of hull, a voice recorded late in life.
+          Together they hold the day in place.
+        </p>
+        <a class="btn-quiet" href="/story">Read the chronology</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight" style="border-top:1px solid var(--line);">
+    <div class="container" style="text-align:center; padding-block: clamp(48px,7vw,84px);">
+      <a class="btn-book" href={SITE.bookPath}>Book Your Visit</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .witness__copy { margin-top: clamp(32px, 5vw, 56px); display: flex; flex-direction: column; align-items: center; gap: 26px; text-align: center; }
+  .witness__copy .measure { text-align: center; }
+</style>

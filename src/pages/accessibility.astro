@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHeader from '../components/PageHeader.astro';
+const accreditations = [
+  'Quality Tourism Framework',
+  'Accessible Tourism — Limited Mobility',
+  'Accessible Tourism — Wheelchairs & Scooters',
+  'Sustainable Tourism',
+];
+---
+<Base title="Accessibility" description="The Bombing of Darwin Experience is ATIC-accredited for accessible and sustainable tourism — step-free access, companion cards, assistance animals, sensory advisories and multilingual support.">
+  <PageHeader
+    record="Access & care"
+    title="Accessibility"
+    lede="We want every visitor to feel welcome. The experience is accredited by the Australian Tourism Industry Council across multiple frameworks."
+  />
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Accreditations</p>
+      <div class="badges">
+        <img src="/images/badges/limited-mobility.webp" alt="ATIC Accessible Tourism — Limited Mobility Accredited Business" width="240" height="94" loading="lazy" />
+        <img src="/images/badges/wheelchairs-scooters.webp" alt="ATIC Accessible Tourism — Wheelchairs & Scooters Accredited Business" width="240" height="94" loading="lazy" />
+        <img src="/images/badges/sustainable-quality.webp" alt="Quality Tourism Accredited Business and Sustainable Tourism Accredited Business" width="320" height="94" loading="lazy" />
+      </div>
+      <ul class="accred">
+        {accreditations.map((a) => <li>{a}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--tight" style="border-top:1px solid var(--line);">
+    <div class="container">
+      <div class="facts">
+        <div>
+          <h3 class="title" style="font-size:1.15rem;">Mobility</h3>
+          <p class="prose">Step-free access throughout all main visitor routes. Exhibits, interactive consoles and theatre seating accommodate a range of heights and mobility aids — wheelchairs, prams and scooters are fully welcome, and         our 51 seat theatre easily accommodates all needs.</p>
+        </div>
+        <div>
+          <h3 class="title" style="font-size:1.15rem;">Companions & assistance animals</h3>
+          <p class="prose">Companion Cards are accepted in full, and accredited assistance animals are permitted throughout the facility.</p>
+        </div>
+        <div>
+          <h3 class="title" style="font-size:1.15rem;">Sensory & immersive effects</h3>
+          <p class="prose">The reenactment uses immersive audio, projection, virtual reality and a brief air effect. Every module is optional — please tell our team if you'd prefer to sit any part out.</p>
+        </div>
+        <div>
+          <h3 class="title" style="font-size:1.15rem;">Languages</h3>
+          <p class="prose">Localised content and synchronised audio are available in other languages through the visitor app via a QR code at the front desk. Please bring personal headphones.</p>
+        </div>
+      </div>
+      <p class="prose prose--serif measure" style="margin-top: clamp(36px, 6vw, 60px);">
+        If there's anything that would make your visit easier, tell us when you book or call
+        <a href="tel:0889835700" style="color: var(--gold-bright);">(08) 8983 5700</a> — our team will meet you where you are.
+      </p>
+      <a class="btn-book" href="/tickets" style="margin-top:28px;">Book Your Visit</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .badges { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 34px; }
+  .badges img { height: 72px; width: auto; background: #fff; border-radius: 8px; padding: 8px 12px; box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
+  .accred { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .accred li { font-family: var(--font-serif); font-size: 1.1rem; color: var(--bone); padding: 18px 0; border-top: 1px solid var(--line); }
+  .accred li::before { content: '—'; color: var(--gold); margin-right: 12px; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 56px); }
+  @media (max-width: 760px) { .accred, .facts { grid-template-columns: 1fr; } }
+</style>
