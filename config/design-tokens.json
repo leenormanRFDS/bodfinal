@@ -1,0 +1,80 @@
+{
+  "version": "1.1.0",
+  "typography": {
+    "editorial": {
+      "family": "Cormorant Garamond",
+      "weights": [
+        500,
+        600
+      ],
+      "use": [
+        "major narrative statements",
+        "selected historical editorial moments"
+      ]
+    },
+    "ui": {
+      "family": "Inter",
+      "weights": [
+        400,
+        500,
+        600
+      ],
+      "use": [
+        "body",
+        "navigation",
+        "visitor utility",
+        "booking",
+        "controls"
+      ]
+    },
+    "evidence": {
+      "family": "IBM Plex Mono",
+      "weights": [
+        400,
+        500
+      ],
+      "use": [
+        "time",
+        "coordinates",
+        "dates",
+        "archive IDs",
+        "sources",
+        "map annotations"
+      ]
+    }
+  },
+  "colors": {
+    "void": "#07090B",
+    "charcoal": "#111418",
+    "steel": "#1B2025",
+    "archiveIvory": "#EEE9DF",
+    "paper": "#D7D0C4",
+    "fieldGrey": "#949A9E",
+    "signalRed": "#A4433D",
+    "agedBrass": "#9A8562",
+    "rfdsBlue": "#004684",
+    "rfdsCyan": "#008DC7",
+    "rfdsOrange": "#F05B22"
+  },
+  "principles": {
+    "pureWhiteForEditorial": false,
+    "cards": "only_when_semantic_grouping_requires_them",
+    "glass": "smoked_museum_or_optical_glass_only",
+    "shadows": "rare",
+    "borders": "subtle",
+    "roundedSaaSCards": "avoid",
+    "rfdsColors": "only_for_RFDS_specific_context"
+  },
+  "aesthetic": [
+    "cinematic",
+    "institutional",
+    "archival",
+    "precise",
+    "dark",
+    "material",
+    "restrained",
+    "reverent",
+    "spatial",
+    "Australian"
+  ]
+}

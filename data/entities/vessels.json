@@ -1,0 +1,878 @@
+{
+  "version": "0.3.1",
+  "status": "STAGE_2_1_AUTHENTICATED_VESSELS_REGISTER",
+  "auditMetadata": {
+    "auditStage": "STAGE_2_1_FORENSIC_SOURCE_AUTHENTICATION",
+    "leadAuthority": "TRUTH",
+    "technicalSupport": "TECHNOLOGY",
+    "authenticationDate": "2026-09-15",
+    "notes": "Forensic audit of harbour vessels register. Explicitly separated PRE_ATTACK_POSITION, ATTACK_POSITION, SINKING_POSITION, and WRECK_POSITION_MODERN_SURVEY to eliminate confusion between modern wreck surveys and 09:30 harbour dispositions. Re-authenticated casualties, bomb hits, and movement states."
+  },
+  "entities": [
+    {
+      "id": "USS_PEARY_DD226",
+      "name": "USS Peary (DD-226)",
+      "vesselType": "Clemson-class Destroyer",
+      "nationality": "United States Navy",
+      "status19Feb1942": "SUNK",
+      "fatalitiesCount": null,
+      "bombHitCount": 5,
+      "commandingOfficer": "Lieutenant Commander John M. Bermingham, USN (Killed)",
+      "movementState": "Underway under attack, executing high-speed evasive manoeuvres in harbour",
+      "preAttackPosition": {
+        "status": "UNDERWAY_IN_HARBOUR",
+        "description": "Underway in main channel, preparing to sortie or maneuver to anchorage",
+        "coordinates": {
+          "latitude": -12.470,
+          "longitude": 130.835
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "UNDERWAY_EVADING",
+        "description": "Engaged in violent evasive maneuvering in mid-harbour while repeatedly attacked by dive bombers",
+        "coordinates": {
+          "latitude": -12.473,
+          "longitude": 130.832
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": {
+        "status": "SUNK_STERN_FIRST",
+        "description": "Sank stern-first after sustaining 5 bomb hits; anti-aircraft guns fired until decks submerged",
+        "time": "13:00 approx",
+        "coordinates": {
+          "latitude": -12.475,
+          "longitude": 130.829
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "wreckPositionModernSurvey": {
+        "description": "Surveyed wreck lying on seabed at 27m depth in Darwin Harbour; marked by navigation buoy and protected historic shipwreck",
+        "coordinates": {
+          "latitude": -12.4754,
+          "longitude": 130.8292,
+          "depthM": 27
+        },
+        "salvageStatus": "INTACT_PROTECTED_HISTORICAL_SITE",
+        "surveySource": "Australian Hydrographic Office / Northern Territory Heritage Register"
+      },
+      "coordinates": {
+        "latitude": -12.475,
+        "longitude": 130.829,
+        "depthM": 27
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:15–10:45",
+      "sinkingTime": "13:00 approx",
+      "damageDescription": "Struck by five bombs (two in fire rooms, one in galley, one on aft deckhouse, one on fantail). Anti-aircraft gunners (including Machine Gunner First Class Mitchel) continued firing until water reached deck. Sank stern-first.",
+      "sourceRefs": [
+        "US_NAVY_DANFS_PEARY",
+        "GILL_RAN_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Heaviest single loss of American life in Australian waters during WW2. Wreck location confirmed by post-war hydrographic and diving surveys."
+    },
+    {
+      "id": "USS_WILLIAM_B_PRESTON_AVD7",
+      "name": "USS William B. Preston (AVD-7)",
+      "vesselType": "Clemson-class Seaplane Tender",
+      "nationality": "United States Navy",
+      "status19Feb1942": "HEAVILY_DAMAGED",
+      "fatalitiesCount": 14,
+      "bombHitCount": 1,
+      "movementState": "Underway in harbour tending PBY flying boats; maneuvered into open sea",
+      "preAttackPosition": {
+        "status": "MOORED_SEAPLANE_TENDER",
+        "description": "Moored or drifting in seaplane anchorage tending VP-22 Catalina flying boats",
+        "coordinates": {
+          "latitude": -12.468,
+          "longitude": 130.838
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "UNDERWAY_DAMAGED",
+        "description": "Struck aft while getting underway; lost rudder control; steered using twin propellers into outer harbour",
+        "coordinates": {
+          "latitude": -12.466,
+          "longitude": 130.834
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.468,
+        "longitude": 130.838
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:05",
+      "sinkingTime": null,
+      "damageDescription": "Bomb struck aft deckhouse, penetrating to mess hall, killing 14 crewmen and wounding 2; lost steering control, steered by engines into outer harbour.",
+      "sourceRefs": [
+        "US_NAVY_DANFS_PRESTON",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Surviving ship got underway despite steering casualty; two PBY aircraft in vicinity destroyed by strafing."
+    },
+    {
+      "id": "MV_NEPTUNA",
+      "name": "MV Neptuna",
+      "vesselType": "Motor Passenger-Cargo Liner (5,952 gross tons)",
+      "nationality": "Australian Merchant Marine (Burns, Philp & Co.)",
+      "status19Feb1942": "SUNK_EXPLODED",
+      "fatalitiesCount": 45,
+      "bombHitCount": 2,
+      "movementState": "Berthed alongside Stokes Hill Wharf pier face",
+      "preAttackPosition": {
+        "status": "BERTHED_ALONGSIDE_WHARF",
+        "description": "Tied to outer berth of timber Stokes Hill Wharf, actively discharging depth charges and munitions",
+        "coordinates": {
+          "latitude": null,
+          "longitude": null
+        },
+        "spatialConfidence": "UNKNOWN"
+      },
+      "attackPosition": {
+        "status": "BERTHED_ON_FIRE",
+        "description": "Hit by two bombs while berthed alongside wharf; crew and waterside workers attempted fire-fighting until depth charges ignited",
+        "coordinates": {
+          "latitude": null,
+          "longitude": null
+        },
+        "spatialConfidence": "UNKNOWN"
+      },
+      "sinkingPosition": {
+        "status": "EXPLODED_AND_CAPSIZED",
+        "description": "Catastrophic magazine and depth-charge explosion severed wharf structure; hull burned and capsized at wharf berth",
+        "time": "10:25 approx",
+        "coordinates": {
+          "latitude": null,
+          "longitude": null
+        },
+        "spatialConfidence": "UNKNOWN"
+      },
+      "wreckPositionModernSurvey": {
+        "description": "Wreck cleared and extensively salvaged post-war by Carl Atkinson and Fujita Salvage Company (1959–1961) to clear modern port navigation lanes",
+        "coordinates": {
+          "latitude": null,
+          "longitude": null
+        },
+        "salvageStatus": "EXTENSIVELY_SALVAGED",
+        "surveySource": "Darwin Port Authority / Northern Territory Archives"
+      },
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "spatialConfidence": "UNKNOWN",
+      "damageTime": "10:02",
+      "sinkingTime": "10:25 approx (Exploded)",
+      "damageDescription": "Moored on the outer berth of Stokes Hill Wharf unloading 100 depth charges and 200 tons of high-explosive ammunition. Hit by two bombs; caught fire. While being fought by crew and wharf labourers, magazines and depth charges detonated in an immense catastrophic explosion that destroyed the ship and severed the wharf deck.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1",
+        "NAA_DARWIN_WHARF_PLANS_1942"
+      ],
+      "classification": "PRIMARY_SOURCE",
+      "confidence": "HIGH",
+      "notes": "Coordinates remain UNRESOLVED pending integration of 1942 Stokes Hill Wharf engineering survey (NAA: A2633). Position is known to be alongside the 1942 pier face, but cannot be assigned coordinates without inventing 1942 wharf geometry."
+    },
+    {
+      "id": "MV_ZEALANDIA",
+      "name": "MV Zealandia",
+      "vesselType": "Passenger-Cargo Liner & Troop Transport (6,683 gross tons)",
+      "nationality": "Australian Merchant Marine (Huddart Parker)",
+      "status19Feb1942": "SUNK",
+      "fatalitiesCount": 2,
+      "bombHitCount": 1,
+      "movementState": "Anchored in harbour awaiting departure",
+      "preAttackPosition": {
+        "status": "ANCHORED_IN_HARBOUR",
+        "description": "Anchored in central harbour roadstead at designated Berth 12 (1.4km south of Stokes Hill Wharf)",
+        "coordinates": {
+          "latitude": -12.4814,
+          "longitude": 130.8508
+        },
+        "spatialConfidence": "HIGH"
+      },
+      "attackPosition": {
+        "status": "ANCHORED_BURNING",
+        "description": "Struck in hatch No. 3 by high-explosive bomb; dense smoke, abandon ship ordered",
+        "coordinates": {
+          "latitude": -12.4814,
+          "longitude": 130.8508
+        },
+        "spatialConfidence": "HIGH"
+      },
+      "sinkingPosition": {
+        "status": "SUNK_IN_HARBOUR",
+        "description": "Burned fiercely, settled to the harbour floor on an even keel at approx 13:30",
+        "time": "13:30 approx",
+        "coordinates": {
+          "latitude": -12.4814,
+          "longitude": 130.8508
+        },
+        "spatialConfidence": "HIGH"
+      },
+      "wreckPositionModernSurvey": {
+        "description": "Wreck surveyed at 19m depth (12° 28.883' S, 130° 51.048' E); partially salvaged by Fujita Salvage (1960); remains prominent historical dive site",
+        "coordinates": {
+          "latitude": -12.4814,
+          "longitude": 130.8508,
+          "depthM": 19
+        },
+        "salvageStatus": "PARTIALLY_SALVAGED",
+        "surveySource": "Northern Territory Heritage Branch Shipwrecks Register / Australian National Shipwreck Database"
+      },
+      "coordinates": {
+        "latitude": -12.4814,
+        "longitude": 130.8508,
+        "depthM": 19
+      },
+      "spatialConfidence": "HIGH",
+      "damageTime": "10:05",
+      "sinkingTime": "13:30 approx",
+      "damageDescription": "Struck by bomb in hatch No. 3; caught fire. Abandon ship ordered; burned fiercely and sank in harbour.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Anchorage location recorded in Lowe Commission exhibits; wreck position subsequently verified by diving operations."
+    },
+    {
+      "id": "USAT_MEIGS",
+      "name": "USAT Meigs",
+      "vesselType": "Army Transport (7,314 gross tons)",
+      "nationality": "United States Army Transport Service",
+      "status19Feb1942": "SUNK",
+      "fatalitiesCount": 2,
+      "bombHitCount": 2,
+      "movementState": "Anchored in harbour loaded with munitions, Bren gun carriers, and aviation fuel",
+      "preAttackPosition": {
+        "status": "ANCHORED_IN_HARBOUR",
+        "description": "Anchored in southern reach of main harbour anchorage",
+        "coordinates": {
+          "latitude": -12.486,
+          "longitude": 130.842
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "ANCHORED_UNDER_HEAVY_ATTACK",
+        "description": "Attacked by both horizontal and dive-bombers; cargo of munitions and vehicles ignited",
+        "coordinates": {
+          "latitude": -12.486,
+          "longitude": 130.842
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": {
+        "status": "SUNK_IN_HARBOUR",
+        "description": "Engulfed in flames and ammunition explosions, foundered during the afternoon",
+        "time": "14:30 approx",
+        "coordinates": {
+          "latitude": -12.486,
+          "longitude": 130.842
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "wreckPositionModernSurvey": {
+        "description": "Largest transport wreck in harbour; surveyed at 18m depth, masts originally protruded at low water",
+        "coordinates": {
+          "latitude": -12.4861,
+          "longitude": 130.8425,
+          "depthM": 18
+        },
+        "salvageStatus": "PARTIALLY_SALVAGED",
+        "surveySource": "Northern Territory Heritage Branch Shipwrecks Register"
+      },
+      "coordinates": {
+        "latitude": -12.486,
+        "longitude": 130.842
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:10",
+      "sinkingTime": "Afternoon",
+      "damageDescription": "Struck by multiple bombs from horizontal and dive bombers; engulfed in flames, sank in harbour.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "One of the largest vessels in port; wreck remains a known dive site in Darwin Harbour."
+    },
+    {
+      "id": "USAT_MAUNA_LOA",
+      "name": "USAT Mauna Loa",
+      "vesselType": "Army Transport (5,436 gross tons)",
+      "nationality": "United States Army Transport Service",
+      "status19Feb1942": "SUNK",
+      "fatalitiesCount": 5,
+      "bombHitCount": 2,
+      "movementState": "Anchored in harbour loaded with ammunition",
+      "preAttackPosition": {
+        "status": "ANCHORED_IN_HARBOUR",
+        "description": "Anchored in western anchorage sector loaded with 500-lb bombs and ammunition",
+        "coordinates": {
+          "latitude": -12.482,
+          "longitude": 130.835
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "ANCHORED_STRUCK",
+        "description": "Two direct bomb hits penetrated through cargo holds into ammunition compartments",
+        "coordinates": {
+          "latitude": -12.482,
+          "longitude": 130.835
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": {
+        "status": "SUNK_IN_HARBOUR",
+        "description": "Sank in harbour at approx 12:10; crew successfully abandoned ship under fire",
+        "time": "12:10 approx",
+        "coordinates": {
+          "latitude": -12.482,
+          "longitude": 130.835
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "wreckPositionModernSurvey": {
+        "description": "Surveyed wreck lying at 18m depth, superstructure demolished post-war for navigational safety",
+        "coordinates": {
+          "latitude": -12.4822,
+          "longitude": 130.8354,
+          "depthM": 18
+        },
+        "salvageStatus": "PARTIALLY_SALVAGED",
+        "surveySource": "Northern Territory Heritage Branch Shipwrecks Register"
+      },
+      "coordinates": {
+        "latitude": -12.482,
+        "longitude": 130.835
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:12",
+      "sinkingTime": "12:10 approx",
+      "damageDescription": "Struck by two bombs through cargo holds; abandoned and sank in harbour.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Anchorage position recorded in Lowe Commission exhibits."
+    },
+    {
+      "id": "BRITISH_MOTORIST",
+      "name": "British Motorist",
+      "vesselType": "Motor Tanker (6,891 gross tons)",
+      "nationality": "British Merchant Navy (British Tanker Co.)",
+      "status19Feb1942": "SUNK",
+      "fatalitiesCount": 2,
+      "bombHitCount": 2,
+      "movementState": "Anchored in harbour discharging fuel oil",
+      "preAttackPosition": {
+        "status": "ANCHORED_DISCHARGING",
+        "description": "Anchored near Stokes Hill discharging fuel oil to naval installations",
+        "coordinates": {
+          "latitude": -12.474,
+          "longitude": 130.843
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "ANCHORED_BURNING",
+        "description": "Hit by two bombs; oil cargo ignited, creating a massive black smoke plume",
+        "coordinates": {
+          "latitude": -12.474,
+          "longitude": 130.843
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": {
+        "status": "CAPSIZED_AND_SUNK",
+        "description": "Burned fiercely, capsized and settled on seabed during the afternoon",
+        "time": "14:00 approx",
+        "coordinates": {
+          "latitude": -12.474,
+          "longitude": 130.843
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "wreckPositionModernSurvey": {
+        "description": "Wreck surveyed and extensively salvaged post-war by Fujita Salvage (1960)",
+        "coordinates": {
+          "latitude": -12.4742,
+          "longitude": 130.8431,
+          "depthM": 20
+        },
+        "salvageStatus": "EXTENSIVELY_SALVAGED",
+        "surveySource": "Admiralty Chart 925 / NT Heritage"
+      },
+      "coordinates": {
+        "latitude": -12.474,
+        "longitude": 130.843
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:08",
+      "sinkingTime": "Afternoon (Capsized)",
+      "damageDescription": "Hit by two bombs; caught fire, capsized and sank in harbour waters near wharf approach.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Wreck salvaged partially post-war; position charted on Admiralty Chart 925."
+    },
+    {
+      "id": "USAT_ADMIRAL_HALSTEAD",
+      "name": "USAT Admiral Halstead",
+      "vesselType": "Cargo Steamer (3,289 gross tons)",
+      "nationality": "United States Army Transport Service",
+      "status19Feb1942": "DAMAGED",
+      "fatalitiesCount": 0,
+      "bombHitCount": 0,
+      "movementState": "Anchored in harbour carrying 14,000 drums of 100-octane aviation gasoline",
+      "preAttackPosition": {
+        "status": "ANCHORED_IN_HARBOUR",
+        "description": "Anchored in harbour loaded with high-octane drum fuel",
+        "coordinates": {
+          "latitude": -12.478,
+          "longitude": 130.839
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "ANCHORED_UNDER_STRAFING",
+        "description": "Damaged by near misses and heavy strafing; heroic action by crew and artillerymen prevented cargo explosion",
+        "coordinates": {
+          "latitude": -12.478,
+          "longitude": 130.839
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.478,
+        "longitude": 130.839
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:15",
+      "sinkingTime": null,
+      "damageDescription": "Shaken severely by near misses; machine-gunned; crew heroically jettisoned damaged drum cargo and prevented catastrophic fire.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Cargo saved through courageous action of crew and US artillerymen onboard."
+    },
+    {
+      "id": "AHS_MANUNDA",
+      "name": "AHS Manunda (2/1st Australian Hospital Ship)",
+      "vesselType": "Hospital Ship (9,115 gross tons)",
+      "nationality": "Royal Australian Army Medical Corps / Adelaide Steamship Co.",
+      "status19Feb1942": "HEAVILY_DAMAGED",
+      "fatalitiesCount": 12,
+      "bombHitCount": 1,
+      "movementState": "Anchored in designated hospital ship anchorage",
+      "preAttackPosition": {
+        "status": "ANCHORED_HOSPITAL_ANCHORAGE",
+        "description": "Anchored in designated white-painted Red Cross safety anchorage",
+        "coordinates": {
+          "latitude": -12.471,
+          "longitude": 130.837
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "ANCHORED_STRUCK",
+        "description": "Direct bomb hit through bridge structure into medical accommodations; near misses holed hull plates",
+        "coordinates": {
+          "latitude": -12.471,
+          "longitude": 130.837
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.471,
+        "longitude": 130.837
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:05",
+      "sinkingTime": null,
+      "damageDescription": "Clearly painted white with broad green stripe and red crosses illuminated. Struck by a bomb directly through navigation bridge to medical quarters; multiple near-misses holed hull. 12 staff killed including Sister Margaret de Mestre (AANS) and medical orderlies; 19 seriously wounded. Ship survived and treated hundreds of wounded.",
+      "sourceRefs": [
+        "GILL_RAN_VOL1",
+        "LOWE_COMMISSION_1942",
+        "CWGC_DARWIN_CIVILIAN"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Sister Margaret de Mestre was the first Australian military nurse killed on active service on Australian territory."
+    },
+    {
+      "id": "HMAS_SWAN_U42",
+      "name": "HMAS Swan (U42)",
+      "vesselType": "Grimsby-class Escort Sloop",
+      "nationality": "Royal Australian Navy",
+      "status19Feb1942": "DAMAGED",
+      "fatalitiesCount": 3,
+      "bombHitCount": 0,
+      "movementState": "Underway in harbour at action stations",
+      "preAttackPosition": {
+        "status": "UNDERWAY_PATROL",
+        "description": "Underway in harbour at action stations",
+        "coordinates": {
+          "latitude": -12.469,
+          "longitude": 130.841
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "UNDERWAY_DEFENDING",
+        "description": "Targeted by eight separate dive-bombing runs; sustained near misses and heavy strafing while firing continuous AA barrages",
+        "coordinates": {
+          "latitude": -12.469,
+          "longitude": 130.841
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.469,
+        "longitude": 130.841
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:05–10:30",
+      "sinkingTime": null,
+      "damageDescription": "Targeted by eight separate dive-bombing runs; sustained near misses and heavy strafing. 3 killed, 19 wounded. Fired continuous anti-aircraft barrages.",
+      "sourceRefs": [
+        "GILL_RAN_VOL1",
+        "RAN_HMAS_MELVILLE_WAR_DIARY_1942"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Primary RAN warship defending harbour; maneuvered aggressively throughout first raid."
+    },
+    {
+      "id": "HMAS_PLATYPUS_A3",
+      "name": "HMAS Platypus (A3)",
+      "vesselType": "Submarine Depot & Repair Ship (3,476 tons)",
+      "nationality": "Royal Australian Navy",
+      "status19Feb1942": "DAMAGED",
+      "fatalitiesCount": 3,
+      "bombHitCount": 0,
+      "movementState": "Moored in harbour near Stokes Hill Wharf",
+      "preAttackPosition": {
+        "status": "MOORED_IN_HARBOUR",
+        "description": "Moored at naval buoy off Stokes Hill Wharf",
+        "coordinates": {
+          "latitude": -12.473,
+          "longitude": 130.846
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "MOORED_DAMAGED",
+        "description": "Near miss ruptured hull plates and flooded engine room; 3 crew killed",
+        "coordinates": {
+          "latitude": -12.473,
+          "longitude": 130.846
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.473,
+        "longitude": 130.846
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:10",
+      "sinkingTime": null,
+      "damageDescription": "Near miss ruptured hull plates and flooded engine room; 3 crew killed. Remained afloat providing repair and support services.",
+      "sourceRefs": [
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Depot ship base for local RAN flotilla."
+    },
+    {
+      "id": "HMAS_DELORAINE_J232",
+      "name": "HMAS Deloraine (J232)",
+      "vesselType": "Bathurst-class Corvette / Minesweeper",
+      "nationality": "Royal Australian Navy",
+      "status19Feb1942": "INTACT",
+      "fatalitiesCount": 0,
+      "bombHitCount": 0,
+      "movementState": "Underway in harbour at high speed",
+      "preAttackPosition": {
+        "status": "UNDERWAY_IN_HARBOUR",
+        "description": "Underway at high speed maneuvering in open harbour",
+        "coordinates": {
+          "latitude": -12.467,
+          "longitude": 130.835
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "UNDERWAY_EVADING",
+        "description": "Avoided bomb hits through high-speed evasive maneuvering while firing 12-pounder and Oerlikons",
+        "coordinates": {
+          "latitude": -12.467,
+          "longitude": 130.835
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.467,
+        "longitude": 130.835
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:10",
+      "sinkingTime": null,
+      "damageDescription": "Avoided bomb hits through high-speed evasive maneuvering; engaged aircraft with 12-pounder and Oerlikon guns.",
+      "sourceRefs": [
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Famous for having sunk Japanese submarine I-124 off Darwin on 20 January 1942."
+    },
+    {
+      "id": "SS_BAROSSA",
+      "name": "SS Barossa",
+      "vesselType": "Cargo Steamer (4,239 gross tons)",
+      "nationality": "Australian Merchant Marine (Adelaide Steamship Co.)",
+      "status19Feb1942": "HEAVILY_DAMAGED_BEACHED",
+      "fatalitiesCount": 0,
+      "bombHitCount": 0,
+      "movementState": "Anchored in harbour; beached after damage",
+      "preAttackPosition": {
+        "status": "ANCHORED_IN_HARBOUR",
+        "description": "Anchored in northern harbour anchorage",
+        "coordinates": {
+          "latitude": -12.461,
+          "longitude": 130.841
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "HOLED_BY_NEAR_MISSES",
+        "description": "Severe hull leakage caused by near misses; captain ordered ship run aground to prevent sinking in fairway",
+        "coordinates": {
+          "latitude": -12.461,
+          "longitude": 130.841
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.461,
+        "longitude": 130.841
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:15",
+      "sinkingTime": null,
+      "damageDescription": "Near misses caused heavy hull leakage; beached on a sandbank to avoid sinking in the main channel.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Refloated post-raid and repaired."
+    },
+    {
+      "id": "COAL_HULK_KELAT",
+      "name": "Kelat (Coal Storage Hulk)",
+      "vesselType": "Iron Sailing Vessel / Stationary Coal Hulk (1,849 tons)",
+      "nationality": "Royal Australian Navy Auxiliary",
+      "status19Feb1942": "DAMAGED_SUBSEQUENTLY_SUNK",
+      "fatalitiesCount": 0,
+      "bombHitCount": 0,
+      "movementState": "Stationary mooring in harbour",
+      "preAttackPosition": {
+        "status": "STATIONARY_MOORING",
+        "description": "Moored in central harbour as coaling hulk",
+        "coordinates": {
+          "latitude": -12.477,
+          "longitude": 130.845
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "PLATES_SPRUNG",
+        "description": "Sprung hull plates and rivet failures from concussion of near-miss bombs",
+        "coordinates": {
+          "latitude": -12.477,
+          "longitude": 130.845
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": {
+        "status": "SUNK_POST_ATTACK",
+        "description": "Slowly settled under persistent flooding, sinking on 24 February 1942",
+        "time": "1942-02-24",
+        "coordinates": {
+          "latitude": -12.477,
+          "longitude": 130.845
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "wreckPositionModernSurvey": {
+        "description": "Iron hull surveyed on seabed at 15m depth",
+        "coordinates": {
+          "latitude": -12.4770,
+          "longitude": 130.8450,
+          "depthM": 15
+        },
+        "salvageStatus": "PARTIALLY_SALVAGED",
+        "surveySource": "Northern Territory Heritage Branch Shipwrecks Register"
+      },
+      "coordinates": {
+        "latitude": -12.477,
+        "longitude": 130.845
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:10",
+      "sinkingTime": "1942-02-24",
+      "damageDescription": "Plates sprung by near misses; slowly settled and sank five days later.",
+      "sourceRefs": [
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Former iron clipper ship built in 1881 used as coaling depot."
+    },
+    {
+      "id": "HMAS_KANGAROO",
+      "name": "HMAS Kangaroo",
+      "vesselType": "Bar-class Boom Defence Vessel",
+      "nationality": "Royal Australian Navy",
+      "status19Feb1942": "DAMAGED",
+      "fatalitiesCount": 1,
+      "bombHitCount": 0,
+      "movementState": "Moored on the anti-submarine boom gate station",
+      "preAttackPosition": {
+        "status": "MOORED_BOOM_GATE",
+        "description": "Moored at anti-submarine indicator boom net gate between Dudley Point and West Point",
+        "coordinates": {
+          "latitude": -12.445,
+          "longitude": 130.825
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "attackPosition": {
+        "status": "MOORED_UNDER_ATTACK",
+        "description": "Attacked by dive bombers at the boom gate; near misses caused splinter damage",
+        "coordinates": {
+          "latitude": -12.445,
+          "longitude": 130.825
+        },
+        "spatialConfidence": "APPROXIMATE"
+      },
+      "sinkingPosition": null,
+      "wreckPositionModernSurvey": null,
+      "coordinates": {
+        "latitude": -12.445,
+        "longitude": 130.825
+      },
+      "spatialConfidence": "APPROXIMATE",
+      "damageTime": "10:10",
+      "sinkingTime": null,
+      "damageDescription": "Attacked by dive bombers at the boom gate; 1 crew member killed (Stoker A.J. Couchman).",
+      "sourceRefs": [
+        "GILL_RAN_VOL1",
+        "RAN_HMAS_MELVILLE_WAR_DIARY_1942"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Operated the boom gate vessel at the entrance to Darwin Harbour."
+    }
+  ],
+  "template": {
+    "id": "VESSEL_ID",
+    "name": null,
+    "vesselType": null,
+    "nationality": null,
+    "status19Feb1942": null,
+    "fatalitiesCount": null,
+    "bombHitCount": null,
+    "commandingOfficer": null,
+    "movementState": null,
+    "preAttackPosition": {
+      "status": null,
+      "description": null,
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "spatialConfidence": "EXACT | HIGH | APPROXIMATE | LOW | UNKNOWN"
+    },
+    "attackPosition": {
+      "status": null,
+      "description": null,
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "spatialConfidence": "EXACT | HIGH | APPROXIMATE | LOW | UNKNOWN"
+    },
+    "sinkingPosition": {
+      "status": null,
+      "description": null,
+      "time": null,
+      "coordinates": {
+        "latitude": null,
+        "longitude": null
+      },
+      "spatialConfidence": "EXACT | HIGH | APPROXIMATE | LOW | UNKNOWN"
+    },
+    "wreckPositionModernSurvey": {
+      "description": null,
+      "coordinates": {
+        "latitude": null,
+        "longitude": null,
+        "depthM": null
+      },
+      "salvageStatus": "INTACT_ON_SEABED | PARTIALLY_SALVAGED | EXTENSIVELY_SALVAGED | NOT_APPLICABLE",
+      "surveySource": null
+    },
+    "coordinates": {
+      "latitude": null,
+      "longitude": null,
+      "depthM": null
+    },
+    "spatialConfidence": "EXACT | HIGH | APPROXIMATE | LOW | UNKNOWN",
+    "damageTime": null,
+    "sinkingTime": null,
+    "damageDescription": null,
+    "sourceRefs": [],
+    "classification": "ESTABLISHED_FACT",
+    "confidence": "HIGH",
+    "notes": null
+  }
+}

@@ -1,0 +1,579 @@
+{
+  "version": "0.3.1",
+  "status": "STAGE_2_1_AUTHENTICATED_HISTORICAL_CANON",
+  "auditMetadata": {
+    "auditStage": "STAGE_2_1_FORENSIC_SOURCE_AUTHENTICATION",
+    "leadAuthority": "TRUTH",
+    "technicalSupport": "TECHNOLOGY",
+    "authenticationDate": "2026-09-15",
+    "notes": "Forensic audit of canonical historical claims. Corrected First Wave aircraft breakdown to 81 Nakajima B5N2 Kate level bombers, 71 Aichi D3A1 Val dive bombers, and 36 Mitsubishi A6M2 Zero fighters. Added granular supportClassification to all claims. Structured casualty historiography distinguishing Lowe Commission finding (243), official histories (235–243), and modern scholarly synthesis (235–250+)."
+  },
+  "rules": {
+    "classifications": [
+      "PRIMARY_SOURCE",
+      "CONTEMPORARY_ARCHIVAL_RECORD",
+      "OFFICIAL_HISTORY",
+      "ARCHIVAL_MATERIAL",
+      "ESTABLISHED_FACT",
+      "HISTORICAL_INTERPRETATION",
+      "INFERENCE",
+      "DIGITAL_RECONSTRUCTION"
+    ],
+    "supportClassifications": [
+      "DIRECTLY_SUPPORTED",
+      "SUPPORTED_BY_SYNTHESIS",
+      "INFERRED_FROM_MULTIPLE_SOURCES",
+      "DISPUTED",
+      "UNSUPPORTED",
+      "REQUIRES_SOURCE"
+    ],
+    "confidence": [
+      "VERIFIED",
+      "HIGH",
+      "MODERATE",
+      "LOW",
+      "DISPUTED",
+      "UNKNOWN"
+    ],
+    "publication": "Do not publish disputed/unknown claims as certain. Link claims to canonical sources in data/entities/sources.json."
+  },
+  "claims": [
+    {
+      "id": "EVENT_DATE",
+      "value": "1942-02-19",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1",
+        "GILLISON_RAAF_VOL1",
+        "SENSHI_SOSHO_VOL26"
+      ],
+      "note": "Definitive calendar date of the two Japanese air raids on Darwin."
+    },
+    {
+      "id": "WARNING_TIME_0935",
+      "value": "09:35–09:37",
+      "classification": "CONTEMPORARY_ARCHIVAL_RECORD",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "FATHER_MCGRATH_RADIO_LOG_1942",
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "Father John McGrath sighted the formation passing Bathurst Island mission at approx 09:35 and transmitted the radio message to Darwin VID at 09:37. Official Lowe Commission Exhibit 3.",
+      "temporalProvenance": {
+        "reportedTime": "09:35–09:37",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "09:35–09:37",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "APPROXIMATE",
+        "notes": "Father John McGrath sighted the formation passing Bathurst Island mission at approx 09:35 and transmitted the radio message to Darwin VID at 09:37. Official Lowe Commission Exhibit 3."
+      }
+    },
+    {
+      "id": "ATTACK_TIME_0958",
+      "value": "09:58",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "note": "Lowe Commission finding: First bombs detonated in Darwin Harbour at precisely 09:58. Air raid siren sounded at 10:01, three minutes late.",
+      "temporalProvenance": {
+        "reportedTime": "09:58",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "09:58",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "EXACT",
+        "notes": "Lowe Commission finding: First bombs detonated in Darwin Harbour at precisely 09:58. Air raid siren sounded at 10:01, three minutes late."
+      }
+    },
+    {
+      "id": "TIMELINE_0800",
+      "value": "One hundred and eighty‑eight aircraft — Zeros, dive bombers and level bombers — lift from the Japanese carrier fleet in the Timor Sea.",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "SENSHI_SOSHO_VOL26"
+      ],
+      "note": "Senshi Sōsho Vol. 26 documents exact 1st Carrier Air Fleet launch: 81 B5N2 Kates (level bombers), 71 D3A1 Vals (dive bombers), and 36 A6M2 Zeros (fighters), totaling 188 carrier aircraft."
+    },
+    {
+      "id": "CLAIM_FIRST_WAVE_AIRCRAFT_BREAKDOWN",
+      "value": "First Wave Carrier Strike Force: 188 total carrier aircraft (81 Nakajima B5N2 Kate level bombers, 71 Aichi D3A1 Val dive bombers, 36 Mitsubishi A6M2 Zero fighters).",
+      "firstWaveTotal": 188,
+      "confidence": "HIGH / ESTABLISHED",
+      "d3aCount": 71,
+      "currentCanonicalStatus": "BEST_SUPPORTED_CURRENT_INTERPRETATION",
+      "classification": "HISTORICAL_INTERPRETATION",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "SENSHI_SOSHO_VOL26",
+        "GILL_RAN_VOL1",
+        "AWM_DARWIN_ENCYCLOPEDIA"
+      ],
+      "conflictingSourceNote": {
+        "sourceRef": "AWM_DARWIN_ENCYCLOPEDIA",
+        "reportedBreakdown": "81 B5N, 72 D3A, 36 A6M",
+        "reportedD3ACount": 72,
+        "discrepancyAnalysis": "An Australian War Memorial article discussing Japanese sources reports 81 B5N, 72 D3A, and 36 A6M, which creates an internal numerical inconsistency with the established 188-aircraft first-wave total (81 + 72 + 36 = 189). The canonical allocation of 71 D3A (Akagi 18, Kaga 18, Sōryū 18, Hiryū 17 due to one unserviceable airframe) remains the best supported current interpretation in Senshi Sōsho Vol. 26. Individual D3A aircraft must NOT be represented 1:1 in visitor-facing reconstruction until this conflict has been adjudicated against the underlying Japanese operational air logs."
+      },
+      "reconstructionConstraint": "DO_NOT_REPRESENT_INDIVIDUAL_D3A_1_TO_1_UNTIL_ADJUDICATED",
+      "note": "FIRST_WAVE_TOTAL = 188 (confidence: HIGH / ESTABLISHED). D3A_COUNT = 71 (currentCanonicalStatus: BEST_SUPPORTED_CURRENT_INTERPRETATION). Conflicting AWM source reports 72 D3A. Individual D3A aircraft must not be represented 1:1 in visitor-facing reconstruction until adjudicated."
+    },
+    {
+      "id": "TIME_0800",
+      "value": "08:00 (approx. 07:50–08:00)",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "SENSHI_SOSHO_VOL26"
+      ],
+      "note": "Commencement of carrier flight deck takeoff operations in the Timor Sea (~220 NM NNW Darwin). Flagship Akagi launched strike aircraft commencing 06:20–06:25 JST (Fuchida took off 06:22 JST = 07:52 Darwin local time).",
+      "temporalProvenance": {
+        "rawSourceTime": "06:20–06:25 JST (Fuchida launch 06:22 JST)",
+        "rawClockBasis": "Tokyo Standard Time (UTC+09:00)",
+        "reportedTime": "08:00 (approx)",
+        "reportedTimeZoneOrBasis": "Tokyo Standard Time (UTC+09:00) / Darwin Local Time (UTC+10:30)",
+        "normalizationOperation": "Convert from JST (+09:00) to Darwin Wartime Local Time (+10:30) by adding +01:30",
+        "normalizedDarwinLocalTime": "07:50–08:00 (approx. 08:00 Darwin Local Time)",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "NORMALIZED_TO_DARWIN_LOCAL",
+        "precision": "APPROXIMATE",
+        "notes": "Commencement of carrier flight deck takeoff operations across the four carriers. Historiographically synthesised as ~08:00 Darwin local time."
+      }
+    },
+    {
+      "id": "TIME_0845",
+      "value": "08:45",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "SENSHI_SOSHO_VOL26"
+      ],
+      "note": "Completion of first-wave launch operations, formation rendezvous of 188 aircraft, and strike departure south-southeast toward Bathurst Island.",
+      "temporalProvenance": {
+        "rawSourceTime": "07:15 JST",
+        "rawClockBasis": "Tokyo Standard Time (UTC+09:00)",
+        "reportedTime": "08:45",
+        "reportedTimeZoneOrBasis": "Darwin Wartime Local Time (UTC+10:30)",
+        "normalizationOperation": "Convert from JST (+09:00) to Darwin Wartime Local Time (+10:30) by adding +01:30",
+        "normalizedDarwinLocalTime": "08:45",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "NORMALIZED_TO_DARWIN_LOCAL",
+        "precision": "EXACT",
+        "notes": "All 188 aircraft launched, assembled into formation, and departed carrier area by 08:45 Darwin Local Time (07:15 JST). Frequently cited in Australian naval histories as 'all 188 aircraft launched by 08:45 am'."
+      }
+    },
+    {
+      "id": "TIMELINE_0935",
+      "value": "The mission on Bathurst Island radios a large formation approaching. It is discounted as returning American P‑40s.",
+      "classification": "CONTEMPORARY_ARCHIVAL_RECORD",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "FATHER_MCGRATH_RADIO_LOG_1942",
+        "LOWE_COMMISSION_1942",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "note": "Confirmed by radio station VID transmission log and testimony of RAAF Operations staff before the Lowe Commission."
+    },
+    {
+      "id": "TIME_0935",
+      "value": "09:35",
+      "classification": "CONTEMPORARY_ARCHIVAL_RECORD",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "FATHER_MCGRATH_RADIO_LOG_1942",
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "Timestamp of initial visual detection over Bathurst Island.",
+      "temporalProvenance": {
+        "reportedTime": "09:35",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "09:35",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "EXACT",
+        "notes": "Timestamp of initial visual detection over Bathurst Island."
+      }
+    },
+    {
+      "id": "TIMELINE_0958",
+      "value": "Before the town’s air-raid sirens sound, the first raid breaks over Darwin Harbour and the town. It will last about forty minutes.",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "note": "Sirens sounded at 10:01 after detonations commenced; raid ended around 10:45 (approx 47 minutes total duration)."
+    },
+    {
+      "id": "TIME_0958",
+      "value": "09:58",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "First bomb impact time as determined by judicial inquiry.",
+      "temporalProvenance": {
+        "reportedTime": "09:58",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "09:58",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "EXACT",
+        "notes": "First bomb impact time as determined by judicial inquiry."
+      }
+    },
+    {
+      "id": "TIMELINE_1000",
+      "value": "A direct hit kills nine — the postmaster, his family and his staff — sheltering in a trench.",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "CWGC_DARWIN_CIVILIAN",
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "Direct bomb strike on slit trench behind Darwin Post Office killed 9: Postmaster Shugg's wife Alice and daughter Eileen; Supervisor Denis Moriarty; telephonists Iris Bald, Jennie Stasinowsky, Florence Walkley, Emily Young; mechanic Arthur Bald; and messenger Roy Stasinowsky."
+    },
+    {
+      "id": "TIME_1000",
+      "value": "10:00",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "CWGC_DARWIN_CIVILIAN"
+      ],
+      "note": "Impact timestamp at Darwin Post Office.",
+      "temporalProvenance": {
+        "reportedTime": "10:00",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "10:00",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "EXACT",
+        "notes": "Impact timestamp at Darwin Post Office."
+      }
+    },
+    {
+      "id": "TIMELINE_1045",
+      "value": "The American destroyer, one of the largest ships in the harbour, is struck by five bombs.",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "US_NAVY_DANFS_PEARY",
+        "GILL_RAN_VOL1"
+      ],
+      "note": "USS Peary (DD-226) sustained five direct bomb hits during sustained dive-bomber attacks between 10:15 and 10:45."
+    },
+    {
+      "id": "TIME_1045",
+      "value": "10:45",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "US_NAVY_DANFS_PEARY",
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "Conclusion of First Wave carrier air strikes and final bomb impacts on USS Peary.",
+      "temporalProvenance": {
+        "reportedTime": "10:45",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "10:45",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "EXACT",
+        "notes": "Conclusion of First Wave carrier air strikes and final bomb impacts on USS Peary."
+      }
+    },
+    {
+      "id": "TIMELINE_1200",
+      "value": "Fifty‑four land‑based bombers return at high altitude to strike the RAAF base at Parap.",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "Second raid comprised 27 G4M1 Bettys (Takao Kokutai) and 27 G3M2 Nells (1st Kokutai), arriving between 11:58 and 12:25 at 18,000–23,000 ft, pattern-bombing RAAF Station Darwin."
+    },
+    {
+      "id": "TIME_1200",
+      "value": "11:58–12:25",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "note": "Official arrival and duration of the Second Wave land-based strike.",
+      "temporalProvenance": {
+        "reportedTime": "11:58–12:25",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "11:58–12:25",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "APPROXIMATE",
+        "notes": "Official arrival and duration of the Second Wave land-based strike."
+      }
+    },
+    {
+      "id": "TIMELINE_1300",
+      "value": "She sinks stern‑first. More than eighty of her crew go down with her.",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "US_NAVY_DANFS_PEARY",
+        "GILL_RAN_VOL1"
+      ],
+      "note": "USS Peary sank stern-first at approximately 13:00. Official casualty records report conflicting counts: US NHHC reports 80 killed, RAN/NT records cite 88, and AWM records cite 91."
+    },
+    {
+      "id": "TIME_1300",
+      "value": "13:00 approx",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "US_NAVY_DANFS_PEARY"
+      ],
+      "note": "Timestamp of USS Peary sinking.",
+      "temporalProvenance": {
+        "reportedTime": "13:00",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "13:00",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "APPROXIMATE",
+        "notes": "Timestamp of USS Peary sinking."
+      }
+    },
+    {
+      "id": "TIMELINE_Dusk",
+      "value": "At least 235 are dead. Eight ships lie sunk, more than thirty aircraft destroyed. More individual bombs fell on Darwin than on Pearl Harbour, though at a lighter total explosive tonnage.",
+      "classification": "HISTORICAL_INTERPRETATION",
+      "confidence": "DISPUTED",
+      "supportClassification": "DISPUTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GROSE_1942_DISASTER",
+        "SENSHI_SOSHO_VOL26"
+      ],
+      "note": "DISPUTED ELEMENTS: (1) Official Lowe Commission adjudicated death toll is 243 (not 235; 235 was an early press/censorship figure; modern historians estimate 235–250+). (2) Eight ships sunk immediately (USS Peary, MV Neptuna, MV Zealandia, USAT Meigs, USAT Mauna Loa, British Motorist, plus luggers Mavie and Highland Warrior; Kelat sank later). (3) 'More bombs fell on Darwin than Pearl Harbour' is historically nuanced: Japanese aircraft dropped approximately 681 bombs on Darwin across the two raids, compared to approx 450–475 individual bombs and 40 torpedoes at Pearl Harbor. However, Pearl Harbor sustained far higher total bomb tonnage and loss of life (2,403 dead). Context must be articulated rather than stated as an unqualified soundbite."
+    },
+    {
+      "id": "TIME_Dusk",
+      "value": "18:30 (Dusk)",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "GILL_RAN_VOL1"
+      ],
+      "note": "Evening of 19 February 1942; harbour fires continue burning, military evacuation under way.",
+      "temporalProvenance": {
+        "reportedTime": "18:30 (Dusk)",
+        "reportedTimeZoneOrBasis": "Darwin Local Time (Daylight Saving, UTC+10:30)",
+        "normalizedDarwinLocalTime": "18:30 (Dusk)",
+        "utcOffset": "+10:30",
+        "normalizationStatus": "SOURCE_LOCAL_TIME",
+        "precision": "EXACT",
+        "notes": "Evening of 19 February 1942; harbour fires continue burning, military evacuation under way."
+      }
+    },
+    {
+      "id": "CLAIM_CASUALTIES_TOTAL",
+      "value": "Multi-source historiographical range: 235 to 250+ deaths (no single unnuanced modern official total)",
+      "classification": "HISTORICAL_INTERPRETATION",
+      "confidence": "HIGH",
+      "supportClassification": "SUPPORTED_BY_SYNTHESIS",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "NAA_FACT_SHEET_195",
+        "AWM_DARWIN_ENCYCLOPEDIA",
+        "GILL_RAN_VOL1",
+        "GROSE_1942_DISASTER"
+      ],
+      "note": "Historiographical adjudication: No single uncontested official total exists. The National Archives public account states at least 235 deaths; Justice Lowe found approximately 243; official war historians concluded approximately 243; modern scholars estimate between 235 and 250+. Unsupported claims of 1,000+ are rejected as wartime rumours without archival foundation."
+    },
+    {
+      "id": "CLAIM_CASUALTIES_HISTORIOGRAPHY_LOWE",
+      "value": "Approximately 243 killed (approx 53 civilian, 190 military/naval personnel; 'safe to say deaths do not exceed 250')",
+      "classification": "PRIMARY_DOCUMENT",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "Official judicial finding of the 1942 Commonwealth Commission of Inquiry (Lowe Commission Report, 27 March 1942, p. 9), based on direct post-raid investigations in Darwin."
+    },
+    {
+      "id": "CLAIM_CASUALTIES_HISTORIOGRAPHY_OFFICIAL_HISTORIES",
+      "value": "Approximately 243 killed recorded in post-war official war histories",
+      "classification": "OFFICIAL_HISTORY",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "GILL_RAN_VOL1",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "note": "Official war histories (Gill, Royal Australian Navy 1939-1942, p. 595; Gillison, Royal Australian Air Force 1939-1942, p. 433) endorse the Lowe Commission finding of approximately 243 killed."
+    },
+    {
+      "id": "CLAIM_CASUALTIES_HISTORIOGRAPHY_NAA_PUBLIC",
+      "value": "At least 235 people killed and 300 to 400 wounded",
+      "classification": "MODERN_INSTITUTIONAL_SUMMARY",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "NAA_FACT_SHEET_195"
+      ],
+      "note": "Current official public summary published by the National Archives of Australia in Fact Sheet 195 ('The bombing of Darwin')."
+    },
+    {
+      "id": "CLAIM_CASUALTIES_HISTORIOGRAPHY_AWM",
+      "value": "Official historians concluded approximately 243 killed; later research notes possible upward revision",
+      "classification": "MODERN_INSTITUTIONAL_SUMMARY",
+      "confidence": "HIGH",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "AWM_DARWIN_ENCYCLOPEDIA",
+        "GILL_RAN_VOL1"
+      ],
+      "note": "Australian War Memorial institutional interpretation acknowledging the official history benchmark of ~243 while recognizing subsequent scholarly debate and upward revisions towards 250+."
+    },
+    {
+      "id": "CLAIM_CASUALTIES_HISTORIOGRAPHY_EARLY_OFFICIAL",
+      "value": "17 initially announced by Prime Minister Curtin, later updated to 235",
+      "classification": "PRIMARY_DOCUMENT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GROSE_1942_DISASTER"
+      ],
+      "note": "Early wartime censorship restricted public casualty reporting. Prime Minister John Curtin announced 17 fatalities on 19 February 1942 to avert national panic; this was subsequently revised to 235 in press communiqués."
+    },
+    {
+      "id": "CLAIM_CASUALTIES_HISTORIOGRAPHY_MODERN_SYNTHESIS",
+      "value": "235 to 250+ killed",
+      "classification": "HISTORICAL_SYNTHESIS",
+      "confidence": "HIGH",
+      "supportClassification": "SUPPORTED_BY_SYNTHESIS",
+      "sources": [
+        "GROSE_1942_DISASTER",
+        "ALFORD_DARWIN_1942"
+      ],
+      "note": "Modern forensic historical analysis cross-referencing military service rolls, merchant navy lists, and cemetery registers (Grose 2009, Alford 2011, Lewis 2013). Acknowledges minor uncertainty due to possible unrecorded Aboriginal and civilian itinerant casualties."
+    },
+    {
+      "id": "CLAIM_CASUALTIES_UNSUPPORTED_MYTHS",
+      "value": "Claims of 1,000+ or 900+ casualties in Darwin on 19 February 1942",
+      "classification": "HISTORICAL_INTERPRETATION",
+      "confidence": "DISPUTED",
+      "supportClassification": "DISPUTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GROSE_1942_DISASTER"
+      ],
+      "note": "Rumours alleging over 1,000 deaths circulated immediately after the raid and persist in popular folklore. Both the Lowe Commission and exhaustive modern archival forensic reconciliations conclusively demonstrate these figures are unsupported by physical remains, hospital records, or missing-person reports."
+    },
+    {
+      "id": "CLAIM_NEPTUNA_AMMUNITION",
+      "value": "MV Neptuna held 100 depth charges and 200 tons of high explosives",
+      "classification": "CONTEMPORARY_ARCHIVAL_RECORD",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "note": "Direct manifest evidence submitted to the Lowe Commission."
+    },
+    {
+      "id": "CLAIM_RADAR_311_STATUS",
+      "value": "RAAF Radar 311 at Dripstone was not operational on the morning of 19 February 1942",
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "note": "Equipment was on site but not calibrated or tied into an operational plotting center until late March 1942."
+    },
+    {
+      "id": "CLAIM_STOKES_HILL_WHARF_BREACH",
+      "value": "MV Neptuna detonation breached a 100-foot gap in Stokes Hill timber wharf deck",
+      "classification": "CONTEMPORARY_ARCHIVAL_RECORD",
+      "confidence": "VERIFIED",
+      "supportClassification": "DIRECTLY_SUPPORTED",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "NAA_DARWIN_WHARF_PLANS_1942",
+        "AWM_AERIAL_RECON_1942"
+      ],
+      "note": "Confirmed by post-explosion engineering surveys and RAAF reconnaissance photographs."
+    },
+    {
+      "id": "CLAIM_POST_OFFICE_CASUALTIES",
+      "value": "Casualties at the Darwin Post & Telegraph Office shelter trench.",
+      "classification": "HISTORICAL_INTERPRETATION",
+      "confidence": "DISPUTED",
+      "supportClassification": "DISPUTED",
+      "sources": [
+        "AWM_DARWIN_ENCYCLOPEDIA"
+      ],
+      "note": "Australian War Memorial collection material states 9 staff members killed. Library & Archives NT and some AWM research publications state 10 people sheltering were killed. Pending formal adjudication to determine if discrepancy arises from staff classification vs. total occupants."
+    },
+    {
+      "id": "CLAIM_USS_PEARY_CASUALTIES",
+      "value": "Fatalities aboard USS Peary (DD-226) during the attack.",
+      "classification": "HISTORICAL_INTERPRETATION",
+      "confidence": "DISPUTED",
+      "supportClassification": "DISPUTED",
+      "sources": [
+        "GILL_RAN_VOL1",
+        "US_NAVY_DANFS_PEARY",
+        "AWM_DARWIN_ENCYCLOPEDIA"
+      ],
+      "note": "Authoritative sources report different casualty totals (US NHHC reports 80 killed, 13 wounded; RAN/NT institutional records cite 88 fatalities; AWM records cite 91 killed). The reason for the discrepancy has not been fully reconciled in the current evidence model."
+    },
+    {
+      "id": "CLAIM_FIRST_WAVE_INGRESS_AXIS",
+      "value": "First wave ingress axis over Darwin Harbour: 315°–345°.",
+      "classification": "DIGITAL_RECONSTRUCTION",
+      "confidence": "MODERATE",
+      "supportClassification": "INFERRED_FROM_MULTIPLE_SOURCES",
+      "sources": [
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "note": "Numerical heading range is a reconstructed parameter derived from multiple eyewitness and operational accounts of the general north-westerly approach across the peninsula. It is an approximation, not a single documented track."
+    }
+  ]
+}

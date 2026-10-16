@@ -1,0 +1,8 @@
+{
+  "name": "Bombing of Darwin",
+  "description": "Historical exhibition and booking app for the Bombing of Darwin attraction, originally built by RFDS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

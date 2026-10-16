@@ -1,0 +1,175 @@
+{
+  "version": "0.3.1",
+  "status": "STAGE_2_1_AUTHENTICATED_FORMATIONS_REGISTER",
+  "auditMetadata": {
+    "auditStage": "STAGE_2_1_FORENSIC_SOURCE_AUTHENTICATION",
+    "leadAuthority": "TRUTH",
+    "technicalSupport": "TECHNOLOGY",
+    "authenticationDate": "2026-09-15",
+    "notes": "Reconciled First Wave carrier strike subformations with official history totals: 81 B5N2 Kate level bombers (Akagi 18, Kaga 27, Soryu 18, Hiryu 18), 71 D3A1 Val dive bombers (Akagi 18, Kaga 18, Soryu 18, Hiryu 17), 36 A6M2 Zero fighters (9 per carrier). Total 188 aircraft."
+  },
+  "formations": [
+    {
+      "id": "FORMATION_FIRST_WAVE_TOTAL",
+      "name": "First Wave Carrier Strike Force (Dai-Ichi Kōkū Kantai Combined Strike)",
+      "strikeWave": "FIRST_WAVE_CARRIER",
+      "overallCommander": "Commander Mitsuo Fuchida (IJN, Akagi)",
+      "launchOrigin": {
+        "locationDescription": "Timor Sea, approx 220 nautical miles NNW of Darwin",
+        "approximateCoordinates": {
+          "latitude": -10.5,
+          "longitude": 129.0
+        },
+        "carrierUnits": [
+          "Akagi (Carrier Division 1, flagship)",
+          "Kaga (Carrier Division 1)",
+          "Soryu (Carrier Division 2)",
+          "Hiryu (Carrier Division 2)"
+        ]
+      },
+      "launchTimeReported": "08:00–08:45",
+      "launchTimeAudit": {
+        "operationalWindowDarwinLocal": "08:00–08:45 (commencement of flight deck takeoff operations ~07:50–08:00 to airborne rendezvous and departure ~08:45)",
+        "commencementJST": "06:20–06:25 JST (Tokyo Standard Time, UTC+09:00)",
+        "departureJST": "07:15 JST (Tokyo Standard Time, UTC+09:00)",
+        "normalizationOffset": "+01:30 (Darwin wartime local daylight saving time, UTC+10:30)",
+        "normalizationStatus": "NORMALIZED_HISTORICAL_SYNTHESIS",
+        "notes": "Range represents full operational launch and assembly window across 4 carriers in the Timor Sea, not an unresolved clock conflict."
+      },
+      "totalAircraftCount": 188,
+      "totalAircraftCountConfidence": "HIGH / ESTABLISHED",
+      "subFormations": [
+        {
+          "formationId": "SUB_FORMATION_KATE_LEVEL_BOMBERS",
+          "aircraftType": "AIRCRAFT_B5N2_KATE",
+          "aircraftCount": 81,
+          "commander": "Commander Mitsuo Fuchida (Overall Strike Leader, Akagi) / Lt. Cdr. Takahisa Amagai (Kaga)",
+          "carrierBreakdown": {
+            "Akagi": 18,
+            "Kaga": 27,
+            "Soryu": 18,
+            "Hiryu": 18
+          },
+          "targetAssignment": "Stokes Hill Wharf, Town Civic Center, Harbour Anchorage central shipping, Naval Fuel Installations",
+          "operationalAltitudeM": [3000, 3600],
+          "flightPattern": "Large coordinated V-formations (chutai of 9 aircraft each; Kaga provided 3 chutai, others 2 each) conducting level bombing runs on synchronized target axes",
+          "sourceRef": "SENSHI_SOSHO_VOL26"
+        },
+        {
+          "formationId": "SUB_FORMATION_VAL_DIVE_BOMBERS",
+          "aircraftType": "AIRCRAFT_D3A1_VAL",
+          "aircraftCount": 71,
+          "currentCanonicalStatus": "BEST_SUPPORTED_CURRENT_INTERPRETATION",
+          "commander": "Lieutenant Commander Takashige Egusa (Soryu)",
+          "carrierBreakdown": {
+            "Akagi": 18,
+            "Kaga": 18,
+            "Soryu": 18,
+            "Hiryu": 17
+          },
+          "targetAssignment": "Harbour shipping (USS Peary, USAT Meigs, MV Neptuna, MV Zealandia, British Motorist) and wharf berths",
+          "operationalAltitudeM": [500, 4200],
+          "flightPattern": "Steep 60-degree dive-bombing attacks peeling off from 12,000 ft, releasing at 1,500–2,000 ft, recovering low over harbour waters. Hiryu launched 17 aircraft.",
+          "sourceRef": "SENSHI_SOSHO_VOL26",
+          "conflictingSourceNote": {
+            "sourceRef": "AWM_DARWIN_ENCYCLOPEDIA",
+            "reportedCount": 72,
+            "note": "An Australian War Memorial article discussing Japanese sources reports 81 B5N, 72 D3A, and 36 A6M, which creates an internal numerical inconsistency with the established 188-aircraft total (81 + 72 + 36 = 189). Canonical count remains 71 (Senshi Sōsho Vol. 26). Individual D3A aircraft must NOT be represented 1:1 in visitor-facing reconstruction until this conflict has been adjudicated against underlying Japanese operational air logs."
+          }
+        },
+        {
+          "formationId": "SUB_FORMATION_ZERO_ESCORT_STRAFERS",
+          "aircraftType": "AIRCRAFT_A6M2_ZERO",
+          "aircraftCount": 36,
+          "commander": "Lieutenant Shigeru Itaya (Akagi)",
+          "carrierBreakdown": {
+            "Akagi": 9,
+            "Kaga": 9,
+            "Soryu": 9,
+            "Hiryu": 9
+          },
+          "targetAssignment": "USAAF P-40 air interception, RAAF Base Darwin strafing, harbour shipping strafing, civil airport strafing",
+          "operationalAltitudeM": [50, 4500],
+          "flightPattern": "Top-cover escort stepped up to 14,000 ft, descending to deck for high-speed cannon and machine-gun strafing passes",
+          "sourceRef": "SENSHI_SOSHO_VOL26"
+        }
+      ],
+      "ingressRoute": {
+        "description": "Crossed Bathurst Island at 09:37, proceeded southeast across Clarence Strait into the mainland east of Darwin, bypassed town to the south-east over Howard Springs, and initiated primary attack turn heading northwest (315°–345°) directly into Darwin Harbour and RAAF Station",
+        "spatialConfidence": "HIGH",
+        "evidenceBasis": "Bathurst Island radio report (Father McGrath), RAAF radar/observation posts, Lowe Commission findings, Senshi Sōsho"
+      },
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED"
+    },
+    {
+      "id": "FORMATION_SECOND_WAVE_TOTAL",
+      "name": "Second Wave Land-Based Heavy Bomber Strike (21st & 23rd Air Flotillas)",
+      "strikeWave": "SECOND_WAVE_LAND",
+      "launchOrigin": {
+        "locationDescription": "Dutch East Indies bases (Kendari, Celebes and Ambon, Moluccas)",
+        "units": [
+          "Takao Kōkūtai (23rd Air Flotilla, Kendari)",
+          "1st Kōkūtai (21st Air Flotilla, Ambon)"
+        ]
+      },
+      "arrivalTimeReported": "11:58–12:25",
+      "totalAircraftCount": 54,
+      "subFormations": [
+        {
+          "formationId": "SUB_FORMATION_TAKAO_G4M1_BETTY",
+          "aircraftType": "AIRCRAFT_G4M1_BETTY",
+          "aircraftCount": 27,
+          "base": "Kendari",
+          "targetAssignment": "RAAF Station Darwin runway, dispersals, and hangars",
+          "operationalAltitudeM": [5500, 7000],
+          "flightPattern": "Three 9-aircraft V-formations (chutai) in high-altitude line abreast releasing pattern-bombing sticks",
+          "sourceRef": "SENSHI_SOSHO_VOL26"
+        },
+        {
+          "formationId": "SUB_FORMATION_FIRST_KOKUTAI_G3M2_NELL",
+          "aircraftType": "AIRCRAFT_G3M2_NELL",
+          "aircraftCount": 27,
+          "base": "Ambon",
+          "targetAssignment": "RAAF Station Darwin barracks, technical workshops, and auxiliary infrastructure",
+          "operationalAltitudeM": [5500, 7000],
+          "flightPattern": "Three 9-aircraft V-formations following the first group by approximately 15 minutes",
+          "sourceRef": "SENSHI_SOSHO_VOL26"
+        }
+      ],
+      "ingressRoute": {
+        "description": "High-altitude direct approach from the north-west over Beagle Gulf straight to RAAF Station Darwin, maintaining horizontal bombing run at ~18,000–23,000 ft",
+        "spatialConfidence": "HIGH",
+        "evidenceBasis": "Senshi Sōsho, RAAF 14th Heavy AA Battery engagement logs, Lowe Commission"
+      },
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED"
+    },
+    {
+      "id": "FORMATION_ALLIED_USAAF_33RD_PURSUIT",
+      "name": "USAAF 33rd Pursuit Squadron (Provisional) — Interception Flight",
+      "strikeWave": "ALLIED_DEFENCE",
+      "commander": "Major Floyd Pell, USAAF (Killed in action)",
+      "totalAircraftCount": 10,
+      "aircraftType": "AIRCRAFT_P40E_WARHAWK",
+      "disposition": "5 aircraft airborne (Maj Pell, Lt Perry, Lt Hughes, Lt Stone, Lt Walker); 5 aircraft on ground scrambling or refuelling at RAAF Darwin",
+      "combatOutcome": "Attacked by superior numbers of A6M2 Zeros while landing/climbing. 9 aircraft shot down or destroyed on ground. 4 pilots killed.",
+      "sourceRefs": [
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "version": "0.3.0",
+  "status": "STAGE_2_CANONICAL_LAYERS_REGISTER",
+  "layers": [
+    {
+      "id": "LAYER_ADMIRALTY_CHART_925_1942",
+      "title": "Port Darwin Hydrographic Chart 925 (1942 Corrections)",
+      "date": "1942",
+      "layerType": "HISTORICAL_NAUTICAL_CHART",
+      "coverageArea": {
+        "description": "Darwin Harbour, Port Darwin approaches, Charles Point to East Point, inner harbour anchorages",
+        "bounds": {
+          "north": -12.35,
+          "south": -12.58,
+          "west": 130.65,
+          "east": 130.95
+        }
+      },
+      "repository": "National Archives of Australia (MP1049/5) / Australian Hydrographic Office Historical Collection",
+      "digitizationState": "DIGITISED_HIGH_RES_FOLIO",
+      "georeferenceStatus": "NOT_GEOREFERENCED",
+      "licensingRights": "CROWN_COPYRIGHT_EXPIRED_PUBLIC_DOMAIN",
+      "suitabilityForCesium": "REFERENCE_OVERLAY_PENDING_GEOREFERENCING",
+      "technicalNotes": "Shows low-water datum, sandbanks, 1942 channels, and original Fort Hill shoreline prior to post-war reclamation. Needs 4-point georeferencing to WGS84 for Cesium drape.",
+      "sourceRef": "ADMIRALTY_CHART_925_1942"
+    },
+    {
+      "id": "LAYER_RAAF_AERIAL_SURVEY_FEB_1942",
+      "title": "RAAF Darwin Post-Raid Aerial Reconnaissance Mosaics",
+      "date": "1942-02-20",
+      "layerType": "HISTORICAL_AERIAL_PHOTOGRAPHY",
+      "coverageArea": {
+        "description": "Stokes Hill Wharf, Fort Hill, Darwin Naval Anchorage, RAAF Aerodrome",
+        "bounds": {
+          "north": -12.40,
+          "south": -12.49,
+          "west": 130.81,
+          "east": 130.89
+        }
+      },
+      "repository": "Australian War Memorial (Accessions 011570–011573) / RAAF Historical Branch",
+      "digitizationState": "DIGITISED_ONLINE_MEDIUM_RES",
+      "georeferenceStatus": "NOT_GEOREFERENCED",
+      "licensingRights": "CROWN_COPYRIGHT_EXPIRED_PUBLIC_DOMAIN",
+      "suitabilityForCesium": "REFERENCE_TEXTURE_PENDING_ORTHORECTIFICATION",
+      "technicalNotes": "Direct vertical and oblique aerial captures showing smoke columns, sunken hulls, and ruptured oil tanks. Requires orthorectification before texture projection in Cesium.",
+      "sourceRef": "AWM_AERIAL_RECON_1942"
+    },
+    {
+      "id": "LAYER_WHARF_DAMAGE_SURVEY_1942",
+      "title": "Stokes Hill Town Pier Engineering Damage Survey & Breach Diagram",
+      "date": "1942-03",
+      "layerType": "ENGINEERING_CADASTRE_SURVEY",
+      "coverageArea": {
+        "description": "Stokes Hill timber pier head, railway viaduct curve, and MV Neptuna explosion crater",
+        "bounds": {
+          "north": -12.469,
+          "south": -12.474,
+          "west": 130.846,
+          "east": 130.851
+        }
+      },
+      "repository": "National Archives of Australia (Series A2633 / Series MP1049/5)",
+      "digitizationState": "DIGITISED_IN_PART",
+      "georeferenceStatus": "UNRESOLVED",
+      "licensingRights": "CROWN_COPYRIGHT_EXPIRED_PUBLIC_DOMAIN",
+      "suitabilityForCesium": "GROUND_TRUTH_CAD_VECTOR_SOURCE",
+      "technicalNotes": "Crucial primary document needed to determine exact timber pier dimensions (length, width, orientation, pile spacing) and breach coordinates. BLOCKING for 3D reconstruction.",
+      "sourceRef": "NAA_DARWIN_WHARF_PLANS_1942"
+    },
+    {
+      "id": "LAYER_DARWIN_TOWN_SURVEY_1942",
+      "title": "Darwin Town Cadastral & Building Map (1942 Air Raid Damage Assessment)",
+      "date": "1942-04",
+      "layerType": "TOWN_PLANNING_SURVEY",
+      "coverageArea": {
+        "description": "Darwin Central Commercial District (Smith, Mitchell, Bennett, Cavanagh, Esplanade)",
+        "bounds": {
+          "north": -12.455,
+          "south": -12.472,
+          "west": 130.835,
+          "east": 130.855
+        }
+      },
+      "repository": "Northern Territory Archives Service (NTAS NTRS 2178)",
+      "digitizationState": "PHYSICAL_ARCHIVE_WITH_MICROFICHE",
+      "georeferenceStatus": "NOT_GEOREFERENCED",
+      "licensingRights": "CROWN_COPYRIGHT_EXPIRED_PUBLIC_DOMAIN",
+      "suitabilityForCesium": "HISTORICAL_BUILDING_FOOTPRINT_REFERENCE",
+      "technicalNotes": "Documents building footprints, bomb impact craters, destroyed civilian structures (Post Office, Police Station, Government House grounds).",
+      "sourceRef": "SOURCE_REQUIRED_1942_WHARF_SURVEY"
+    },
+    {
+      "id": "LAYER_DARWIN_HARBOUR_WRECK_SURVEY",
+      "title": "Department of Defence Hydrographic & Salvage Survey of Darwin Harbour Wrecks",
+      "date": "1946–1960 (Fujita Salvage / RAN Survey)",
+      "layerType": "BATHYMETRIC_WRECK_SURVEY",
+      "coverageArea": {
+        "description": "Darwin Harbour seabed wrecks: USS Peary, Meigs, Mauna Loa, British Motorist, Zealandia, Neptuna debris field",
+        "bounds": {
+          "north": -12.44,
+          "south": -12.50,
+          "west": 130.81,
+          "east": 130.87
+        }
+      },
+      "repository": "Australian Hydrographic Office / Northern Territory Museum and Art Gallery (MAGNT)",
+      "digitizationState": "DIGITISED_ONLINE",
+      "georeferenceStatus": "MODERN_WGS84_GEOREFERENCED",
+      "licensingRights": "COMMONWEALTH_OF_AUSTRALIA_COPYRIGHT",
+      "suitabilityForCesium": "VERIFIED_SEABED_ANCHOR_POINTS",
+      "technicalNotes": "Modern multibeam sonar surveys and historical salvage coordinates provide high-precision seabed positions for major wrecks.",
+      "sourceRef": "AHO_CHART_AUS26"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "description": "Machine-readable experience assurance gates for The Bombing of Darwin.",
+  "materialWorkRequires": {
+    "builderPass": true,
+    "watcherPass": true,
+    "cinematicPassForStorySpatial": true,
+    "renderedInspection": true
+  },
+  "prohibitedVisitorFacingPatterns": [
+    "camera altitude telemetry",
+    "internal camera preset IDs",
+    "developer state labels",
+    "raw evidence enum IDs",
+    "visible full evidence roster in normal document flow",
+    "visitor-facing monospace typography",
+    "generic map pins",
+    "crosshair markers",
+    "target reticles",
+    "radar sweeps",
+    "military HUD styling"
+  ],
+  "storySceneGates": {
+    "primarySubjectMustBeObvious": true,
+    "maxOrdinaryNarrativeViewportFraction": 0.34,
+    "onePrimaryGeographicSubjectByDefault": true,
+    "oneSecondaryRelationshipByDefault": true,
+    "oneEvidenceAnnotationByDefault": true,
+    "cameraMustSettleBeforeReading": true,
+    "firstDownwardTraversalRequired": true,
+    "reverseTraversalRequired": true,
+    "restoredScrollStateRequired": true,
+    "mobileSpatialParityRequired": true,
+    "reducedMotionMeaningParityRequired": true,
+    "noUnexplainedGeometry": true,
+    "noUnresolvedEntityCoordinates": true,
+    "noPrecisionBeyondEvidence": true
+  },
+  "historicalPresentationGates": {
+    "unresolvedGeographyRendersNoNode": true,
+    "modernSurveyedWreckNotEquivalentToAttackPosition": true,
+    "reconstructionMustBeDisclosed": true,
+    "disputedClaimsMustNotAppearAsSettledPrimaryCopy": true,
+    "timeBasisMustBeHistoricallyGoverned": true
+  },
+  "accessibilityGates": {
+    "keyboardParity": true,
+    "screenReaderMeaningParity": true,
+    "reducedMotionSupport": true,
+    "visibleKeyboardEntryPoints": true,
+    "modalFocusManagement": true
+  },
+  "thirdPartyGates": {
+    "mustNotDominateVisualSystem": true,
+    "officialBrandingAndLicensingPreserved": true,
+    "noBrittleCrossOriginRestyling": true
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "version": "0.3.1",
+  "status": "STAGE_2_1_AUTHENTICATED_AIRCRAFT_REGISTER",
+  "auditMetadata": {
+    "auditStage": "STAGE_2_1_FORENSIC_SOURCE_AUTHENTICATION",
+    "leadAuthority": "TRUTH",
+    "technicalSupport": "TECHNOLOGY",
+    "authenticationDate": "2026-09-15",
+    "notes": "Forensic correction of First Wave carrier aircraft breakdown based on Senshi Sōsho Vol. 26 and Australian official histories: 81 Nakajima B5N2 Kate level bombers (corrected from 71), 71 Aichi D3A1 Val dive bombers (corrected from 81), 36 Mitsubishi A6M2 Zero fighters. Carrier-by-carrier allocations reconciled."
+  },
+  "entities": [
+    {
+      "id": "AIRCRAFT_A6M2_ZERO",
+      "name": "Mitsubishi A6M2 Type 0 Carrier Fighter (Model 21)",
+      "popularName": "Zero / Zeke",
+      "operator": "Imperial Japanese Navy Air Service (1st Carrier Air Fleet)",
+      "strikeWave": "FIRST_WAVE_CARRIER",
+      "operationalRole": "Air Superiority Escort & Low-Level Strafing",
+      "reportedCount": 36,
+      "breakdown": {
+        "Akagi": 9,
+        "Kaga": 9,
+        "Soryu": 9,
+        "Hiryu": 9
+      },
+      "commanders": {
+        "Akagi": "Lieutenant Shigeru Itaya",
+        "Kaga": "Lieutenant Yoshio Shiga",
+        "Soryu": "Lieutenant Masaji Suganami",
+        "Hiryu": "Lieutenant Sumio Nōno"
+      },
+      "armament": "2 x 20mm Type 99 cannon, 2 x 7.7mm Type 97 machine guns, 2 x 60kg bombs",
+      "operationalAltitudeRangeM": [50, 4500],
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "notes": "Escorted the first wave strike formation. Destroyed USAAF P-40s in air combat and carried out extensive low-level strafing runs against RAAF Darwin airfield, civil airport, harbour shipping, and town facilities."
+    },
+    {
+      "id": "AIRCRAFT_D3A1_VAL",
+      "name": "Aichi D3A1 Type 99 Carrier Dive Bomber (Model 11)",
+      "popularName": "Val",
+      "operator": "Imperial Japanese Navy Air Service (1st Carrier Air Fleet)",
+      "strikeWave": "FIRST_WAVE_CARRIER",
+      "operationalRole": "Precision Dive Bombing",
+      "reportedCount": 71,
+      "canonicalCount": 71,
+      "currentCanonicalStatus": "BEST_SUPPORTED_CURRENT_INTERPRETATION",
+      "firstWaveTotal": 188,
+      "firstWaveTotalConfidence": "HIGH / ESTABLISHED",
+      "breakdown": {
+        "Akagi": 18,
+        "Kaga": 18,
+        "Soryu": 18,
+        "Hiryu": 17
+      },
+      "commanders": {
+        "Akagi": "Lieutenant Takehiko Chihaya",
+        "Kaga": "Lieutenant Shōichi Ogawa",
+        "Soryu": "Lieutenant Commander Takashige Egusa",
+        "Hiryu": "Lieutenant Michio Kobayashi"
+      },
+      "armament": "1 x 250kg bomb under fuselage, 2 x 60kg bombs under wings, 2 x 7.7mm forward guns, 1 x 7.7mm rear flexible gun",
+      "operationalAltitudeRangeM": [300, 4200],
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILL_RAN_VOL1",
+        "AWM_DARWIN_ENCYCLOPEDIA"
+      ],
+      "conflictingSourceNote": {
+        "sourceRef": "AWM_DARWIN_ENCYCLOPEDIA",
+        "reportedCount": 72,
+        "discrepancyAnalysis": "An Australian War Memorial article discussing Japanese sources reports 81 B5N, 72 D3A, and 36 A6M, which creates an internal numerical inconsistency with the established 188 total carrier aircraft (81 + 72 + 36 = 189). The canonical allocation of 71 D3A (Akagi 18, Kaga 18, Sōryū 18, Hiryū 17 due to one unserviceable airframe) remains the best supported current interpretation in Senshi Sōsho Vol. 26. Individual D3A aircraft must NOT be represented 1:1 in visitor-facing reconstruction until this conflict has been adjudicated against underlying Japanese operational air logs.",
+        "reconstructionConstraint": "DO_NOT_REPRESENT_INDIVIDUAL_D3A_1_TO_1_UNTIL_ADJUDICATED"
+      },
+      "classification": "HISTORICAL_INTERPRETATION",
+      "confidence": "HIGH",
+      "notes": "Executed steep dive-bombing attacks against harbour shipping (USS Peary, USAT Meigs, MV Neptuna, MV Zealandia), Stokes Hill Wharf, and naval shore installations. Canonical count is 71 (Hiryu launched 17 aircraft due to one unserviceable airframe). AWM notes 72, introducing an unresolved 1-aircraft discrepancy with the established 188-aircraft first wave total."
+    },
+    {
+      "id": "AIRCRAFT_B5N2_KATE",
+      "name": "Nakajima B5N2 Type 97 Carrier Attack Bomber (Model 12)",
+      "popularName": "Kate",
+      "operator": "Imperial Japanese Navy Air Service (1st Carrier Air Fleet)",
+      "strikeWave": "FIRST_WAVE_CARRIER",
+      "operationalRole": "High-Altitude Horizontal Level Bombing",
+      "reportedCount": 81,
+      "breakdown": {
+        "Akagi": 18,
+        "Kaga": 27,
+        "Soryu": 18,
+        "Hiryu": 18
+      },
+      "commanders": {
+        "Akagi": "Commander Mitsuo Fuchida (Overall Strike Leader)",
+        "Kaga": "Lieutenant Commander Takahisa Amagai",
+        "Soryu": "Lieutenant Heijirō Abe",
+        "Hiryu": "Lieutenant Toshio Hashimoto"
+      },
+      "armament": "1 x 800kg armor-piercing or high-explosive bomb, or 1 x 250kg bomb + 6 x 60kg bombs. (NO torpedoes were deployed in Darwin Harbour due to shallow tidal waters and mudbanks; all Kates operated in level-bombing configuration).",
+      "operationalAltitudeRangeM": [3000, 4500],
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "notes": "Led by strike commander Mitsuo Fuchida. Flew in tight horizontal bombing V-formations releasing coordinated salvos over harbour anchorages, town civic center, and fuel installations. Kaga operated 27 aircraft in three 9-plane chutai."
+    },
+    {
+      "id": "AIRCRAFT_G4M1_BETTY",
+      "name": "Mitsubishi G4M1 Type 1 Land Attack Bomber (Model 11)",
+      "popularName": "Betty",
+      "operator": "Imperial Japanese Navy Air Service (Takao Kōkūtai / 23rd Air Flotilla)",
+      "strikeWave": "SECOND_WAVE_LAND",
+      "operationalRole": "Long-Range High-Altitude Pattern Bombing",
+      "reportedCount": 27,
+      "launchBase": "Kendari (Celebes / Dutch East Indies)",
+      "armament": "Up to 1000kg of high-explosive bombs (typically 1 x 800kg or 4 x 250kg bombs)",
+      "operationalAltitudeRangeM": [5500, 7500],
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "notes": "Comprised the first element of the second raid (arriving approx 11:58). Flew in tight high-altitude V-formation, pattern-bombing RAAF Station Darwin runway, hangars, and barracks."
+    },
+    {
+      "id": "AIRCRAFT_G3M2_NELL",
+      "name": "Mitsubishi G3M2/3 Type 96 Land Attack Bomber",
+      "popularName": "Nell",
+      "operator": "Imperial Japanese Navy Air Service (1st Kōkūtai / 21st Air Flotilla)",
+      "strikeWave": "SECOND_WAVE_LAND",
+      "operationalRole": "Long-Range High-Altitude Pattern Bombing",
+      "reportedCount": 27,
+      "launchBase": "Ambon (Moluccas / Dutch East Indies)",
+      "armament": "Up to 800kg of bombs",
+      "operationalAltitudeRangeM": [5500, 7500],
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "notes": "Comprised the second element of the second raid (arriving approx 12:15). Bombing concentrated on remaining RAAF Darwin facilities and ammunition storage."
+    },
+    {
+      "id": "AIRCRAFT_P40E_WARHAWK",
+      "name": "Curtiss P-40E Warhawk (Kittyhawk Mk IA)",
+      "popularName": "Warhawk",
+      "operator": "United States Army Air Forces (33rd Pursuit Squadron Provisional)",
+      "strikeWave": "ALLIED_DEFENCE",
+      "operationalRole": "Air Defence Interception",
+      "reportedCount": 10,
+      "commandingOfficer": "Major Floyd Pell, USAAF (Killed in action)",
+      "armament": "6 x .50 in (12.7mm) M2 Browning machine guns",
+      "operationalAltitudeRangeM": [0, 4500],
+      "sourceRefs": [
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "notes": "En route from Darwin to Koepang (Timor) earlier that morning, turned back by bad weather. 5 aircraft under Major Pell were attacked by Zeros while patrolling/landing; the remaining 5 scrambled amidst bombing. 9 of 10 aircraft were shot down or destroyed on the ground; 4 American pilots killed (Maj Pell, Lt Perry, Lt Hughes, Lt Stone)."
+    },
+    {
+      "id": "AIRCRAFT_PBY5_CATALINA",
+      "name": "Consolidated PBY-5 Catalina Flying Boat",
+      "popularName": "Catalina",
+      "operator": "United States Navy (Patrol Squadron VP-22) & Royal Australian Air Force",
+      "strikeWave": "ALLIED_MARITIME_PATROL",
+      "operationalRole": "Long-Range Maritime Reconnaissance",
+      "reportedCount": 3,
+      "armament": ".50 in and .30 in defensive machine guns",
+      "operationalAltitudeRangeM": [0, 500],
+      "sourceRefs": [
+        "GILL_RAN_VOL1",
+        "US_NAVY_DANFS_PRESTON"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "VERIFIED",
+      "notes": "Moored in Darwin Harbour or taking off near seaplane tender USS William B. Preston. Strafed and destroyed on the water by A6M2 Zeros during the first minutes of the raid."
+    },
+    {
+      "id": "AIRCRAFT_HUDSON_RAAF",
+      "name": "Lockheed Hudson Mk II/III",
+      "popularName": "Hudson",
+      "operator": "Royal Australian Air Force (No. 2 & No. 13 Squadrons)",
+      "strikeWave": "ALLIED_MARITIME_BOMBER",
+      "operationalRole": "Reconnaissance & Strike",
+      "reportedCount": 6,
+      "armament": "Machine guns, light bombs",
+      "operationalAltitudeRangeM": [0, 100],
+      "sourceRefs": [
+        "GILLISON_RAAF_VOL1"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "confidence": "HIGH",
+      "notes": "Stationed on the ground at RAAF Station Darwin. Several destroyed or damaged on dispersals by strafing and bombing."
+    }
+  ],
+  "template": {
+    "id": "AIRCRAFT_ID",
+    "name": null,
+    "popularName": null,
+    "operator": null,
+    "strikeWave": null,
+    "operationalRole": null,
+    "reportedCount": null,
+    "armament": null,
+    "operationalAltitudeRangeM": [],
+    "sourceRefs": [],
+    "classification": "ESTABLISHED_FACT",
+    "confidence": "VERIFIED",
+    "notes": null
+  }
+}

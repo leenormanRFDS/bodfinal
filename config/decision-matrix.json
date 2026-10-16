@@ -1,0 +1,128 @@
+{
+  "version": "1.1.0",
+  "authorities": [
+    "DESIGN",
+    "EXPERIENCE",
+    "TRUTH",
+    "TECHNOLOGY",
+    "VISITOR_GROWTH"
+  ],
+  "supportDisciplines": [
+    "ACCESSIBILITY",
+    "CARTOGRAPHY",
+    "GEOSPATIAL"
+  ],
+  "conflictResolution": [
+    "TRUTH",
+    "EXPERIENCE",
+    "DESIGN",
+    "TECHNOLOGY",
+    "VISITOR_GROWTH"
+  ],
+  "tasks": {
+    "TYPOGRAPHY": {
+      "lead": "DESIGN",
+      "support": [
+        "ACCESSIBILITY"
+      ]
+    },
+    "BOOKING": {
+      "lead": "VISITOR_GROWTH",
+      "support": [
+        "EXPERIENCE",
+        "DESIGN",
+        "TECHNOLOGY"
+      ],
+      "skill": "visitor-growth"
+    },
+    "HISTORICAL_COPY": {
+      "lead": "TRUTH",
+      "support": [
+        "EXPERIENCE"
+      ],
+      "skill": "historical-content"
+    },
+    "MEMORIAL": {
+      "lead": "TRUTH",
+      "support": [
+        "EXPERIENCE",
+        "DESIGN"
+      ]
+    },
+    "SCROLLYTELLING": {
+      "lead": "EXPERIENCE",
+      "support": [
+        "DESIGN",
+        "TECHNOLOGY",
+        "ACCESSIBILITY"
+      ],
+      "skill": "premium-interaction"
+    },
+    "CESIUM_STORY": {
+      "lead": "EXPERIENCE",
+      "support": [
+        "TRUTH",
+        "TECHNOLOGY",
+        "CARTOGRAPHY",
+        "GEOSPATIAL",
+        "ACCESSIBILITY"
+      ],
+      "skill": "spatial-story"
+    },
+    "GLB_STORYTELLING": {
+      "lead": "TECHNOLOGY",
+      "support": [
+        "EXPERIENCE",
+        "DESIGN",
+        "TRUTH",
+        "ACCESSIBILITY"
+      ],
+      "skill": "premium-interaction"
+    },
+    "PREMIUM_SLIDER": {
+      "lead": "DESIGN",
+      "support": [
+        "EXPERIENCE",
+        "TECHNOLOGY",
+        "ACCESSIBILITY"
+      ],
+      "skill": "premium-interaction"
+    },
+    "PAID_LANDING_PAGE": {
+      "lead": "VISITOR_GROWTH",
+      "support": [
+        "DESIGN",
+        "EXPERIENCE",
+        "TRUTH"
+      ],
+      "skill": "visitor-growth"
+    },
+    "SEO": {
+      "lead": "VISITOR_GROWTH",
+      "support": [
+        "TRUTH",
+        "TECHNOLOGY"
+      ],
+      "skill": "visitor-growth"
+    },
+    "HISTORICAL_DATA": {
+      "lead": "TRUTH",
+      "support": [
+        "EXPERIENCE",
+        "TECHNOLOGY"
+      ],
+      "skill": "historical-content"
+    },
+    "RELEASE": {
+      "lead": "TECHNOLOGY",
+      "support": [
+        "TRUTH",
+        "EXPERIENCE",
+        "DESIGN",
+        "VISITOR_GROWTH",
+        "ACCESSIBILITY"
+      ],
+      "skill": "release-qa"
+    }
+  }
+}

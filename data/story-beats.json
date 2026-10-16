@@ -1,0 +1,358 @@
+{
+  "version": "0.3.0",
+  "status": "STAGE_3_AUTHENTICATED_SPATIAL_BEATS",
+  "auditMetadata": {
+    "auditStage": "STAGE_3_SPATIAL_STORYTELLING",
+    "leadAuthority": "EXPERIENCE",
+    "historicalAuthority": "TRUTH",
+    "technicalAuthority": "TECHNOLOGY",
+    "authenticationDate": "2026-09-15",
+    "notes": "Evidence-aware spatial story beat choreography. All 8 beats assigned verified camera presets, canonical entity linkages, and evidence-governed geospatial coordinates. Negative constraints enforced: no fabricated individual aircraft tracks; 1942 wharf geometry remains null; no 1:1 D3A representation."
+  },
+  "beats": [
+    {
+      "id": "BEAT_0",
+      "chapter": "CHAPTER_0",
+      "historicalTime": "08:00",
+      "headline": "The strike launches",
+      "description": "One hundred and eighty‑eight aircraft — Zeros, dive bombers and level bombers — lift from the Japanese carrier fleet in the Timor Sea.",
+      "truthRefs": [
+        "TIMELINE_0800",
+        "TIME_0800"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_0_TIMOR_LAUNCH",
+        "visibleEntityIds": [
+          "FORMATION_FIRST_WAVE_TOTAL",
+          "ROUTE_FIRST_WAVE_TIMOR_TO_BATHURST"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": [
+            22,
+            36
+          ]
+        },
+        "geospatial": {
+          "status": "RECONSTRUCTION_PARAMETER_LAUNCH_AREA",
+          "confidence": "APPROXIMATE",
+          "coordinates": {
+            "latitude": -10.5,
+            "longitude": 129.0,
+            "altitudeM": 950000
+          },
+          "description": "Timor Sea carrier launch area envelope ~220 NM NNW Darwin (Senshi Sōsho Vol. 26). Coordinates define a regional reconstruction parameter for camera framing; carrier fleet positions were not observed directly."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    },
+    {
+      "id": "BEAT_1",
+      "chapter": "CHAPTER_1",
+      "historicalTime": "09:35",
+      "headline": "The warning that wasn’t heard",
+      "description": "The mission on Bathurst Island radios a large formation approaching. It is discounted as the returning American P‑40s.",
+      "truthRefs": [
+        "TIMELINE_0935",
+        "TIME_0935"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_1_BATHURST_WARNING",
+        "visibleEntityIds": [
+          "BATHURST_ISLAND_MISSION_1942",
+          "ROUTE_FIRST_WAVE_BATHURST_OVERFLIGHT",
+          "ROUTE_FIRST_WAVE_MAINLAND_BYPASS"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": [
+            132,
+            180
+          ]
+        },
+        "geospatial": {
+          "status": "VERIFIED_SITE_WITH_OBSERVED_CORRIDOR",
+          "confidence": "HIGH",
+          "coordinates": {
+            "latitude": -11.758,
+            "longitude": 130.627,
+            "altitudeM": 120000
+          },
+          "description": "Sacred Heart Mission, Bathurst Island (verified ground site). Father McGrath dispatched warning at 09:37 via coastal radio. Formation was sighted high overhead heading southeast (~140°); airspace passage is an observed corridor, not satellite-tracked."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    },
+    {
+      "id": "BEAT_2",
+      "chapter": "CHAPTER_2",
+      "historicalTime": "09:58",
+      "headline": "The first bombs fall",
+      "description": "Before the town’s air-raid sirens sound, the first raid breaks over Darwin Harbour and the town. It will last about forty minutes.",
+      "truthRefs": [
+        "TIMELINE_0958",
+        "TIME_0958"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_2_HARBOUR_STRIKE",
+        "visibleEntityIds": [
+          "ROUTE_FIRST_WAVE_ATTACK_RUN",
+          "DARWIN_HARBOUR_CONTEMPORARY",
+          "STOKES_HILL_WHARF_CONTEMPORARY"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": [
+            352,
+            468
+          ]
+        },
+        "geospatial": {
+          "status": "APPROXIMATE_ATTACK_SECTOR",
+          "confidence": "HIGH",
+          "coordinates": {
+            "latitude": -12.4634,
+            "longitude": 130.8456,
+            "altitudeM": 22000
+          },
+          "description": "Darwin Harbour and town peninsula. First wave sweeps in from 315°–345° out of the rising sun. First bombs impact harbour at 09:58."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    },
+    {
+      "id": "BEAT_3",
+      "chapter": "CHAPTER_3",
+      "historicalTime": "10:00",
+      "headline": "The Post Office",
+      "description": "A direct hit kills the postmaster, his family and staff sheltering in a trench.",
+      "truthRefs": [
+        "TIMELINE_1000",
+        "TIME_1000"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_3_POST_OFFICE",
+        "visibleEntityIds": [
+          "DARWIN_POST_OFFICE_1942",
+          "GOVERNMENT_HOUSE_DARWIN_1942"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": [
+            396,
+            408
+          ]
+        },
+        "geospatial": {
+          "status": "ESTABLISHED_FACT",
+          "confidence": "HIGH",
+          "coordinates": {
+            "latitude": -12.4647,
+            "longitude": 130.8443,
+            "altitudeM": 4200
+          },
+          "description": "Corner Mitchell and Bennett Streets. Direct bomb hit on civilian shelter trench behind Post Office at approx 10:00 kills nine."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    },
+    {
+      "id": "BEAT_4",
+      "chapter": "CHAPTER_4",
+      "historicalTime": "10:45",
+      "headline": "USS Peary",
+      "description": "The American destroyer, one of the largest ships in the harbour, is struck by five bombs.",
+      "truthRefs": [
+        "TIMELINE_1045",
+        "TIME_1045"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_4_PEARY_ATTACK",
+        "visibleEntityIds": [
+          "USS_PEARY_DD226",
+          "DARWIN_HARBOUR_CONTEMPORARY"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": [
+            240,
+            500
+          ]
+        },
+        "geospatial": {
+          "status": "APPROXIMATE_MANOEUVRE_SECTOR",
+          "confidence": "HIGH",
+          "coordinates": {
+            "latitude": -12.473,
+            "longitude": 130.832,
+            "altitudeM": 5500
+          },
+          "description": "Darwin Harbour channel manoeuvre sector. USS Peary (DD-226) conducts active high-speed evasive manoeuvres under repeated dive-bombing attacks (struck by 5 bombs); vessel was underway and moving, not stationary."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    },
+    {
+      "id": "BEAT_5",
+      "chapter": "CHAPTER_5",
+      "historicalTime": "12:00",
+      "headline": "The second raid",
+      "description": "Fifty‑four land‑based bombers return at high altitude to strike the RAAF base at Parap.",
+      "truthRefs": [
+        "TIMELINE_1200",
+        "TIME_1200"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_5_RAAF_AIRFIELD",
+        "visibleEntityIds": [
+          "RAAF_STATION_DARWIN_1942",
+          "DARWIN_CIVIL_AERODROME_1942",
+          "ROUTE_SECOND_WAVE_HIGH_ALTITUDE_RUN",
+          "FORMATION_SECOND_WAVE_TOTAL"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": [
+            452,
+            278
+          ]
+        },
+        "geospatial": {
+          "status": "ESTABLISHED_FACT",
+          "confidence": "HIGH",
+          "coordinates": {
+            "latitude": -12.414,
+            "longitude": 130.875,
+            "altitudeM": 34000
+          },
+          "description": "RAAF Station Darwin. Second wave of 54 land-based naval bombers attacks in tight V-formations from 18,000–23,000 ft at 12:00."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    },
+    {
+      "id": "BEAT_6",
+      "chapter": "CHAPTER_6",
+      "historicalTime": "13:00",
+      "headline": "Peary is lost",
+      "description": "She sinks stern‑first. More than eighty of her crew go down with her.",
+      "truthRefs": [
+        "TIMELINE_1300",
+        "TIME_1300"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_6_PEARY_LOST",
+        "visibleEntityIds": [
+          "USS_PEARY_DD226"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": [
+            240,
+            500
+          ]
+        },
+        "geospatial": {
+          "status": "MODERN_SURVEYED_WRECK_POSITION",
+          "confidence": "HIGH",
+          "coordinates": {
+            "latitude": -12.4754,
+            "longitude": 130.8292,
+            "altitudeM": 2800
+          },
+          "description": "Surveyed seabed resting position (27m depth) confirmed by Australian Hydrographic Service (Chart Aus 26). Protected historic shipwreck and war grave. Surface sinking location (~13:00) occurred nearby in harbour channel; conflicting official records document 80 to 91 casualties."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    },
+    {
+      "id": "BEAT_7",
+      "chapter": "CHAPTER_7",
+      "historicalTime": "Dusk",
+      "headline": "The reckoning begins",
+      "description": "At least 235 are dead. Eight ships lie sunk, more than thirty aircraft destroyed. More individual bombs fell on Darwin than on Pearl Harbour, though at a lighter total explosive tonnage.",
+      "truthRefs": [
+        "TIMELINE_Dusk",
+        "TIME_Dusk"
+      ],
+      "spatial": {
+        "cameraPreset": "BEAT_7_RECKONING",
+        "visibleEntityIds": [
+          "STOKES_HILL_WHARF_CONTEMPORARY",
+          "DARWIN_HARBOUR_CONTEMPORARY"
+        ],
+        "historicalLayerIds": [
+          "LAYER_CARTO_DARK_BASEMAP"
+        ],
+        "plotBoard": {
+          "coordinateSpace": "PLOT_BOARD_2D",
+          "coordinate": null
+        },
+        "geospatial": {
+          "status": "CONTEMPORARY_ORIENTATION_PRECINCT",
+          "confidence": "HIGH",
+          "coordinates": {
+            "latitude": -12.4725,
+            "longitude": 130.8485,
+            "altitudeM": 4800
+          },
+          "description": "Contemporary Stokes Hill Wharf precinct and Darwin Harbour waters at dusk. Same wharf. Same sky. 1942 historic timber wharf geometry remains unresolved."
+        }
+      },
+      "motion": {
+        "mode": "CINEMATIC_FLIGHT",
+        "reducedMotion": "STATIC_COMPOSITION"
+      },
+      "status": "AUTHENTICATED_SPATIAL_BEAT"
+    }
+  ]
+}

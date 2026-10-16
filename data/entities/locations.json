@@ -1,0 +1,344 @@
+{
+  "version": "0.3.0",
+  "status": "STAGE_2_CANONICAL_LOCATIONS_REGISTER",
+  "entities": [
+    {
+      "id": "STOKES_HILL_WHARF_CONTEMPORARY",
+      "name": "Stokes Hill Wharf (Contemporary Structure & Visitor Precinct)",
+      "latitude": -12.4725,
+      "longitude": 130.8485,
+      "altitudeM": 0,
+      "geometryType": "point",
+      "temporalContext": "CONTEMPORARY",
+      "verificationStatus": "CONTEMPORARY_GAZETTEER_APPROXIMATE",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "AHO_CHART_AUS26",
+        "GA_GEODETIC_SURVEY"
+      ],
+      "validFrom": "1956",
+      "validTo": "PRESENT",
+      "interpretiveNotes": "Contemporary public wharf and visitor precinct centroid. Coordinates derived from Australian Hydrographic Office Chart Aus 26 and Geoscience Australia Gazetteer. WGS84 is the spatial reference datum, not a provenance source. Marked as APPROXIMATE centroid for modern orientation. Does NOT define the 1942 timber wharf structure or its bombed pier head alignment.",
+      "notes": "Contemporary public wharf and visitor precinct centroid. Coordinates derived from Australian Hydrographic Office Chart Aus 26 and Geoscience Australia Gazetteer. WGS84 is the spatial reference datum, not a provenance source. Marked as APPROXIMATE centroid for modern orientation. Does NOT define the 1942 timber wharf structure or its bombed pier head alignment."
+    },
+    {
+      "id": "STOKES_HILL_WHARF_1942",
+      "name": "Stokes Hill Wharf (1942 Historical Timber Structure)",
+      "latitude": null,
+      "longitude": null,
+      "altitudeM": null,
+      "geometryType": "unknown",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "UNRESOLVED_HISTORICAL_GEOMETRY",
+      "spatialConfidence": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "sourceRefs": [
+        "NAA_DARWIN_WHARF_PLANS_1942",
+        "SOURCE_REQUIRED_1942_WHARF_SURVEY"
+      ],
+      "validFrom": "1904",
+      "validTo": "1942-02-19",
+      "interpretiveNotes": "Historical timber town pier bombed and severed in the raid of 19 February 1942. Precise pier footprint, rail viaduct curve, cargo sheds, and the MV Neptuna explosive breach require verification against primary Commonwealth Railways engineering surveys (NAA: A2633) and archival aerial reconnaissance. Must NOT be inferred from contemporary concrete wharf coordinates.",
+      "notes": "Historical timber town pier bombed and severed in the raid of 19 February 1942. Precise pier footprint, rail viaduct curve, cargo sheds, and the MV Neptuna explosive breach require verification against primary Commonwealth Railways engineering surveys (NAA: A2633) and archival aerial reconnaissance. Must NOT be inferred from contemporary concrete wharf coordinates."
+    },
+    {
+      "id": "FORT_HILL_WHARF_1942",
+      "name": "Fort Hill Wharf (1942 Historical Oil Pipeline Berth)",
+      "latitude": null,
+      "longitude": null,
+      "altitudeM": null,
+      "geometryType": "unknown",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "UNRESOLVED_HISTORICAL_GEOMETRY",
+      "spatialConfidence": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "sourceRefs": [
+        "ADMIRALTY_CHART_925_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "validFrom": "1930",
+      "validTo": "1965",
+      "interpretiveNotes": "Secondary naval timber jetty connecting fuel oil pipelines beneath Fort Hill. Entire promontory and jetty were excavated and removed during post-war port redevelopments (1965). Coordinates remain unresolved.",
+      "notes": "Secondary naval timber jetty connecting fuel oil pipelines beneath Fort Hill. Entire promontory and jetty were excavated and removed during post-war port redevelopments (1965). Coordinates remain unresolved."
+    },
+    {
+      "id": "DARWIN_HARBOUR_CONTEMPORARY",
+      "name": "Darwin Harbour (Contemporary Geographic Extent)",
+      "latitude": -12.4634,
+      "longitude": 130.8456,
+      "altitudeM": 0,
+      "geometryType": "point",
+      "temporalContext": "CONTEMPORARY",
+      "verificationStatus": "CONTEMPORARY_GEOGRAPHIC_EXTENT",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "AHO_CHART_AUS26"
+      ],
+      "validFrom": "CONTEMPORARY",
+      "validTo": "PRESENT",
+      "interpretiveNotes": "Natural deepwater harbour centroid used for high-altitude regional framing.",
+      "notes": "Natural deepwater harbour centroid used for high-altitude regional framing."
+    },
+    {
+      "id": "DARWIN_HARBOUR_1942",
+      "name": "Darwin Harbour (1942 Anchorage & Naval Berth Limits)",
+      "latitude": null,
+      "longitude": null,
+      "altitudeM": null,
+      "geometryType": "area",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "UNRESOLVED_HISTORICAL_GEOMETRY",
+      "spatialConfidence": "UNKNOWN",
+      "confidence": "UNKNOWN",
+      "sourceRefs": [
+        "ADMIRALTY_CHART_925_1942",
+        "SOURCE_REQUIRED_HARBOUR_MOORINGS_LOG_1942"
+      ],
+      "validFrom": "1942-02",
+      "validTo": "1942-02",
+      "interpretiveNotes": "Designated naval Man-of-War anchorage, commercial berths 1–25, and shallow mudflat boundaries circa 1942 pending integration of official Naval Board mooring charts.",
+      "notes": "Designated naval Man-of-War anchorage, commercial berths 1–25, and shallow mudflat boundaries circa 1942 pending integration of official Naval Board mooring charts."
+    },
+    {
+      "id": "RAAF_STATION_DARWIN_1942",
+      "name": "RAAF Station Darwin (1942 Operational Base & Aerodrome)",
+      "latitude": -12.414,
+      "longitude": 130.875,
+      "altitudeM": 30,
+      "geometryType": "area",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_MILITARY_INSTALLATION",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "validFrom": "1940",
+      "validTo": "1945",
+      "interpretiveNotes": "Primary RAAF airfield, hangars, and operations headquarters (now modern RAAF Base Darwin / Darwin International Airport). Target of the 54 high-altitude bombers in the second wave.",
+      "notes": "Primary RAAF airfield, hangars, and operations headquarters (now modern RAAF Base Darwin / Darwin International Airport). Target of the 54 high-altitude bombers in the second wave."
+    },
+    {
+      "id": "DARWIN_CIVIL_AERODROME_1942",
+      "name": "Darwin Civil Aerodrome (Parap 1942)",
+      "latitude": -12.428,
+      "longitude": 130.865,
+      "altitudeM": 25,
+      "geometryType": "area",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_CIVIL_INSTALLATION",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "validFrom": "1934",
+      "validTo": "1942",
+      "interpretiveNotes": "Pre-war civil airport and hangar facilities at Parap, south of the main military runways.",
+      "notes": "Pre-war civil airport and hangar facilities at Parap, south of the main military runways."
+    },
+    {
+      "id": "BATHURST_ISLAND_MISSION_1942",
+      "name": "Sacred Heart Mission (Bathurst Island Warning Sighting)",
+      "latitude": -11.758,
+      "longitude": 130.627,
+      "altitudeM": 10,
+      "geometryType": "point",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "VERIFIED_LOCATION",
+      "spatialConfidence": "HIGH",
+      "confidence": "HIGH",
+      "sourceRefs": [
+        "FATHER_MCGRATH_RADIO_LOG_1942",
+        "LOWE_COMMISSION_1942"
+      ],
+      "validFrom": "1911",
+      "validTo": "PRESENT",
+      "interpretiveNotes": "Location where Father John McGrath sighted the First Wave Japanese strike formation passing overhead and radioed the warning at approx 09:37.",
+      "notes": "Location where Father John McGrath sighted the First Wave Japanese strike formation passing overhead and radioed the warning at approx 09:37."
+    },
+    {
+      "id": "DRIPSTONE_CAVES_RADAR_311_1942",
+      "name": "RAAF No. 311 Radar Station Site (Dripstone Caves)",
+      "latitude": -12.355,
+      "longitude": 130.868,
+      "altitudeM": 15,
+      "geometryType": "point",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "VERIFIED_LOCATION",
+      "spatialConfidence": "HIGH",
+      "confidence": "HIGH",
+      "sourceRefs": [
+        "GILLISON_RAAF_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "validFrom": "1942-02",
+      "validTo": "1945",
+      "interpretiveNotes": "Site of the early experimental British AW radar set. Non-operational on the morning of 19 February 1942 due to calibration status and lack of dedicated operational communication circuits.",
+      "notes": "Site of the early experimental British AW radar set. Non-operational on the morning of 19 February 1942 due to calibration status and lack of dedicated operational communication circuits."
+    },
+    {
+      "id": "LARRAKEYAH_BARRACKS_1942",
+      "name": "Larrakeyah Barracks & Naval Base HMAS Melville",
+      "latitude": -12.458,
+      "longitude": 130.828,
+      "altitudeM": 18,
+      "geometryType": "area",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_MILITARY_INSTALLATION",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "GILL_RAN_VOL1",
+        "LOWE_COMMISSION_1942"
+      ],
+      "validFrom": "1939",
+      "validTo": "PRESENT",
+      "interpretiveNotes": "Headquarters of the 7th Military District and Royal Australian Navy Base HMAS Melville. Strafed by A6M2 Zeros during the first wave.",
+      "notes": "Headquarters of the 7th Military District and Royal Australian Navy Base HMAS Melville. Strafed by A6M2 Zeros during the first wave."
+    },
+    {
+      "id": "DARWIN_POST_OFFICE_1942",
+      "name": "Darwin General Post & Telegraph Office (Civilian Trench Site)",
+      "latitude": -12.4647,
+      "longitude": 130.8443,
+      "altitudeM": 15,
+      "geometryType": "point",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_CIVIC_INSTALLATION",
+      "spatialConfidence": "HIGH",
+      "confidence": "HIGH",
+      "sourceRefs": [
+        "CWGC_DARWIN_CIVILIAN",
+        "LOWE_COMMISSION_1942"
+      ],
+      "validFrom": "1872",
+      "validTo": "1942-02-19",
+      "interpretiveNotes": "Corner of Mitchell and Bennett Streets. Struck by a direct bomb hit on an open trench shelter behind the building at approx 10:00, killing Postmaster H.A. Shugg's family, supervisors, and telephonists (9 civilian dead).",
+      "notes": "Corner of Mitchell and Bennett Streets. Struck by a direct bomb hit on an open trench shelter behind the building at approx 10:00, killing Postmaster H.A. Shugg's family, supervisors, and telephonists (9 civilian dead)."
+    },
+    {
+      "id": "GOVERNMENT_HOUSE_DARWIN_1942",
+      "name": "Government House (Administrator's Residence)",
+      "latitude": -12.4682,
+      "longitude": 130.8465,
+      "altitudeM": 20,
+      "geometryType": "point",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_CIVIC_INSTALLATION",
+      "spatialConfidence": "HIGH",
+      "confidence": "HIGH",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942"
+      ],
+      "validFrom": "1879",
+      "validTo": "PRESENT",
+      "interpretiveNotes": "Official residence of the Administrator of the Northern Territory overlooking the harbour. Bombs detonated in the grounds, causing blast damage and killing an Aboriginal domestic employee (Daisy Martin).",
+      "notes": "Official residence of the Administrator of the Northern Territory overlooking the harbour. Bombs detonated in the grounds, causing blast damage and killing an Aboriginal domestic employee (Daisy Martin)."
+    },
+    {
+      "id": "STOKES_HILL_OIL_TANKS_1942",
+      "name": "Stokes Hill Naval Fuel Oil Installation (Tanks 1, 2, 3)",
+      "latitude": -12.4695,
+      "longitude": 130.8505,
+      "altitudeM": 25,
+      "geometryType": "area",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_INFRASTRUCTURE",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "GILL_RAN_VOL1",
+        "AWM_AERIAL_RECON_1942"
+      ],
+      "validFrom": "1939",
+      "validTo": "1942-02-19",
+      "interpretiveNotes": "Bulk fuel oil tanks on the elevation of Stokes Hill. Struck by bombs during the first wave; burning fuel sent immense black smoke plumes over the town and harbour for days.",
+      "notes": "Bulk fuel oil tanks on the elevation of Stokes Hill. Struck by bombs during the first wave; burning fuel sent immense black smoke plumes over the town and harbour for days."
+    },
+    {
+      "id": "AA_BATTERY_14_OVAL_1942",
+      "name": "14th Heavy Anti-Aircraft Battery — Darwin Oval Emplacement",
+      "latitude": -12.4615,
+      "longitude": 130.843,
+      "altitudeM": 12,
+      "geometryType": "point",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_MILITARY_INSTALLATION",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "ALFORD_DARWIN_1942",
+        "SOURCE_REQUIRED_AA_SITE_PLANS_1942"
+      ],
+      "validFrom": "1941",
+      "validTo": "1945",
+      "interpretiveNotes": "Static 3.7-inch anti-aircraft gun pits near Darwin Oval, engaging first-wave horizontal and dive bombers.",
+      "notes": "Static 3.7-inch anti-aircraft gun pits near Darwin Oval, engaging first-wave horizontal and dive bombers."
+    },
+    {
+      "id": "AA_BATTERY_14_FORT_HILL_1942",
+      "name": "14th Heavy Anti-Aircraft Battery — Fort Hill Position",
+      "latitude": -12.4715,
+      "longitude": 130.846,
+      "altitudeM": 22,
+      "geometryType": "point",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_MILITARY_INSTALLATION",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "ALFORD_DARWIN_1942",
+        "SOURCE_REQUIRED_AA_SITE_PLANS_1942"
+      ],
+      "validFrom": "1941",
+      "validTo": "1945",
+      "interpretiveNotes": "Gun positions atop Fort Hill commanding harbour approaches.",
+      "notes": "Gun positions atop Fort Hill commanding harbour approaches."
+    },
+    {
+      "id": "AA_BATTERY_14_FANNIE_BAY_1942",
+      "name": "14th Heavy Anti-Aircraft Battery — Fannie Bay Position",
+      "latitude": -12.428,
+      "longitude": 130.835,
+      "altitudeM": 10,
+      "geometryType": "point",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_MILITARY_INSTALLATION",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "ALFORD_DARWIN_1942",
+        "SOURCE_REQUIRED_AA_SITE_PLANS_1942"
+      ],
+      "validFrom": "1941",
+      "validTo": "1945",
+      "interpretiveNotes": "Northern coastal anti-aircraft battery position guarding northern air corridors.",
+      "notes": "Northern coastal anti-aircraft battery position guarding northern air corridors."
+    },
+    {
+      "id": "HARBOUR_BOOM_DEFENCE_NET_1942",
+      "name": "Darwin Anti-Submarine Boom Net & Gate Alignment (1942)",
+      "latitude": null,
+      "longitude": null,
+      "altitudeM": null,
+      "geometryType": "corridor",
+      "temporalContext": "HISTORICAL_1942",
+      "verificationStatus": "ESTABLISHED_NAVAL_INFRASTRUCTURE",
+      "spatialConfidence": "APPROXIMATE",
+      "confidence": "APPROXIMATE",
+      "sourceRefs": [
+        "GILL_RAN_VOL1",
+        "RAN_HMAS_MELVILLE_WAR_DIARY_1942"
+      ],
+      "validFrom": "1941",
+      "validTo": "1945",
+      "interpretiveNotes": "The world's longest anti-submarine boom net (approx. 6 km) spanning Darwin Harbour entrance from East Point to West Point/Talc Head, with a mobile gate vessel operated by HMAS Kangaroo and Karangi.",
+      "notes": "The world's longest anti-submarine boom net (approx. 6 km) spanning Darwin Harbour entrance from East Point to West Point/Talc Head, with a mobile gate vessel operated by HMAS Kangaroo and Karangi."
+    }
+  ]
+}

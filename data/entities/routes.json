@@ -1,0 +1,293 @@
+{
+  "version": "0.3.1",
+  "status": "STAGE_2_1_AUTHENTICATED_ROUTES_REGISTER",
+  "auditMetadata": {
+    "auditStage": "STAGE_2_1_FORENSIC_SOURCE_AUTHENTICATION",
+    "leadAuthority": "TRUTH",
+    "technicalSupport": "TECHNOLOGY",
+    "authenticationDate": "2026-09-15",
+    "notes": "Forensic audit of route spatial assertions. Separated historical evidence (primary textual records and verified sightings) from computational reconstruction parameters. Audited bearings, altitudes, corridor widths, and origin coordinates to eliminate false precision."
+  },
+  "routes": [
+    {
+      "id": "ROUTE_FIRST_WAVE_TIMOR_TO_BATHURST",
+      "name": "First Wave Carrier Strike — Launch & Transit to Bathurst Island",
+      "formationRef": "FORMATION_FIRST_WAVE_TOTAL",
+      "segmentType": "INTERPOLATED_POSITION",
+      "geometryType": "corridor",
+      "spatialConfidence": "APPROXIMATE",
+      "timeRange": {
+        "start": "08:00",
+        "end": "09:35"
+      },
+      "historicalEvidence": {
+        "launchAreaDescription": "Timor Sea, approx 220 nautical miles NNW of Darwin (Senshi Sōsho Vol. 26).",
+        "cruisingAltitudeM": [3000, 4500],
+        "firstSighting": "Bathurst Island Mission at 09:35–09:37 heading south (Father McGrath radio transmission).",
+        "exactNavigationalTrackRecorded": false
+      },
+      "reconstructionParameters": {
+        "nominalLaunchCentroid": {
+          "latitude": -10.5,
+          "longitude": 129.0,
+          "uncertaintyRadiusKm": 40,
+          "parameterClassification": "RECONSTRUCTION_PARAMETER"
+        },
+        "nominalDestinationPoint": {
+          "latitude": -11.758,
+          "longitude": 130.627,
+          "uncertaintyRadiusKm": 5,
+          "parameterClassification": "HISTORICAL_EVIDENCE_CENTROID"
+        },
+        "nominalBearingRangeDeg": [130, 150],
+        "nominalCorridorWidthKm": 30
+      },
+      "corridorGeometry": {
+        "originArea": {
+          "description": "Timor Sea carrier launch zone ~220 NM NNW Darwin (reconstructed centroid)",
+          "latitude": -10.5,
+          "longitude": 129.0,
+          "uncertaintyRadiusKm": 40
+        },
+        "destinationPoint": {
+          "description": "Bathurst Island Mission airspace",
+          "latitude": -11.758,
+          "longitude": 130.627,
+          "uncertaintyRadiusKm": 5
+        },
+        "bearingRangeDeg": [130, 150],
+        "corridorWidthKm": 30,
+        "altitudeRangeM": [3000, 4500]
+      },
+      "evidenceBasis": "Senshi Sōsho records of carrier launch coordinates; confirmed visual sighting at Bathurst Island at 09:37.",
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "FATHER_MCGRATH_RADIO_LOG_1942"
+      ],
+      "classification": "HISTORICAL_INTERPRETATION",
+      "notes": "Route over open water cannot be modeled as a single polyline. Represented as a transit corridor from approximate carrier launch area to verified visual observation over Bathurst Island."
+    },
+    {
+      "id": "ROUTE_FIRST_WAVE_BATHURST_OVERFLIGHT",
+      "name": "First Wave Carrier Strike — Bathurst Island Overflight Sighting",
+      "formationRef": "FORMATION_FIRST_WAVE_TOTAL",
+      "segmentType": "SOURCE_OBSERVED_POSITION",
+      "geometryType": "point_with_bearing",
+      "spatialConfidence": "HIGH",
+      "timeRange": {
+        "start": "09:35",
+        "end": "09:38"
+      },
+      "historicalEvidence": {
+        "verbatimText": "An unusually large air formation bearing south, heading south, observed over Bathurst Island (Father McGrath radio message).",
+        "location": "Directly over Sacred Heart Mission, Nguiu, Bathurst Island (-11.758, 130.627).",
+        "time": "09:35–09:37 CST",
+        "altitudeDescription": "High altitude cruising formation (estimated 3,000–4,000m)."
+      },
+      "reconstructionParameters": {
+        "nominalBearingDeg": 140,
+        "nominalAltitudeM": 3500,
+        "parameterClassification": "RECONSTRUCTION_PARAMETER"
+      },
+      "sightingGeometry": {
+        "observedLocation": {
+          "latitude": -11.758,
+          "longitude": 130.627,
+          "altitudeM": 3500
+        },
+        "observedHeading": "Heading south-southeast across Clarence Strait",
+        "bearingDeg": 140,
+        "uncertaintyRadiusKm": 5
+      },
+      "evidenceBasis": "Father John McGrath radio telegraph log: 'An unusually large air formation bearing south, heading south, observed over Bathurst Island.'",
+      "sourceRefs": [
+        "FATHER_MCGRATH_RADIO_LOG_1942",
+        "LOWE_COMMISSION_1942"
+      ],
+      "classification": "PRIMARY_SOURCE",
+      "notes": "Direct primary observation. Anchor point for all subsequent raid ingress calculations."
+    },
+    {
+      "id": "ROUTE_FIRST_WAVE_MAINLAND_BYPASS",
+      "name": "First Wave Carrier Strike — Eastern Inland Approach Corridor",
+      "formationRef": "FORMATION_FIRST_WAVE_TOTAL",
+      "segmentType": "SOURCE_DESCRIBED_DIRECTION",
+      "geometryType": "corridor",
+      "spatialConfidence": "APPROXIMATE",
+      "timeRange": {
+        "start": "09:38",
+        "end": "09:55"
+      },
+      "historicalEvidence": {
+        "descriptions": "Formation crossed Clarence Strait east of Darwin, bypassed town inland towards the south-east (Shoal Bay, Howard Springs, 34 Mile post), positioning to attack out of the sun.",
+        "eyewitnessStations": ["Shoal Bay military post", "Howard Springs civilian observers", "34-Mile Post spotters"],
+        "exactFlightLineRecorded": false
+      },
+      "reconstructionParameters": {
+        "boundingArea": {
+          "north": -12.15,
+          "south": -12.65,
+          "west": 130.95,
+          "east": 131.25
+        },
+        "nominalCorridorWidthKm": 15,
+        "nominalBearingRangeDeg": [150, 175],
+        "parameterClassification": "RECONSTRUCTION_PARAMETER"
+      },
+      "corridorGeometry": {
+        "corridorDescription": "Traversed Clarence Strait east of Gunn Point, entering mainland airspace east of Shoal Bay and sweeping south-southeast towards Howard Springs / Acacia",
+        "boundingArea": {
+          "north": -12.15,
+          "south": -12.65,
+          "west": 130.95,
+          "east": 131.25
+        },
+        "corridorWidthKm": 15,
+        "altitudeRangeM": [3000, 4200],
+        "bearingRangeDeg": [150, 175]
+      },
+      "evidenceBasis": "Accounts of civilian and military spotters at Shoal Bay, Howard Springs, and 34 Mile post; Lowe Commission evidence.",
+      "sourceRefs": [
+        "LOWE_COMMISSION_1942",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "classification": "HISTORICAL_INTERPRETATION",
+      "notes": "Deliberate Japanese tactic to bypass seaward anti-aircraft defences and approach Darwin from the south-east with the sun behind them. Cannot be represented as an exact flight line; must be displayed as an approach corridor."
+    },
+    {
+      "id": "ROUTE_FIRST_WAVE_ATTACK_RUN",
+      "name": "First Wave Carrier Strike — Attack Ingress on Darwin Harbour and Airfield",
+      "formationRef": "FORMATION_FIRST_WAVE_TOTAL",
+      "segmentType": "RECONSTRUCTED_ROUTE",
+      "geometryType": "directional_fan",
+      "spatialConfidence": "APPROXIMATE",
+      "timeRange": {
+        "start": "09:55",
+        "end": "10:45"
+      },
+      "historicalEvidence": {
+        "attackDirectionDescription": "Aircraft turned northwest (approx 315°–345°) over the Howard Springs/Berrimah area, attacking towards Darwin Harbour, Stokes Hill Wharf, and RAAF Station Darwin out of the rising sun.",
+        "tacticalDecomposition": "Kates in tight horizontal level-bombing runs at 3,000–3,600m; Vals in steep 60° dive-bombing attacks peeling off from 3,500m to 500m; Zeros strafing on the deck from 50m to 500m."
+      },
+      "reconstructionParameters": {
+        "nominalApexPoint": {
+          "latitude": -12.55,
+          "longitude": 130.98,
+          "uncertaintyRadiusKm": 8,
+          "parameterClassification": "RECONSTRUCTION_PARAMETER"
+        },
+        "attackAxisBearingDeg": [315, 345],
+        "parameterClassification": "RECONSTRUCTION_PARAMETER"
+      },
+      "fanGeometry": {
+        "apexPoint": {
+          "description": "Turning zone south-southeast of Darwin (Howard Springs / Berrimah)",
+          "latitude": -12.55,
+          "longitude": 130.98,
+          "uncertaintyRadiusKm": 8
+        },
+        "attackAxisBearingDeg": [315, 345],
+        "targetSectors": [
+          {
+            "target": "Darwin Harbour & Stokes Hill Wharf",
+            "assignedUnits": ["SUB_FORMATION_KATE_LEVEL_BOMBERS", "SUB_FORMATION_VAL_DIVE_BOMBERS"]
+          },
+          {
+            "target": "RAAF Station Darwin & Civil Aerodrome",
+            "assignedUnits": ["SUB_FORMATION_ZERO_ESCORT_STRAFERS", "SUB_FORMATION_VAL_DIVE_BOMBERS"]
+          }
+        ]
+      },
+      "evidenceBasis": "Senshi Sōsho attack orders, Lowe Commission eyewitness testimonies, anti-aircraft battery tracking logs.",
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "LOWE_COMMISSION_1942",
+        "GILL_RAN_VOL1"
+      ],
+      "classification": "HISTORICAL_INTERPRETATION",
+      "notes": "Coordinated multi-axis attack run breaking over Darwin at approx 09:58."
+    },
+    {
+      "id": "ROUTE_FIRST_WAVE_EGRESS",
+      "name": "First Wave Carrier Strike — Egress & Return Flight",
+      "formationRef": "FORMATION_FIRST_WAVE_TOTAL",
+      "segmentType": "UNRESOLVED_SEGMENT",
+      "geometryType": "corridor",
+      "spatialConfidence": "LOW",
+      "timeRange": {
+        "start": "10:35",
+        "end": "11:30"
+      },
+      "historicalEvidence": {
+        "generalDirectionReported": "Observed departing towards the north-west over Beagle Gulf towards the Timor Sea.",
+        "exactFlightPaths": null,
+        "radarTracking": null,
+        "notes": "No Allied radar was operational to track departing aircraft. Primary records state only general north-westerly departure."
+      },
+      "reconstructionParameters": {
+        "nominalEgressBearingRangeDeg": [320, 350],
+        "nominalCorridorWidthKm": 40,
+        "parameterClassification": "RECONSTRUCTION_PARAMETER"
+      },
+      "corridorGeometry": {
+        "egressBearingRangeDeg": [320, 350],
+        "generalDirection": "Northwest over Beagle Gulf returning to carrier recovery positions in the Timor Sea",
+        "corridorWidthKm": 40
+      },
+      "evidenceBasis": "Senshi Sōsho carrier recovery logs; radar tracking absent; Allied visual reports noted departure to north-west.",
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1"
+      ],
+      "classification": "INFERENCE",
+      "notes": "Exact egress routes and regrouping points remain largely unrecorded in primary Allied logs; high degree of uncertainty."
+    },
+    {
+      "id": "ROUTE_SECOND_WAVE_HIGH_ALTITUDE_RUN",
+      "name": "Second Wave Land Bombers — High Altitude Ingress on RAAF Darwin",
+      "formationRef": "FORMATION_SECOND_WAVE_TOTAL",
+      "segmentType": "SOURCE_DESCRIBED_DIRECTION",
+      "geometryType": "corridor",
+      "spatialConfidence": "HIGH",
+      "timeRange": {
+        "start": "11:50",
+        "end": "12:30"
+      },
+      "historicalEvidence": {
+        "approachDirection": "Direct north-westerly approach across Beagle Gulf from Dutch East Indies bases (Kendari and Ambon).",
+        "altitude": "High altitude horizontal bombing run at 5,500m–7,000m (approx 18,000–23,000 ft).",
+        "tracking": "Engaged by 14th Heavy Anti-Aircraft Battery 3.7-inch guns (Oval, Fort Hill, Fannie Bay). Target: RAAF Station Darwin."
+      },
+      "reconstructionParameters": {
+        "targetCentroid": {
+          "latitude": -12.414,
+          "longitude": 130.875,
+          "altitudeM": 6500,
+          "parameterClassification": "HISTORICAL_TARGET_CENTROID"
+        },
+        "approachBearingDeg": 135,
+        "nominalCorridorWidthKm": 10,
+        "parameterClassification": "RECONSTRUCTION_PARAMETER"
+      },
+      "corridorGeometry": {
+        "ingressDirection": "Direct approach from northwest across Beagle Gulf",
+        "targetPoint": {
+          "latitude": -12.414,
+          "longitude": 130.875,
+          "altitudeM": 6500
+        },
+        "approachBearingDeg": 135,
+        "altitudeRangeM": [5500, 7500],
+        "corridorWidthKm": 10
+      },
+      "evidenceBasis": "14th Heavy AA Battery tracking plots (Oval, Fort Hill, Fannie Bay); RAAF Operations logs; Senshi Sōsho flight plans.",
+      "sourceRefs": [
+        "SENSHI_SOSHO_VOL26",
+        "GILLISON_RAAF_VOL1",
+        "ALFORD_DARWIN_1942"
+      ],
+      "classification": "ESTABLISHED_FACT",
+      "notes": "High-altitude straight level bombing run maintained under anti-aircraft fire, releasing sticks across RAAF Station Darwin."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "version": "1.1.0",
+  "principle": "Motion must communicate time, transition, chronology, causation, location, revelation or focus.",
+  "preferredStoryRhythm": [
+    "scroll",
+    "transition",
+    "composition",
+    "read"
+  ],
+  "durationsMs": {
+    "micro": [
+      120,
+      220
+    ],
+    "ui": [
+      180,
+      320
+    ],
+    "editorial": [
+      450,
+      900
+    ],
+    "cameraBeat": [
+      1200,
+      5000
+    ]
+  },
+  "reducedMotion": "discrete_state_change_or_static_composition",
+  "avoid": [
+    "bouncing UI",
+    "continuous decorative drift",
+    "gratuitous parallax",
+    "generic stagger presets",
+    "scroll-jacking",
+    "motion_without_information"
+  ]
+}
