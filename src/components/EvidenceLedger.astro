@@ -482,13 +482,12 @@ const evidenceItems = Object.values(CANONICAL_EVIDENCE_RECORDS);
 
   // Wire up index buttons within the modal dialog
   document.querySelectorAll<HTMLButtonElement>('[data-ledger-index-btn]').forEach(btn => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-ledger-index-btn');
-      if (id) {
-        const { CANONICAL_EVIDENCE_RECORDS } = await import('../lib/spatial/spatial-evidence-overlay');
-        if (CANONICAL_EVIDENCE_RECORDS[id] && (window as any).openEvidenceLedger) {
-          (window as any).openEvidenceLedger(CANONICAL_EVIDENCE_RECORDS[id]);
-        }
+      // Records are published by SpatialEngine (see there for why this is not a dynamic import).
+      const records = (window as any).__BOD_EVIDENCE_RECORDS__;
+      if (id && records?.[id] && (window as any).openEvidenceLedger) {
+        (window as any).openEvidenceLedger(records[id]);
       }
     });
   });

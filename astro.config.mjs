@@ -11,6 +11,8 @@ import vercel from '@astrojs/vercel';
  * import('cesium') in spatial-viewer.ts.
  *
  * Client build only: includeDependenciesRecursively=false is rejected for the server build.
+ * Do NOT add a separate Cesium group: splitting Cesium across chunks broke its init order
+ * ("D is not a function", live map dead) — verified 25 Oct 2026.
  * Check after builds: `grep -l 'from"./cesium' .vercel/output/static/_astro/*.js` lists nothing.
  */
 const clientChunking = {
@@ -27,7 +29,6 @@ const clientChunking = {
             codeSplitting: {
               groups: [
                 { name: 'helpers', test: /rolldown\/runtime|vite\/preload-helper|commonjsHelpers/, priority: 100, includeDependenciesRecursively: false },
-                { name: 'cesium', test: /node_modules[\\/](cesium|@cesium)[\\/]/, priority: 10, includeDependenciesRecursively: false },
               ],
             },
           },

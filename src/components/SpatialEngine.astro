@@ -242,6 +242,11 @@ const { className = '' } = Astro.props;
 <script>
   import { CANONICAL_EVIDENCE_RECORDS } from '../lib/spatial/spatial-evidence-overlay';
 
+  // Shared with EvidenceLedger (mounted site-wide in Base). A dynamic import there forced a
+  // namespace object whose helper Rolldown placed inside the Cesium chunk, making /story load
+  // Cesium statically. Only pages with the spatial stage have ledger records.
+  (window as any).__BOD_EVIDENCE_RECORDS__ = CANONICAL_EVIDENCE_RECORDS;
+
   // Wire accessible evidence roster for keyboard users
   document.querySelectorAll<HTMLButtonElement>('.spatial-stage__evidence-access button').forEach(btn => {
     btn.addEventListener('click', () => {
