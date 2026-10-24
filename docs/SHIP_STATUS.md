@@ -6,7 +6,7 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 |---|---|
 | Current milestone | **M4/M5 site pass — speed, unused files, TV witness, tracking** (on `dev/site-pass`, awaiting owner review) |
 | Working branch | `dev/site-pass` (from `dev/spatial-engine` @ `65b71e5`). Previous: `dev/spatial-engine`. |
-| Production | `dev/spatial-engine` fast-forwarded into `main` and deployed 25 Oct 2026, on the product owner's explicit approval ("Merge them all and deploy"). Previous production: `main` @ `a7f6c95`. |
+| Production | `main` @ `8b7c2d9` (site pass + ticketing), deployed 25 Oct 2026 07:28 ACDT on owner approval. Previous: `6b3a387`. Custom domain still on old project (move pending, owner). |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
 | Updated | 25 Oct 2026 (site pass) |
 
@@ -150,6 +150,22 @@ designation, launch-area uncertainty) remains in the Evidence Ledger records; th
 check it there. "Same wharf. Same sky." no longer appears on the map at dusk; it remains in the dusk
 beat content (story-beats.json) — owner to confirm that is acceptable under AGENTS.md.
 Owner wrote "Post & Telegram Office"; the label keeps the historical name "Post & Telegraph Office".
+
+## Release 25 Oct 2026 (b) — site pass + ticketing to production
+
+- Approval: product owner, in session, 25 Oct 2026 07:27 ACDT ("approve release").
+- Method: fast-forward of `main` (6b3a387) to `8b7c2d9` (`dev/site-pass` + `dev/ticketing`); no merge commit.
+  Deployed `dpl_BzXXpzGXuzviDzKk4KgMRYK57fyq`, READY, aliased to `bombingofdarwinexperience.vercel.app`.
+  Rollback: Vercel instant rollback to `dpl_9XueCRV5G9e8njfW2eQN8wFNUDC3` (`6b3a387`).
+- Pre-release checks on `8b7c2d9`: all governance suites pass (stage2 124/124 after check fix);
+  serverless hardening 19/19; i18n pass; tsc 0; build pass; Cesium absent from static graphs.
+- Post-deploy smoke: all pages 200 (/programs 301 as before); `/api/products` 4 live products;
+  `/api/availability` live (mock=false, real 09:00 sessions); booking-status NOT_FOUND → 404;
+  checkout flow (iframe + own-tab) opens with live sessions; live map ready, no console errors.
+- Custom domain move: NOT done — the agent's attempt to attach the domain was blocked by a safety
+  control. Owner to move `thebombingofdarwin.com.au` + `www` from project `bombingofdarwin` to
+  `bombingofdarwinexperience` in the Vercel dashboard. Old project stays as rollback.
+  After the move: the first real booking verifies confirmation page + GA4 purchase end to end.
 
 ## Release 25 Oct 2026 — spatial engine to production
 
