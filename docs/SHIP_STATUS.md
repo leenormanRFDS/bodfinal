@@ -231,7 +231,8 @@ Findings (verified against the live Rezdy product page in the owner's Chrome, vi
    `redirectUrl`/`returnUrl` are not documented. Rezdy runs custom code on its thank-you page
    (Integrations › Custom Conversion Tracking, `###ORDER_NUMBER###`). Snippet prepared in
    `docs/evidence/rezdy-thankyou-snippet.html` — **not installed, needs owner approval** (live Rezdy
-   config). Until installed, GA4/Meta purchase events will not fire for most bookings.
+   config). **Installed 25 Oct 2026 07:15 ACDT with owner approval**, appended below the existing
+   Google Ads tag (unchanged); verified persisted after reload. Fires on the next real booking.
 4. **Stale in-progress status served as verified** when Rezdy unreachable → fixed (only CONFIRMED /
    CANCELLED served from cache). `test-serverless-hardening` 19/19 (was 18/19).
 5. **Invented availability on Rezdy failure:** production silently fell back to mock sessions with
@@ -241,7 +242,13 @@ Findings (verified against the live Rezdy product page in the owner's Chrome, vi
 7. Typecheck: 31 → 0 errors.
 
 Verified on preview (Playwright, Rezdy stubbed): desktop iframe path + reminder; own-tab path opens
-Rezdy in a new tab with the waiting panel. NOT verified: real iPhone Safari, a real completed booking.
+Rezdy in a new tab with the waiting panel; availability-failure path. **Owner iPhone test passed**
+25 Oct (reached Rezdy's booking form in its own tab). NOT verified: a real completed booking → our
+confirmation page + GA4 purchase (needs the merge to production + domain move, then one real booking).
+
+Finding (not changed): Rezdy's thank-you page already loads Google Ads `AW-17121250128` but only
+`gtag('config', ...)` — no `conversion` event with a send_to label — so Google Ads likely records no
+booking conversions from Rezdy. Owner to confirm the Ads conversion action/label before adding it.
 
 ## Outstanding defects (logged, not yet addressed)
 
@@ -265,6 +272,6 @@ Rezdy in a new tab with the waiting panel. NOT verified: real iPhone Safari, a r
 
 1. Owner review of the `dev/site-pass` preview; on approval merge to `main`, then move the custom domain to `bombingofdarwinexperience`.
 2. Meta dataset ID + privacy wording, then enable the pixel.
-3. M3: owner approval to install the Rezdy thank-you snippet; owner iPhone test of `dev/ticketing` preview (book → own tab → confirmation).
+3. M3: merge `dev/site-pass` + `dev/ticketing` to `main` and move the domain (owner approval), then verify one real booking end to end (confirmation page, GA4 purchase).
 4. M2: Evidence Ledger affordance (non-canvas), motion paths for formations between beats.
 4. M3: Rezdy in-progress TTL revalidation defect (needs staging credentials for live verification).
