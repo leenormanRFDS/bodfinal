@@ -116,7 +116,7 @@ visitor-facing feature; SS Barossa canon correction.
 **A6M2 Zero model** (`public/models/a6m2-zero.glb`, 16.7 KB): owner-supplied model (generated with
 Tripo). Geometry kept; texture removed because its paint (dark green uppers, yellow leading-edge
 strips) is later-war and its national markings were garbled; outer wing span corrected 1.17 → 1.32 ×
-length (A6M2: 12.0 m / 9.06 m); real-world metres, nose +X; simplified 10.4k → 3.1k triangles;
+length (A6M2: 12.0 m / 9.06 m); real-world metres, nose +Z (glTF forward; first export used +X, which Cesium rendered 90° off — fixed 25 Oct); simplified 10.4k → 3.1k triangles;
 meshopt-compressed (was 870 KB). Rendered in muted bone, minimum 54 px (symbol size, not a scale claim).
 
 **Canon correction — SS_BAROSSA** (`data/entities/vessels.json`, sources added to `sources.json`):

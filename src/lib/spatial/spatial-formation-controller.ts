@@ -71,6 +71,16 @@ export class SpatialFormationController {
     }
   }
 
+  /** Unit vector (ECEF) pointing along a compass heading in the local horizontal plane. */
+  private travelAxis(lon: number, lat: number, alt: number, headingDeg: number): CesiumType.Cartesian3 {
+    const C = this.Cesium;
+    const enu = C.Transforms.eastNorthUpToFixedFrame(C.Cartesian3.fromDegrees(lon, lat, alt));
+    const h = C.Math.toRadians(headingDeg);
+    const local = new C.Cartesian3(Math.sin(h), Math.cos(h), 0);
+    const world = C.Matrix4.multiplyByPointAsVector(enu, local, new C.Cartesian3());
+    return C.Cartesian3.normalize(world, world);
+  }
+
   public initialize(): void {
     this.buildBeat0Formations();
     this.buildBeat1Formations();
@@ -153,8 +163,10 @@ export class SpatialFormationController {
           height: size,
           // Muted bone tint: representative formation, not a bright game sprite.
           color: Cesium.Color.fromCssColorString('rgba(206, 199, 186, 0.72)'),
-          alignedAxis: Cesium.Cartesian3.UNIT_Z,
-          rotation: -Cesium.Math.toRadians(heading),
+          // Artwork is nose-up; aligning "up" with the ground direction of travel keeps the
+          // on-screen heading correct under any camera tilt.
+          alignedAxis: this.travelAxis(d.targetLon, d.targetLat, d.altitudeM, heading),
+          rotation: 0,
           scaleByDistance: new Cesium.NearFarScalar(5e4, 1.25, 3e6, 0.7),
         },
         show: false,
@@ -325,11 +337,12 @@ export class SpatialFormationController {
               // until type-accurate models exist.
               orientation: Cesium.Transforms.headingPitchRollQuaternion(
                 Cesium.Cartesian3.fromDegrees(d.targetLon, d.targetLat, d.altitudeM),
-                // Model nose is +X (east at heading 0); compass heading H → Cesium heading H − 90°.
+                // Model nose is glTF +Z (the glTF/Cesium forward axis), which Cesium places at local
+                // east for heading 0; compass heading H → Cesium heading H − 90°.
                 new Cesium.HeadingPitchRoll(Cesium.Math.toRadians(heading - 90), Cesium.Math.toRadians(-4), Cesium.Math.toRadians(d.id.endsWith('1') ? 14 : -10))
               ),
               model: {
-                uri: '/models/a6m2-zero.glb',
+                uri: '/models/a6m2-zero.glb?v=64384f0a06',
                 minimumPixelSize: 54,
                 maximumScale: 600,
                 color: Cesium.Color.fromCssColorString('rgb(214, 207, 194)'),
@@ -345,8 +358,8 @@ export class SpatialFormationController {
                 height: size,
                 // Muted bone tint: representative formation, not a bright game sprite.
                 color: Cesium.Color.fromCssColorString('rgba(206, 199, 186, 0.78)'),
-                alignedAxis: Cesium.Cartesian3.UNIT_Z,
-                rotation: -Cesium.Math.toRadians(heading),
+                alignedAxis: this.travelAxis(d.targetLon, d.targetLat, d.altitudeM, heading),
+                rotation: 0,
                 scaleByDistance: new Cesium.NearFarScalar(2e3, 1.15, 5e4, 0.6),
               },
             }),
@@ -467,8 +480,10 @@ export class SpatialFormationController {
           width: 36,
           height: 36,
           color: Cesium.Color.fromCssColorString('rgba(206, 199, 186, 0.72)'),
-          alignedAxis: Cesium.Cartesian3.UNIT_Z,
-          rotation: -Cesium.Math.toRadians(heading),
+          // Artwork is nose-up; aligning "up" with the ground direction of travel keeps the
+          // on-screen heading correct under any camera tilt.
+          alignedAxis: this.travelAxis(d.targetLon, d.targetLat, d.altitudeM, heading),
+          rotation: 0,
           scaleByDistance: new Cesium.NearFarScalar(5e3, 1.1, 2.5e5, 0.65),
         },
         show: false,

@@ -38,7 +38,7 @@ meaningful checkpoint. Do not create parallel status/plan documents.
   Vite reload mid-run kills the capture. Tile lists are incremental (tiles newly requested when
   the visitor reaches beat N in story order), which is what "prefetch the next beat" needs.
   Posters are canvas read-backs; a blank (black) read-back aborts the run.
-- 3D models live in `public/models/` (glTF, real-world metres, nose +X). `a6m2-zero.glb` is the
+- 3D models live in `public/models/` (glTF, real-world metres, nose +Z = glTF/Cesium forward axis; Cesium heading = compass − 90°). Model URLs carry `?v=<hash>`; update it when the file changes. `a6m2-zero.glb` is the
   owner-supplied Zero with its AI texture and markings removed (inaccurate for Feb 1942), span
   corrected to 12.0 m, simplified to ~3k triangles, meshopt-compressed. Only use a model for the
   type it depicts; other types stay as silhouettes until type-accurate models exist.
