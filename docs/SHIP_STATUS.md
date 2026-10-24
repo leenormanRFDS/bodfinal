@@ -6,7 +6,7 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 |---|---|
 | Current milestone | **M1 + M2 (spatial) — performance, beat framing, formations** (in verification) |
 | Working branch | `dev/spatial-engine` (from `main` @ `a7f6c95`, 16 Oct 2026) |
-| Production | Untouched. No merge, no deploy. |
+| Production | `dev/spatial-engine` fast-forwarded into `main` and deployed 25 Oct 2026, on the product owner's explicit approval ("Merge them all and deploy"). Previous production: `main` @ `a7f6c95`. |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
 | Updated | 25 Oct 2026 |
 
@@ -150,6 +150,16 @@ designation, launch-area uncertainty) remains in the Evidence Ledger records; th
 check it there. "Same wharf. Same sky." no longer appears on the map at dusk; it remains in the dusk
 beat content (story-beats.json) — owner to confirm that is acceptable under AGENTS.md.
 Owner wrote "Post & Telegram Office"; the label keeps the historical name "Post & Telegraph Office".
+
+## Release 25 Oct 2026 — spatial engine to production
+
+- Approval: product owner, in session, 25 Oct 2026 05:13 ACDT.
+- Method: fast-forward of `main` (a7f6c95) to `dev/spatial-engine`; no merge commit. Rollback: Vercel
+  instant rollback to the previous production deployment, or reset `main` to `a7f6c95`.
+- Pre-release checks on the release commit: all governance suites pass; i18n passes; `npm run build`
+  passes; booking/Rezdy files unchanged vs `main` (`src/lib/rezdy.ts`, `src/lib/booking-store.ts`,
+  `src/pages/api/*`, `BookingForm.astro`). `test-serverless-hardening` 18/19 — same pre-existing
+  failure as on `a7f6c95` (In-Progress TTL Revalidation, M3), not introduced by this release.
 
 ## Outstanding defects (logged, not yet addressed)
 
