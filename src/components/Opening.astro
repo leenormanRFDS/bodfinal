@@ -18,6 +18,8 @@
 import { OPENING } from '../consts';
 
 const MESSAGE = 'An unusually large air formation bearing south, heading south, observed over Bathurst Island.';
+// Spoken line 1 = the logged transmission (MESSAGE) with a radio operator's leading "There's" (owner-confirmed 25 Oct 2026).
+const VOICE_1 = 'There’s an unusually large air formation bearing south, heading south, observed over Bathurst Island.';
 const VOICE_2 = 'It’s probably just the P-40s returning to base.';
 
 // Cue times in seconds on the master soundscape (44.05 s; measured from the 25 Oct 2026 09:23 mix):
@@ -39,6 +41,7 @@ const cfg = JSON.stringify({
   videoWide: OPENING.videoWide,
   videoPhone: OPENING.videoPhone,
   message: MESSAGE,
+  voice1: VOICE_1,
   voice2: VOICE_2,
   cues: CUES,
 });
@@ -286,7 +289,7 @@ const cfg = JSON.stringify({
       const buildSound = () => {
         const t = gsap.timeline({ paused: true, defaults: { ease: 'power2.out' } });
         const say = (text: string, tag: boolean) => { cap.textContent = text; captag.style.display = tag ? '' : 'none'; };
-        t.call(() => say(MSG, true), [], C.cap1[0])
+        t.call(() => say(cfg.voice1, true), [], C.cap1[0])
           .to(capwrap, { autoAlpha: 1, duration: 0.45 }, C.cap1[0])
           .to(capwrap, { autoAlpha: 0, duration: 0.5, ease: 'power1.in' }, C.cap1[1])
           .call(() => say(cfg.voice2, false), [], C.cap2[0])

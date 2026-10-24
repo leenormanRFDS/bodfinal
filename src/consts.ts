@@ -153,11 +153,11 @@ export const ANALYTICS = {
 };
 
 // The opening cinematic (components/Opening.astro). Voices are dramatised re-creations.
-// soundApproved stays false until the owner signs off the recorded voice lines against the
-// logged record (docs/SHIP_STATUS.md, "Opening"). While false, the sound gate is hidden
-// everywhere; add ?opening=sound to a URL to preview the sound path.
+// soundApproved: the owner confirmed the recorded voice lines against the logged record on
+// 25 Oct 2026 (docs/SHIP_STATUS.md, "Opening"). While false, the sound gate is hidden everywhere;
+// ?opening=sound previews the sound path and ?opening=silent forces the silent path.
 export const OPENING = {
-  soundApproved: false,
+  soundApproved: true,
   audio: '/audio/bod-opening.m4a?v=088a3b26',
   videoWide: '/video/bod-paper-wide.mp4?v=91d565c3',
   videoPhone: '/video/bod-paper-phone.mp4?v=c29d4c11',
