@@ -138,6 +138,19 @@ governance suites pass (truth-narrative, stage2-evidence, stage3 visual/ledger/s
 stage15, phase2a formations, i18n, validate-ai-os). `npm run build` passes with the cache rules in
 `.vercel/output/config.json`. NOT verified: real GPU, iOS Safari, real-device load times.
 
+## Checkpoint 25 Oct 2026 (b) — map label wording (owner direction)
+
+Owner found the map headlines/descriptors distracting. Labels now read:
+08:00 FIRST WAVE LAUNCHES · 09:35 WARNING RECEIVED (Darwin) / FATHER MCGRATH TRANSMITS SIGHTING WARNING
+· 09:58 DARWIN HARBOUR & CIVIC PRECINCT · 10:00 DARWIN POST & TELEGRAPH OFFICE / RECEIVES DIRECT HIT
+· 10:45 USS PEARY / STRUCK BY FIVE BOMBS · 12:00 RAAF STATION DARWIN · 13:00 USS PEARY / DEPTH 27M
+· Dusk: headline removed; MV NEPTUNA / EXPLODED ALONGSIDE WHARF. Place, ship and wreck name labels unchanged.
+Detail removed from the map (times, casualty figures, approximate-area wording, surveyed-wreck
+designation, launch-area uncertainty) remains in the Evidence Ledger records; the governance tests now
+check it there. "Same wharf. Same sky." no longer appears on the map at dusk; it remains in the dusk
+beat content (story-beats.json) — owner to confirm that is acceptable under AGENTS.md.
+Owner wrote "Post & Telegram Office"; the label keeps the historical name "Post & Telegraph Office".
+
 ## Outstanding defects (logged, not yet addressed)
 
 - **M3 / commerce:** `test-serverless-hardening.ts` 18/19 on both `main` and branch — "In-Progress TTL Revalidation" fails. The AI Studio report claims this was fixed; the fix is not in the repository. Its other claimed fixes (`.env.example`, dual adapter, Cesium asset move, Post Office label) are also absent from `main`.

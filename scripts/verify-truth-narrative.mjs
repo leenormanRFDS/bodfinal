@@ -110,10 +110,16 @@ if (spatialOverlayRaw.includes('CONTEMPORARY ORIENTATION ANCHOR') || spatialOver
   pass('spatial-evidence-overlay.ts uses clean institutional phrasing for Stokes Hill Wharf');
 }
 
-if (spatialOverlayRaw.includes('PRESENT-DAY STOKES HILL WHARF') && spatialOverlayRaw.includes('SAME WHARF PRECINCT. SAME SKY.')) {
-  pass('spatial-evidence-overlay.ts presents "PRESENT-DAY STOKES HILL WHARF"');
-} else {
-  fail('spatial-evidence-overlay.ts missing "PRESENT-DAY STOKES HILL WHARF"');
+// Owner direction (25 Oct 2026): the dusk headline label was removed from the map. The protected
+// line (AGENTS.md: "Same wharf. Same sky.") must still be carried by the dusk beat content, and the
+// present-day wharf must still be anchored on the map.
+{
+  const beatsRawForPhrase = fs.readFileSync(path.resolve('data/story-beats.json'), 'utf8');
+  if (/Same wharf\. Same sky\./.test(beatsRawForPhrase) && spatialOverlayRaw.includes("presentDay('STOKES_HILL_WHARF_PRESENT')")) {
+    pass('Dusk beat carries "Same wharf. Same sky." and the map anchors the present-day Stokes Hill Wharf');
+  } else {
+    fail('Protected line "Same wharf. Same sky." or present-day Stokes Hill Wharf anchor missing');
+  }
 }
 
 // 7. CROSSHAIRS REMOVAL

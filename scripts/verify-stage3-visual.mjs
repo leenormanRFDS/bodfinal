@@ -72,10 +72,10 @@ assert(!pearyLabelText.includes('88 (RAN/NT)'), 'USS Peary primary spatial label
 assert(!pearyLabelText.includes('91 (AWM)'), 'USS Peary primary spatial label does NOT contain 91 (AWM)');
 assert(!pearyLabelText.includes('91 LOST'), 'USS Peary primary spatial label does NOT claim "91 LOST"');
 assert(!pearyLabelText.includes('WAR GRAVE'), 'USS Peary primary spatial label does NOT claim WAR GRAVE');
-assert(pearyLabelText.includes('USS PEARY (DD-226)'), 'USS Peary primary spatial label identifies ship name and pennant');
-assert(pearyLabelText.includes('MODERN SURVEYED WRECK POSITION'), 'USS Peary primary spatial label identifies MODERN SURVEYED WRECK POSITION');
+assert(pearyLabelText.includes('USS PEARY'), 'USS Peary primary spatial label identifies the ship (owner direction 25 Oct: name + depth only)');
+assert(/'peary-wreck':[\s\S]*?known:\s*'Modern surveyed wreck position/.test(overlayCode), 'Peary wreck ledger record identifies the MODERN SURVEYED wreck position');
 assert(pearyLabelText.includes('DEPTH 27M'), 'USS Peary primary spatial label identifies DEPTH 27M');
-assert(pearyLabelText.includes('PROTECTED HISTORIC SHIPWRECK (CHART AUS 26)'), 'USS Peary primary spatial label uses authenticated designation PROTECTED HISTORIC SHIPWRECK (CHART AUS 26)');
+assert(/'peary-wreck':[\s\S]*?notes:\s*'Legally protected historic shipwreck/.test(overlayCode), 'Peary wreck ledger record carries the protected historic shipwreck designation');
 
 // Peary evidence ledger dispute preservation
 const pearyLedgerMatch = overlayCode.match(/'peary-wreck':\s*\{[\s\S]*?uncertain:\s*['"`]([\s\S]*?)['"`]/);
@@ -90,11 +90,13 @@ assert(overlayCode.includes('SpatialRepresentativeAssets.getWreckSymbolTexture(2
 
 // Post Office labels
 assert(!overlayCode.includes('9 KILLED'), 'Post Office spatial label does NOT claim "9 KILLED"');
-assert(overlayCode.includes('THE SHELTER TRENCH RECEIVED A DIRECT HIT'), 'Post Office spatial label uses neutral descriptive language');
+assert(overlayCode.includes("text: 'DARWIN POST & TELEGRAPH OFFICE\\nRECEIVES DIRECT HIT'"), 'Post Office spatial label uses neutral descriptive language (no casualty count)');
+assert(/'post-office':[\s\S]*?uncertain:\s*'Casualty discrepancy/.test(overlayCode), 'Post Office casualty discrepancy remains in the Evidence Ledger');
 
 // Developer Language
 assert(!overlayCode.includes('text: \'RECONSTRUCTION PARAMETER'), 'Developer language RECONSTRUCTION PARAMETER removed from primary label string');
-assert(overlayCode.includes('ESTIMATED LAUNCH AREA'), 'Replaced with humane language ESTIMATED LAUNCH AREA');
+assert(overlayCode.includes("text: 'FIRST WAVE LAUNCHES'"), 'Launch label uses plain language (owner direction 25 Oct)');
+assert(/'timor-launch':[\s\S]*?uncertain:[^\n]*uncertainty radius/.test(overlayCode), 'Launch-area uncertainty remains in the Evidence Ledger');
 
 // 1942 Wharf & Neptuna presentation vs canon
 console.log('\n[3. Wharf & Neptuna Presentation vs Canon Evidence]');
@@ -104,7 +106,8 @@ const neptunaLabelText = neptunaLabelMatch ? neptunaLabelMatch[1] : '';
 
 assert(!neptunaLabelText.includes('1942 TIMBER FOOTPRINT UNRESOLVED'), 'Neptuna primary label does NOT contain technical phrase "1942 TIMBER FOOTPRINT UNRESOLVED"');
 assert(!neptunaLabelText.includes('UNRESOLVED'), 'Neptuna primary label does NOT contain developer string "UNRESOLVED"');
-assert(neptunaLabelText.includes('MV NEPTUNA · EXPLODED ALONGSIDE WHARF · ~10:25'), 'Neptuna primary label contains clear historical event at the canonical explosion time (events.json EVENT_NEPTUNA_EXPLOSION 10:25)');
+assert(neptunaLabelText.includes('MV NEPTUNA') && neptunaLabelText.includes('EXPLODED ALONGSIDE WHARF'), 'Neptuna primary label states the historical event (owner direction 25 Oct)');
+assert(!/\d\d:\d\d/.test(neptunaLabelText), 'Neptuna label carries no clock time (canon times 10:12 / 10:25 unresolved)');
 
 const wharfLedgerMatch = overlayCode.match(/'stokes-hill-wharf':\s*\{[\s\S]*?uncertain:\s*['"`]([\s\S]*?)['"`]/);
 assert(wharfLedgerMatch !== null, 'stokes-hill-wharf ledger record found in overlay code');
@@ -134,11 +137,13 @@ assert(!kelatLabelText.includes('SUNK 19 FEB'), 'Kelat primary label does NOT st
 assert(overlayCode.includes("classification: 'CONTEXTUAL_SUBSEQUENT_LOSS'"), 'Kelat entity has property classification CONTEXTUAL_SUBSEQUENT_LOSS');
 assert(overlayCode.includes("lossDate: '1942-02-24'"), 'Kelat entity has property lossDate 1942-02-24');
 
-// Verify canonical eight vessels sunk on 19 Feb
-const wharfLabelMatch = overlayCode.match(/wharfLabel\s*=\s*[\s\S]*?label:\s*\{[\s\S]*?text:\s*['"`]([\s\S]*?)['"`]/);
-assert(wharfLabelMatch !== null, 'wharfLabel definition found in overlay code');
-const wharfLabelText = wharfLabelMatch ? wharfLabelMatch[1] : '';
-assert(wharfLabelText.includes('EIGHT SHIPS SUNK IN HARBOUR'), 'Beat 7 wharf consequence label maintains canonical count: EIGHT SHIPS SUNK IN HARBOUR');
+// Verify canonical eight vessels sunk on 19 Feb (owner direction 25 Oct: no dusk headline on the map;
+// the count lives in the dusk story text and must not be contradicted on the map)
+const beatsRaw = fs.readFileSync(path.resolve('data/story-beats.json'), 'utf8');
+assert(/Eight ships lie sunk/.test(beatsRaw), 'Dusk story text maintains canonical count: Eight ships lie sunk');
+const wharfStart = overlayCode.indexOf('const wharfLabel = this.dataSource.entities.add(');
+const wharfBlock = wharfStart >= 0 ? overlayCode.slice(wharfStart, overlayCode.indexOf('this.evidenceNodes.push', wharfStart)) : 'label:';
+assert(!/\blabel:\s*\{/.test(wharfBlock), 'Dusk wharf node draws no headline label');
 
 // Verify canon distinction in historical-canon.json
 const canonString = JSON.stringify(canonFile);

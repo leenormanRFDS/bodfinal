@@ -422,7 +422,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['timor-launch'] }),
       position: Cesium.Cartesian3.fromDegrees(129.25, -10.75, 4200),
       label: {
-        text: 'FIRST WAVE: 188 AIRCRAFT · 08:00–08:45\nESTIMATED LAUNCH AREA · ~220 NM NNW OF DARWIN',
+        text: 'FIRST WAVE LAUNCHES',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -437,7 +437,6 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
-    if (isMobile) this.compactForPhone(launchLabel, 'FIRST WAVE · 188 AIRCRAFT\n08:00–08:45 · LAUNCH AREA');
 
     this.evidenceNodes.push({
       id: 'NODE_TIMOR_LAUNCH',
@@ -567,7 +566,7 @@ export class SpatialEvidenceOverlay {
     this.communicationLabelEntity = this.dataSource.entities.add({
       position: Cesium.Cartesian3.fromDegrees(130.8443, -12.4647, 150),
       label: {
-        text: '09:37 · WARNING TRANSMITTED VIA COASTAL RADIO SERVICE (VID)\n"LARGE FORMATION UNIDENTIFIED AIRCRAFT OVERHEAD HEADING SOUTH"',
+        text: 'WARNING RECEIVED',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -581,7 +580,6 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
-    if (isMobile) this.compactForPhone(this.communicationLabelEntity, '09:37 · WARNING SENT\nVIA COASTAL RADIO (VID)');
     node1Entities.push(this.communicationLabelEntity);
 
     // Primary mission label (16-18px primary event)
@@ -589,7 +587,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['bathurst-mission'] }),
       position: Cesium.Cartesian3.fromDegrees(130.627, -11.758, 450),
       label: {
-        text: 'SACRED HEART MISSION, NGUIU · 09:35\nFATHER MCGRATH TRANSMITS SIGHTING WARNING',
+        text: 'FATHER MCGRATH TRANSMITS\nSIGHTING WARNING',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -605,7 +603,6 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
-    if (isMobile) this.compactForPhone(bathurstLabel, 'NGUIU MISSION · 09:35', -36);
 
     this.evidenceNodes.push({
       id: 'NODE_BATHURST_MISSION',
@@ -726,7 +723,7 @@ export class SpatialEvidenceOverlay {
       // Over the town (Goyder grid, north of the Post Office): the strike fell on harbour AND town.
       position: Cesium.Cartesian3.fromDegrees(130.8418, -12.4612, 120),
       label: {
-        text: 'DARWIN HARBOUR & CIVIC PRECINCT · 09:58\nFIRST BOMBS IMPACT SHIPPING ROADSTEAD & TOWN',
+        text: 'DARWIN HARBOUR &\nCIVIC PRECINCT',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -794,7 +791,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['post-office'] }),
       position: Cesium.Cartesian3.fromDegrees(130.8443, -12.4647, 35),
       label: {
-        text: 'DARWIN POST & TELEGRAPH OFFICE · 10:00\nTHE SHELTER TRENCH RECEIVED A DIRECT HIT',
+        text: 'DARWIN POST & TELEGRAPH OFFICE\nRECEIVES DIRECT HIT',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -872,7 +869,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['peary-underway'] }),
       position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 50),
       label: {
-        text: 'USS PEARY (DD-226) · 10:15–10:45\nSTRUCK BY FIVE BOMBS · APPROXIMATE AREA',
+        text: 'USS PEARY\nSTRUCK BY FIVE BOMBS',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -934,7 +931,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['raaf-station'] }),
       position: Cesium.Cartesian3.fromDegrees(raaf.lon, raaf.lat, 40),
       label: {
-        text: 'RAAF STATION DARWIN · 12:00\nSECOND RAID: 54 LAND-BASED BOMBERS AT ~20,000 FT',
+        text: 'RAAF STATION DARWIN',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -987,7 +984,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['peary-wreck'] }),
       position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 30),
       label: {
-        text: 'USS PEARY (DD-226) · MODERN SURVEYED WRECK POSITION\nDEPTH 27M · PROTECTED HISTORIC SHIPWRECK (CHART AUS 26)',
+        text: 'USS PEARY\nDEPTH 27M',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -1143,23 +1140,11 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['stokes-hill-wharf'] }),
       // Over the town behind the present-day wharf (foreground of the dusk camera).
       position: Cesium.Cartesian3.fromDegrees(130.8478, -12.4622, 60),
-      label: {
-        text: 'THE RECKONING · DUSK, 19 FEBRUARY 1942\nEIGHT SHIPS SUNK IN HARBOUR · 235 TO 250+ DEAD (LOWE COMMISSION: ~243)\nPRESENT-DAY STOKES HILL WHARF · SAME WHARF PRECINCT. SAME SKY.',
-        font: primaryEventFont,
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        fillColor: boneColor,
-        outlineColor: darkBg,
-        outlineWidth: 5,
-        showBackground: false,
-        backgroundColor: bgBadge,
-        backgroundPadding: bgPadding,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -16),
-      },
       show: false,
     });
-    // Phones: the full three-line text wraps to ~9 lines and buries the wreck field.
-    if (isMobile) this.compactForPhone(wharfLabel, 'DUSK · 19 FEB 1942\n8 SHIPS SUNK IN HARBOUR\n235 TO 250+ DEAD');
+    // Owner direction (25 Oct): no headline text over the dusk wreck field. This entity has no
+    // graphics; it remains the node anchor for the Evidence Ledger record. Casualties and the
+    // eight-ships count are carried by the dusk story text (story-beats.json) and the ledger.
 
     this.evidenceNodes.push({
       id: 'NODE_RECKONING_SYNTHESIS',
@@ -1276,7 +1261,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['stokes-hill-wharf'] }),
       position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 10),
       label: {
-        text: 'MV NEPTUNA · EXPLODED ALONGSIDE WHARF · ~10:25\nWRECK SALVAGED 1959–61',
+        text: 'MV NEPTUNA\nEXPLODED ALONGSIDE WHARF',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: goldColor,
