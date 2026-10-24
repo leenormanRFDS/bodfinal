@@ -87,6 +87,12 @@ visitor-facing feature; SS Barossa canon correction.
 - Engine starts on page idle instead of at timeline approach; next beat's tiles prefetched (low
   priority) from recorded per-beat lists (`beat-tiles.json`); render loop paused off-screen; MSAA off
   on phones. Tiles were already palette-quantised (64 colours); lossless WebP would save only ~16%.
+- Re-profiled on the 25 Oct preview (`qa-captures/perf/after-preview-load-profile.json`, same rig):
+  timeline entry → first map pixels 7.4 s → 0.2 s desktop, 6.1 s → 0.07 s emulated phone (the live map
+  was already ready, so the poster was not needed in this run). Main-thread script before the
+  timeline rose 0.6 → 4.7 s desktop, 1.8 → 4.4 s phone, because the engine now initialises during the
+  opening; viewer creation is one ~1.3–1.7 s task under software WebGL. Cache headers verified on the
+  preview: tiles/posters `max-age=31536000, immutable`, model 1 week + SWR (brotli).
 - Risk to watch on real devices: idle start runs the Cesium module evaluation while the visitor reads
   the opening; if that causes jank on low-end phones, move the start back to timeline approach (the
   posters cover the wait either way).
