@@ -6,7 +6,8 @@
   "scripts": {
     "cesium:assets": "node scripts/sync-cesium-assets.mjs",
     "dev": "node scripts/sync-cesium-assets.mjs && astro dev --host 0.0.0.0 --port 3000",
-    "build": "node scripts/sync-cesium-assets.mjs && astro build",
+    "build": "node scripts/sync-cesium-assets.mjs && astro build && node scripts/vercel-cache-headers.mjs",
+    "profile:spatial": "node scripts/profile-spatial-load.mjs",
     "capture:spatial": "node scripts/capture-spatial.mjs",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",

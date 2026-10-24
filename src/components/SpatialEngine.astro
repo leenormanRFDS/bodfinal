@@ -50,6 +50,14 @@ const { className = '' } = Astro.props;
   <div class="spatial-stage__canvas" data-cesium-container id="cesium-container" aria-label="Geographic spatial view of Australia and Darwin Harbour" role="region">
   </div>
 
+  <!-- Beat poster stills: renders of this engine at each beat's authored camera.
+       Shown instantly while the live map loads, and permanently on the static tier
+       (no WebGL / data saver / ?map=static). See src/lib/spatial/spatial-delivery.ts. -->
+  <div class="spatial-poster" data-spatial-poster aria-hidden="true">
+    <img alt="" decoding="async" fetchpriority="high" />
+    <img alt="" decoding="async" />
+  </div>
+
   <!-- Accessible Static / WebGL Failure Fallback -->
   <div class="spatial-fallback" data-spatial-fallback aria-hidden="true">
     <div class="spatial-fallback__inner">
@@ -115,6 +123,32 @@ const { className = '' } = Astro.props;
   .spatial-stage__canvas :global(.cesium-widget-credits),
   .spatial-stage__canvas :global(.cesium-credit-lightbox-overlay) {
     display: none !important;
+  }
+
+  /* Beat poster stills (above the canvas until the live map has drawn the same beat) */
+  .spatial-poster {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+    background: #070A0E;
+    transition: opacity 0.8s ease;
+  }
+  .spatial-poster.is-visible { opacity: 1; }
+  .spatial-poster.is-visible.is-released { opacity: 0; }
+  .spatial-poster img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .spatial-poster img.is-on { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .spatial-poster, .spatial-poster img { transition: none; }
   }
 
   /* WebGL Fallback */

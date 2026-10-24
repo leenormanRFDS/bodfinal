@@ -30,6 +30,22 @@ meaningful checkpoint. Do not create parallel status/plan documents.
   report. Set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` if playwright-core cannot find a browser.
 - `node scripts/verify-stage3-cartography-exposure.mjs` — basemap/tile completeness, Cesium assets,
   truth constraints, palette contrast.
+- `node scripts/capture-spatial.mjs --url http://127.0.0.1:3000 --out qa-captures/posters --beats 0,1,2,3,4,5,6,7 --posters --record-tiles`
+  — REQUIRED after any change to a beat's camera, labels or markers. Regenerates the beat poster
+  stills (`public/spatial-posters/**`, `poster-manifest.json`) and the per-beat tile prefetch lists
+  (`beat-tiles.json`). Stale posters would show the old beat until the live map takes over.
+  Run captures against a SEPARATE dev server/copy if you are editing code at the same time: a
+  Vite reload mid-run kills the capture. Tile lists are incremental (tiles newly requested when
+  the visitor reaches beat N in story order), which is what "prefetch the next beat" needs.
+  Posters are canvas read-backs; a blank (black) read-back aborts the run.
+- 3D models live in `public/models/` (glTF, real-world metres, nose +X). `a6m2-zero.glb` is the
+  owner-supplied Zero with its AI texture and markings removed (inaccurate for Feb 1942), span
+  corrected to 12.0 m, simplified to ~3k triangles, meshopt-compressed. Only use a model for the
+  type it depicts; other types stay as silhouettes until type-accurate models exist.
+- `node scripts/profile-spatial-load.mjs --url <preview> --share <token>` — load profile (desktop and
+  throttled mobile). No GPU here: frame-gated timings are pessimistic; compare run to run only.
+- `npm run build` also patches `.vercel/output/config.json` with immutable caching for tiles/posters
+  (`scripts/vercel-cache-headers.mjs`). Tile and poster URLs carry `?v=<content hash>`.
 
 ## Spatial engine facts (verified, Oct 2026)
 
@@ -40,5 +56,8 @@ meaningful checkpoint. Do not create parallel status/plan documents.
 - Do not reintroduce CARTO without a key: anonymous CARTO returns HTTP 200 "API KEY REQUIRED" tiles.
 - Marker coordinates must come from canon (`data/entities/*`) or `present-day-anchors.json`.
   A null canonical coordinate means do not draw it.
+- Delivery tiers (`src/lib/spatial/spatial-delivery.ts`): live Cesium for capable devices, with the
+  beat poster shown until the live map has drawn the same beat; static posters only for no-WebGL,
+  data saver, ≤1 GB devices, or `?map=static`. `?map=live` forces live.
 - Visual QA means looking at rendered captures. A passing string-match test or HTTP 200 is not
   visual acceptance.

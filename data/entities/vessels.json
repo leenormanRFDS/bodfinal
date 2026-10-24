@@ -665,45 +665,96 @@
       "name": "SS Barossa",
       "vesselType": "Cargo Steamer (4,239 gross tons)",
       "nationality": "Australian Merchant Marine (Adelaide Steamship Co.)",
-      "status19Feb1942": "HEAVILY_DAMAGED_BEACHED",
+      "status19Feb1942": "SET_ON_FIRE_BEACHED",
       "fatalitiesCount": 0,
       "bombHitCount": 0,
-      "movementState": "Anchored in harbour; beached after damage",
+      "movementState": "Berthed at the main (Stokes Hill) wharf; towed clear and beached nearby",
       "preAttackPosition": {
-        "status": "ANCHORED_IN_HARBOUR",
-        "description": "Anchored in northern harbour anchorage",
+        "status": "BERTHED_ALONGSIDE_WHARF",
+        "description": "Berthed at the main wharf with an oil lighter alongside, on the other side of the pier from MV Neptuna",
         "coordinates": {
-          "latitude": -12.461,
-          "longitude": 130.841
+          "latitude": null,
+          "longitude": null
         },
-        "spatialConfidence": "APPROXIMATE"
+        "spatialConfidence": "UNKNOWN"
       },
       "attackPosition": {
-        "status": "HOLED_BY_NEAR_MISSES",
-        "description": "Severe hull leakage caused by near misses; captain ordered ship run aground to prevent sinking in fairway",
+        "status": "BERTHED_ON_FIRE",
+        "description": "Bombed and set on fire while berthed at the main wharf; the tug Wato towed the burning oil lighter clear, then took Barossa in tow clear of the burning Neptuna",
         "coordinates": {
-          "latitude": -12.461,
-          "longitude": 130.841
+          "latitude": null,
+          "longitude": null
         },
-        "spatialConfidence": "APPROXIMATE"
+        "spatialConfidence": "UNKNOWN"
       },
       "sinkingPosition": null,
       "wreckPositionModernSurvey": null,
       "coordinates": {
-        "latitude": -12.461,
-        "longitude": 130.841
+        "latitude": null,
+        "longitude": null
       },
-      "spatialConfidence": "APPROXIMATE",
+      "spatialConfidence": "UNKNOWN",
       "damageTime": "10:15",
       "sinkingTime": null,
-      "damageDescription": "Near misses caused heavy hull leakage; beached on a sandbank to avoid sinking in the main channel.",
+      "damageDescription": "Bombed and set on fire while berthed at the main wharf; towed clear of the burning Neptuna by the tug Wato and beached nearby, where her cargo burnt out.",
       "sourceRefs": [
+        "SEA_POWER_CENTRE_HMAS_WATO",
+        "NHSA_LEWIS_NAVAL_ACTION_DARWIN_2002",
         "LOWE_COMMISSION_1942",
         "GILL_RAN_VOL1"
       ],
       "classification": "ESTABLISHED_FACT",
       "confidence": "HIGH",
-      "notes": "Refloated post-raid and repaired."
+      "notes": "Later salvaged and towed to Brisbane (Lewis 2002). Position at the 1942 wharf follows the same rule as MV Neptuna: the 1942 wharf/berth geometry is unresolved in canon, so no coordinate is drawn.",
+      "beachingPosition": {
+        "status": "BEACHED",
+        "description": "Beached near the wharf after being towed clear; exact site not recorded in the cited sources",
+        "coordinates": {
+          "latitude": null,
+          "longitude": null
+        },
+        "spatialConfidence": "UNKNOWN"
+      },
+      "canonCorrections": [
+        {
+          "date": "2026-10-25",
+          "approvedBy": "Product owner (Lee Norman), in session",
+          "reason": "Previous entry placed Barossa at anchor in the northern anchorage at a coordinate that falls on land, and described near-miss hull damage. Both are contradicted by the cited sources, which place her berthed at the main wharf, set on fire, towed clear and beached.",
+          "previousValues": {
+            "status19Feb1942": "HEAVILY_DAMAGED_BEACHED",
+            "movementState": "Anchored in harbour; beached after damage",
+            "preAttackPosition": {
+              "status": "ANCHORED_IN_HARBOUR",
+              "description": "Anchored in northern harbour anchorage",
+              "coordinates": {
+                "latitude": -12.461,
+                "longitude": 130.841
+              },
+              "spatialConfidence": "APPROXIMATE"
+            },
+            "attackPosition": {
+              "status": "HOLED_BY_NEAR_MISSES",
+              "description": "Severe hull leakage caused by near misses; captain ordered ship run aground to prevent sinking in fairway",
+              "coordinates": {
+                "latitude": -12.461,
+                "longitude": 130.841
+              },
+              "spatialConfidence": "APPROXIMATE"
+            },
+            "coordinates": {
+              "latitude": -12.461,
+              "longitude": 130.841
+            },
+            "spatialConfidence": "APPROXIMATE",
+            "damageDescription": "Near misses caused heavy hull leakage; beached on a sandbank to avoid sinking in the main channel.",
+            "sourceRefs": [
+              "LOWE_COMMISSION_1942",
+              "GILL_RAN_VOL1"
+            ],
+            "notes": "Refloated post-raid and repaired."
+          }
+        }
+      ]
     },
     {
       "id": "COAL_HULK_KELAT",

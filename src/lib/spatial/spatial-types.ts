@@ -17,7 +17,9 @@ export type HistoricalClassification =
   | 'MODERN_SURVEYED_WRECK_POSITION'
   | 'UNRESOLVED_GEOGRAPHY';
 
-export type SpatialCertainty = 'VERIFIED' | 'APPROXIMATE' | 'INFERRED' | 'UNKNOWN' | 'UNRESOLVED';
+// 'HIGH' = source-described with high confidence but not an exact verified position
+// (canon spatialConfidence vocabulary, e.g. routes.json).
+export type SpatialCertainty = 'VERIFIED' | 'HIGH' | 'APPROXIMATE' | 'INFERRED' | 'UNKNOWN' | 'UNRESOLVED';
 
 export type TemporalContext = 'CONTEMPORARY' | 'HISTORICAL_1942' | 'UNRESOLVED';
 

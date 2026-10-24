@@ -19,6 +19,7 @@ export interface CarrierSilhouetteOptions {
 export class SpatialRepresentativeAssets {
   private static carrierTextures: Map<string, string> = new Map();
   private static destroyerTexture: string | null = null;
+  private static destroyerTextureNoWake: string | null = null;
   private static zeroTexture: string | null = null;
   private static valTexture: string | null = null;
   private static kateTexture: string | null = null;
@@ -173,13 +174,16 @@ export class SpatialRepresentativeAssets {
    * Generates a high-contrast plan-view silhouette of USS Peary (Clemson-class four-stack destroyer)
    * with bow pointing UP (North / 12 o'clock) and realistic curved evasive wake trailing astern.
    */
-  public static getDestroyerTexture(): string {
-    if (this.destroyerTexture) return this.destroyerTexture;
+  public static getDestroyerTexture(withWake: boolean = true): string {
+    if (withWake && this.destroyerTexture) return this.destroyerTexture;
+    if (!withWake && this.destroyerTextureNoWake) return this.destroyerTextureNoWake;
     if (typeof document === 'undefined') return '';
 
     const canvas = document.createElement('canvas');
     canvas.width = 100;
-    canvas.height = 280;
+    // Without the wake the canvas is cropped to the hull (100x190, hull centred) so the billboard
+    // anchor sits on the ship.
+    canvas.height = withWake ? 280 : 190;
     const ctx = canvas.getContext('2d');
     if (!ctx) return '';
 
@@ -187,35 +191,37 @@ export class SpatialRepresentativeAssets {
     ctx.save();
     ctx.translate(50, 95); // Center hull around Y = 0; bow at Y = -80, stern at Y = +80
 
-    // 1. High-speed evasive curved naval wake trailing from stern
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(-7, 40);
-    // Port wake plume curving astern
-    ctx.quadraticCurveTo(-26, 100, -32, 175);
-    ctx.lineTo(0, 160);
-    // Starboard wake plume
-    ctx.lineTo(32, 175);
-    ctx.quadraticCurveTo(26, 100, 7, 40);
-    ctx.closePath();
-    const wakeGrad = ctx.createLinearGradient(0, 40, 0, 175);
-    wakeGrad.addColorStop(0, 'rgba(236, 231, 219, 0.50)');
-    wakeGrad.addColorStop(0.3, 'rgba(180, 210, 230, 0.35)');
-    wakeGrad.addColorStop(0.7, 'rgba(140, 180, 210, 0.18)');
-    wakeGrad.addColorStop(1, 'rgba(236, 231, 219, 0.0)');
-    ctx.fillStyle = wakeGrad;
-    ctx.fill();
+    if (withWake) {
+      // 1. High-speed evasive curved naval wake trailing from stern
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(-7, 40);
+      // Port wake plume curving astern
+      ctx.quadraticCurveTo(-26, 100, -32, 175);
+      ctx.lineTo(0, 160);
+      // Starboard wake plume
+      ctx.lineTo(32, 175);
+      ctx.quadraticCurveTo(26, 100, 7, 40);
+      ctx.closePath();
+      const wakeGrad = ctx.createLinearGradient(0, 40, 0, 175);
+      wakeGrad.addColorStop(0, 'rgba(236, 231, 219, 0.50)');
+      wakeGrad.addColorStop(0.3, 'rgba(180, 210, 230, 0.35)');
+      wakeGrad.addColorStop(0.7, 'rgba(140, 180, 210, 0.18)');
+      wakeGrad.addColorStop(1, 'rgba(236, 231, 219, 0.0)');
+      ctx.fillStyle = wakeGrad;
+      ctx.fill();
 
-    // Twin screw prop wash streaks
-    ctx.strokeStyle = 'rgba(245, 242, 235, 0.70)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(-4, 78);
-    ctx.quadraticCurveTo(-14, 115, -18, 165);
-    ctx.moveTo(4, 78);
-    ctx.quadraticCurveTo(14, 115, 18, 165);
-    ctx.stroke();
-    ctx.restore();
+      // Twin screw prop wash streaks
+      ctx.strokeStyle = 'rgba(245, 242, 235, 0.70)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-4, 78);
+      ctx.quadraticCurveTo(-14, 115, -18, 165);
+      ctx.moveTo(4, 78);
+      ctx.quadraticCurveTo(14, 115, 18, 165);
+      ctx.stroke();
+      ctx.restore();
+    }
 
     // 2. Slender Clemson-class flush-deck hull (sharp raked bow at Y = -82, stern at Y = +80)
     ctx.beginPath();
@@ -298,8 +304,10 @@ export class SpatialRepresentativeAssets {
 
     ctx.restore();
 
-    this.destroyerTexture = canvas.toDataURL();
-    return this.destroyerTexture;
+    const url = canvas.toDataURL();
+    if (withWake) this.destroyerTexture = url;
+    else this.destroyerTextureNoWake = url;
+    return url;
   }
 
   /**

@@ -22,6 +22,10 @@ import type {
   HistoricalMapLayerDefinition 
 } from './spatial-types';
 
+function mark(name: string): void {
+  try { performance.mark(name); } catch { /* unsupported */ }
+}
+
 export interface SpatialViewerOptions {
   container: HTMLElement;
   creditContainer?: HTMLElement;
@@ -43,6 +47,9 @@ export class SpatialViewer {
   private activeStateId: SpatialDemonstrationStateId = 'STATE_00_WORLD';
   private isDestroyed: boolean = false;
   private resizeObserver: ResizeObserver | null = null;
+  private suspended = false;
+  private completeListeners: Array<(stateId: SpatialDemonstrationStateId) => void> = [];
+  private lastCompleteState: SpatialDemonstrationStateId | null = null;
 
   // Future GLB & Historical Map Layer registry
   private registeredEntities: Map<string, SpatialEntityDefinition> = new Map();
@@ -105,8 +112,12 @@ export class SpatialViewer {
       // Set Cesium base URL before importing so internal workers and assets resolve
       (window as any).CESIUM_BASE_URL = '/cesium/';
 
-      // Dynamic import to keep initial landing page bundle lightweight
+      // Dynamic import to keep initial landing page bundle lightweight.
+      // performance.mark/measure: 'spatial:*' entries let QA (scripts/profile-spatial-load.mjs)
+      // attribute start-up time without a debugger. They cost nothing measurable.
+      mark('spatial:init-start');
       const Cesium = await import('cesium');
+      mark('spatial:import-done');
       this.Cesium = Cesium;
 
       if (this.isDestroyed) return false;
@@ -137,6 +148,9 @@ export class SpatialViewer {
         // Performance: Request rendering mode — render only when needed or during camera moves
         requestRenderMode: true,
         maximumRenderTimeChange: Infinity,
+        // MSAA only smooths geometry edges (rings, lines); imagery and labels are unaffected.
+        // Phones skip it: it multiplies framebuffer memory and fill cost for little visible gain.
+        msaaSamples: window.innerWidth < 768 ? 1 : 4,
       };
 
       if (this.creditContainer) {
@@ -144,6 +158,7 @@ export class SpatialViewer {
       }
 
       this.viewer = new Cesium.Viewer(this.container, viewerOptions);
+      mark('spatial:viewer-done');
 
       // Adaptive resolution scaling for mobile vs desktop GPU budgets
       const isMobileInit = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -165,6 +180,7 @@ export class SpatialViewer {
       this.choreographer = new CameraChoreographer(Cesium, this.viewer.camera, this.viewer.scene);
       this.evidenceOverlay = new SpatialEvidenceOverlay(Cesium, this.viewer);
       await this.evidenceOverlay.initialize();
+      mark('spatial:overlay-done');
 
       // Set initial composition (State 00 World Context)
       const initialState = DEMONSTRATION_STATES[this.activeStateId];
@@ -189,6 +205,16 @@ export class SpatialViewer {
       });
       this.resizeObserver.observe(this.container);
 
+      // "Scene complete" = settled at the active state with every visible tile drawn.
+      // Used to hand over from the poster still to the live map without showing a half-loaded globe.
+      this.viewer.scene.postRender.addEventListener(() => {
+        if (!this.viewer || this.status.isFlying || !this.viewer.scene.globe.tilesLoaded) return;
+        if (this.lastCompleteState === this.activeStateId) return;
+        this.lastCompleteState = this.activeStateId;
+        for (const cb of this.completeListeners) cb(this.activeStateId);
+      });
+
+      mark('spatial:ready');
       this.updateStatus({
         isReady: true,
         isSupported: true,
@@ -225,6 +251,7 @@ export class SpatialViewer {
     if (!targetState) return;
 
     this.activeStateId = stateId;
+    this.lastCompleteState = null;
     this.evidenceOverlay?.prepareTransition(stateId);
     this.cartography?.setBeatExposure(stateId);
     this.atmosphereController?.applyBeatAtmosphere(stateId);
@@ -251,6 +278,23 @@ export class SpatialViewer {
         this.updateStatus({ isFlying: false });
       },
     });
+  }
+
+  /** Called each time the active state is fully drawn (settled, tiles loaded). */
+  public onSceneComplete(cb: (stateId: SpatialDemonstrationStateId) => void): void {
+    this.completeListeners.push(cb);
+  }
+
+  /**
+   * Stop the render loop while the stage is off screen (visitor has scrolled past the
+   * timeline), and resume it when it returns. requestRenderMode already avoids redraws,
+   * but the loop itself still runs every animation frame.
+   */
+  public setSuspended(suspended: boolean): void {
+    if (!this.viewer || this.viewer.isDestroyed() || this.suspended === suspended) return;
+    this.suspended = suspended;
+    this.viewer.useDefaultRenderLoop = !suspended;
+    if (!suspended) this.viewer.scene.requestRender();
   }
 
   /**

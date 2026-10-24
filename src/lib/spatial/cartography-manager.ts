@@ -22,6 +22,18 @@
 import type * as CesiumType from 'cesium';
 import manifest from './basemap-manifest.json';
 
+/**
+ * Tile URL template with the basemap content hash appended. Tiles are served with an
+ * immutable year-long cache (scripts/vercel-cache-headers.mjs); the hash changes whenever
+ * the basemap is rebuilt, so visitors never see stale cartography.
+ */
+export const BASEMAP_URL_TEMPLATE = `${manifest.urlTemplate}?v=${(manifest as any).version ?? '0'}`;
+
+/** Concrete tile URL (same string Cesium requests, so prefetches land in the HTTP cache). */
+export function basemapTileUrl(z: number, x: number, y: number): string {
+  return BASEMAP_URL_TEMPLATE.replace('{z}', String(z)).replace('{x}', String(x)).replace('{y}', String(y));
+}
+
 export interface BasemapLayerSpec {
   id: string;
   rect: [number, number, number, number];
@@ -79,7 +91,7 @@ export class CartographyManager {
 
     for (const spec of manifest.layers as BasemapLayerSpec[]) {
       const provider = new C.UrlTemplateImageryProvider({
-        url: manifest.urlTemplate,
+        url: BASEMAP_URL_TEMPLATE,
         tileWidth: manifest.tileSize,
         tileHeight: manifest.tileSize,
         minimumLevel: spec.minimumLevel,

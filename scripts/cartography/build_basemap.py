@@ -554,6 +554,9 @@ def main():
 
     manifest = {
         'description': 'Project-owned basemap tile layers (see scripts/cartography/build_basemap.py).',
+        # Content hash of every tile. Appended to tile URLs as ?v= so tiles can be served
+        # with an immutable, year-long cache and still update when the basemap is rebuilt.
+        'version': tree_version(args.out),
         'urlTemplate': '/tiles/darwin-basemap/{z}/{x}/{y}.png',
         'tileSize': TILE,
         'waterColor': '#%02X%02X%02X' % WATER,
@@ -564,6 +567,19 @@ def main():
     with open(args.manifest, 'w') as f:
         json.dump(manifest, f, indent=2)
     print(f'Done: {total} tiles in {time.time() - t0:.0f}s. Manifest -> {args.manifest}', flush=True)
+
+
+def tree_version(root):
+    import hashlib
+    h = hashlib.sha256()
+    for dirpath, _, files in sorted(os.walk(root)):
+        for name in sorted(files):
+            if name.endswith('.png'):
+                fp = os.path.join(dirpath, name)
+                h.update(os.path.relpath(fp, root).encode())
+                with open(fp, 'rb') as f:
+                    h.update(f.read())
+    return h.hexdigest()[:12]
 
 
 if __name__ == '__main__':

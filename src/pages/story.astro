@@ -719,6 +719,7 @@ const timeline = beatsData.beats.map((beat, idx) => ({
   import type { SpatialDemonstrationStateId } from '../lib/spatial/spatial-types';
   import beatsData from '../../data/story-beats.json';
   import { CANONICAL_EVIDENCE_RECORDS } from '../lib/spatial/spatial-evidence-overlay';
+  import { detectSpatialTier, SpatialPosterController, BeatTilePrefetcher, beatIndexForState } from '../lib/spatial/spatial-delivery';
   
   gsap.registerPlugin(ScrollTrigger);
 
@@ -772,16 +773,55 @@ const timeline = beatsData.beats.map((beat, idx) => ({
 
     const cesiumContainer = document.querySelector<HTMLElement>('[data-cesium-container]');
     const fallbackEl = document.querySelector<HTMLElement>('[data-spatial-fallback]');
-    const scopeEl = document.querySelector<HTMLElement>('[data-spatial-dock-scope], [data-spatial-scope]');
-    const classEl = document.querySelector<HTMLElement>('[data-spatial-dock-class], [data-spatial-class]');
+    // Both the dock and the stage carry scope/classification readouts; update every one
+    // (querySelector would return only the first in document order: the stage's hidden copy).
+    const scopeEls = document.querySelectorAll<HTMLElement>('[data-spatial-dock-scope], [data-spatial-scope]');
+    const classEls = document.querySelectorAll<HTMLElement>('[data-spatial-dock-class], [data-spatial-class]');
     const stateBtns = document.querySelectorAll<HTMLButtonElement>('.spatial-state-btn');
 
+    // ---- Delivery: device tier, poster stills, tile prefetch (src/lib/spatial/spatial-delivery.ts)
+    const webglSupported = SpatialViewer.isWebGLSupported();
+    const tier = detectSpatialTier(webglSupported);
+    const posterEl = document.querySelector<HTMLElement>('[data-spatial-poster]');
+    const poster = posterEl ? new SpatialPosterController(posterEl) : null;
+    const postersAvailable = !!poster?.isAvailable();
+    const prefetcher = tier === 'live' ? new BeatTilePrefetcher() : null;
+
+    function showFallback() {
+      // Prefer the engine's own stills over the schematic fallback whenever they exist.
+      if (!postersAvailable) fallbackEl?.classList.add('is-active');
+    }
+
+    // Posters follow the story from the first beat, independently of the live map.
+    // Dock provenance text and posters follow the story whether or not the live map runs.
+    spatialAdapter.subscribe(({ activeStateId, stateConfig }) => {
+      stateBtns.forEach(btn => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.stateId === activeStateId));
+      });
+      if (stateConfig?.geographicScope) {
+        const scope = stateConfig.geographicScope.toUpperCase();
+        scopeEls.forEach((el) => { el.textContent = scope; });
+      }
+      if (classEls.length && stateConfig) {
+        const classificationLabel = (stateConfig as any).humanClassification || (stateConfig.classification ? stateConfig.classification.replace(/_/g, ' ') : 'ESTABLISHED FACT');
+        const confidenceLabel = (stateConfig as any).humanConfidence || stateConfig.confidence || 'VERIFIED';
+        const text = `${classificationLabel.toUpperCase()} · ${confidenceLabel.toUpperCase()}`;
+        classEls.forEach((el) => { el.textContent = text; });
+      }
+
+      const beat = beatIndexForState(activeStateId);
+      if (beat < 0) return;
+      poster?.show(beat);
+      if (tier === 'static') poster?.preload(beat + 1);
+      prefetcher?.prefetch(beat + 1);
+    });
+
     async function initSpatialEngine() {
-      if (spatialInitialized || !cesiumContainer) return;
+      if (spatialInitialized || !cesiumContainer || tier === 'static') return;
       spatialInitialized = true;
 
-      if (!SpatialViewer.isWebGLSupported()) {
-        fallbackEl?.classList.add('is-active');
+      if (!webglSupported) {
+        showFallback();
         return;
       }
 
@@ -789,32 +829,39 @@ const timeline = beatsData.beats.map((beat, idx) => ({
         container: cesiumContainer,
         onStatusChange: (status) => {
           if (!status.isSupported || status.errorMessage) {
-            fallbackEl?.classList.add('is-active');
+            showFallback();
           }
         }
       });
 
       const ok = await spatialViewer.initialize();
       if (!ok) {
-        fallbackEl?.classList.add('is-active');
+        showFallback();
         return;
       }
 
-      // Subscribe adapter to viewer
-      spatialAdapter.subscribe(({ activeStateId, stateConfig, forceInstant }) => {
-        spatialViewer?.transitionToState(activeStateId, forceInstant);
-
-        stateBtns.forEach(btn => {
-          const isMatch = btn.dataset.stateId === activeStateId;
-          btn.setAttribute('aria-pressed', String(isMatch));
-        });
-
-        if (scopeEl && stateConfig?.geographicScope) scopeEl.textContent = stateConfig.geographicScope.toUpperCase();
-        if (classEl && stateConfig) {
-          const classificationLabel = (stateConfig as any).humanClassification || (stateConfig.classification ? stateConfig.classification.replace(/_/g, ' ') : 'ESTABLISHED FACT');
-          const confidenceLabel = (stateConfig as any).humanConfidence || stateConfig.confidence || 'VERIFIED';
-          classEl.textContent = `${classificationLabel.toUpperCase()} · ${confidenceLabel.toUpperCase()}`;
+      // Hand over from poster to live map once the live map has fully drawn the beat the
+      // visitor is on (never mid-flight, never with tiles still arriving).
+      // Fallback: on slow GPUs (or with one slow tile) "every tile loaded" can take a long time.
+      // Release anyway once the live map has been settled on the visitor's beat for 5 s; the
+      // remaining tiles sharpen in place.
+      let settledSince = 0;
+      const releaseFallback = window.setInterval(() => {
+        const st = spatialViewer?.getStatus();
+        if (!st || st.isFlying || st.activeStateId !== spatialAdapter.getActiveStateId()) { settledSince = 0; return; }
+        if (!settledSince) settledSince = performance.now();
+        if (performance.now() - settledSince > 5000) { poster?.release(); window.clearInterval(releaseFallback); }
+      }, 500);
+      spatialViewer.onSceneComplete((stateId) => {
+        if (stateId === spatialAdapter.getActiveStateId()) {
+          poster?.release();
+          window.clearInterval(releaseFallback);
         }
+      });
+
+      // Subscribe adapter to viewer
+      spatialAdapter.subscribe(({ activeStateId, forceInstant }) => {
+        spatialViewer?.transitionToState(activeStateId, forceInstant);
       });
 
       // Synchronize controller offsets after spatial stage is ready and render tree stabilized
@@ -830,9 +877,26 @@ const timeline = beatsData.beats.map((beat, idx) => ({
       controller.destroy();
     });
 
-    // Lazy load spatial engine in advance before entering the story timeline section
     const tlSection = document.querySelector('.s-tl-section');
     const interstitialSection = document.querySelector('.c-interstitial');
+
+    if (tier === 'static' && !postersAvailable) showFallback();
+
+    // Start the live map while the visitor is still reading the opening, so it is ready (or
+    // nearly) by the time they reach the timeline. Idle time only; the intersection trigger
+    // below still covers fast scrollers and direct entry.
+    const whenIdle = (fn: () => void) =>
+      'requestIdleCallback' in window
+        ? (window as any).requestIdleCallback(fn, { timeout: 4000 })
+        : window.setTimeout(fn, 1500);
+    const onLoaded = () => whenIdle(() => {
+      poster?.preload(0);
+      prefetcher?.prefetch(0);
+      initSpatialEngine();
+    });
+    if (document.readyState === 'complete') onLoaded();
+    else window.addEventListener('load', onLoaded, { once: true });
+
     if (tlSection && 'IntersectionObserver' in window) {
       const io = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -846,6 +910,12 @@ const timeline = beatsData.beats.map((beat, idx) => ({
       if (interstitialSection) {
         io.observe(interstitialSection);
       }
+
+      // Pause the render loop while the stage is off screen.
+      const visibility = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => spatialViewer?.setSuspended(!entry.isIntersecting));
+      }, { rootMargin: '200px 0px 200px 0px' });
+      visibility.observe(tlSection);
     } else {
       initSpatialEngine();
     }

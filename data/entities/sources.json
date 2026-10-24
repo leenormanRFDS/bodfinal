@@ -589,6 +589,54 @@
       "reliabilityNotes": "Required to verify exact gun pit coordinates for 3.7-inch and Bofors 40mm anti-aircraft batteries at Darwin Oval, Fort Hill, and Fannie Bay.",
       "rightsStatus": "PENDING",
       "notes": "IMPORTANT: AA positions currently carry APPROXIMATE spatial confidence based on district maps."
+    },
+    {
+      "id": "SEA_POWER_CENTRE_HMAS_WATO",
+      "sourceId": "SEA_POWER_CENTRE_HMAS_WATO",
+      "title": "HMAS Wato (ship history)",
+      "creator": "Sea Power Centre – Australia",
+      "institution": "Royal Australian Navy",
+      "date": "n.d.",
+      "sourceClassification": "MODERN_INSTITUTIONAL_SUMMARY",
+      "sourceType": "MODERN_INSTITUTIONAL_SUMMARY",
+      "classification": "MODERN_INSTITUTIONAL_SUMMARY",
+      "authenticationStatus": "BIBLIOGRAPHICALLY_VERIFIED",
+      "archiveReference": null,
+      "catalogueVerificationNotes": "Accessed 2026-10-25. States Barossa was berthed at the main wharf with an oil lighter alongside during the first raid, was set on fire, was towed by Wato and beached nearby, and her cargo burnt out.",
+      "url": "https://seapower.navy.gov.au/node/1047",
+      "accessStatus": "DIGITISED_ONLINE",
+      "primaryOrSecondary": "SECONDARY",
+      "claimsSupported": [
+        "SS_BAROSSA"
+      ],
+      "claimsSupportedBySynthesis": [],
+      "reliabilityNotes": null,
+      "rightsStatus": null,
+      "notes": null
+    },
+    {
+      "id": "NHSA_LEWIS_NAVAL_ACTION_DARWIN_2002",
+      "sourceId": "NHSA_LEWIS_NAVAL_ACTION_DARWIN_2002",
+      "title": "Naval Action at Darwin – 19 February 1942",
+      "creator": "Lewis, Tom (Lieutenant RAN)",
+      "institution": "Naval Historical Society of Australia (Naval Historical Review, June 2002)",
+      "date": "2002-06",
+      "sourceClassification": "SCHOLARLY_SECONDARY",
+      "sourceType": "SCHOLARLY_SECONDARY",
+      "classification": "SCHOLARLY_SECONDARY",
+      "authenticationStatus": "BIBLIOGRAPHICALLY_VERIFIED",
+      "archiveReference": null,
+      "catalogueVerificationNotes": "Accessed 2026-10-25. States Barossa was moored on the other side of the pier from Neptuna, was bombed and caught fire, and was later salvaged and towed to Brisbane.",
+      "url": "https://navyhistory.au/naval-action-at-darwin-19-february-1942/2/",
+      "accessStatus": "DIGITISED_ONLINE",
+      "primaryOrSecondary": "SECONDARY",
+      "claimsSupported": [
+        "SS_BAROSSA"
+      ],
+      "claimsSupportedBySynthesis": [],
+      "reliabilityNotes": null,
+      "rightsStatus": null,
+      "notes": null
     }
   ],
   "template": {

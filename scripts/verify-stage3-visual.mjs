@@ -104,7 +104,7 @@ const neptunaLabelText = neptunaLabelMatch ? neptunaLabelMatch[1] : '';
 
 assert(!neptunaLabelText.includes('1942 TIMBER FOOTPRINT UNRESOLVED'), 'Neptuna primary label does NOT contain technical phrase "1942 TIMBER FOOTPRINT UNRESOLVED"');
 assert(!neptunaLabelText.includes('UNRESOLVED'), 'Neptuna primary label does NOT contain developer string "UNRESOLVED"');
-assert(neptunaLabelText.includes('MV NEPTUNA · EXPLODED ALONGSIDE WHARF · 10:12'), 'Neptuna primary label contains clear historical event');
+assert(neptunaLabelText.includes('MV NEPTUNA · EXPLODED ALONGSIDE WHARF · ~10:25'), 'Neptuna primary label contains clear historical event at the canonical explosion time (events.json EVENT_NEPTUNA_EXPLOSION 10:25)');
 
 const wharfLedgerMatch = overlayCode.match(/'stokes-hill-wharf':\s*\{[\s\S]*?uncertain:\s*['"`]([\s\S]*?)['"`]/);
 assert(wharfLedgerMatch !== null, 'stokes-hill-wharf ledger record found in overlay code');

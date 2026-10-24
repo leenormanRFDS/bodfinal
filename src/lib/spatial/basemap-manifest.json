@@ -1,5 +1,6 @@
 {
   "description": "Project-owned basemap tile layers (see scripts/cartography/build_basemap.py).",
+  "version": "f2376044d2cd",
   "urlTemplate": "/tiles/darwin-basemap/{z}/{x}/{y}.png",
   "tileSize": 512,
   "waterColor": "#070A0E",

@@ -19,6 +19,10 @@
 import type * as CesiumType from 'cesium';
 import type { HistoricalTimeController } from './historical-time-controller';
 
+
+/** Fog brightness floor. Higher values lift distant land/sea to grey (seen as wedges at 08:00). */
+const MAX_FOG_FLOOR = 0.04;
+
 export interface AtmosphereTuning {
   fogDensity: number;
   fogMinBrightness: number;
@@ -78,8 +82,10 @@ export class SpatialAtmosphereController {
     }
 
     // SkyAtmosphere tuning for restrained Northern Australian tropical marine horizon
+    // The sky atmosphere stays OFF (CartographyManager's quiet scene): at high-altitude beats it
+    // rendered as grey wedges at the frame edges.
     if (scene.skyAtmosphere) {
-      scene.skyAtmosphere.show = true;
+      scene.skyAtmosphere.show = false;
       // Slight warm-tinted desaturated atmosphere (rejecting electric blue haze)
       scene.skyAtmosphere.hueShift = -0.05;
       scene.skyAtmosphere.saturationShift = -0.45;
@@ -94,8 +100,9 @@ export class SpatialAtmosphereController {
     // Fog calibration for humid tropical maritime horizon depth
     if (scene.fog) {
       scene.fog.enabled = true;
-      scene.fog.density = 0.00012;
-      scene.fog.minimumBrightness = 0.18;
+      scene.fog.density = 0.00005;
+      // Low floor: distance recedes into the dark water colour, not into grey haze.
+      scene.fog.minimumBrightness = MAX_FOG_FLOOR;
     }
   }
 
@@ -119,7 +126,7 @@ export class SpatialAtmosphereController {
     // Fog parameters
     if (scene.fog) {
       scene.fog.density = tuning.fogDensity;
-      scene.fog.minimumBrightness = tuning.fogMinBrightness;
+      scene.fog.minimumBrightness = Math.min(tuning.fogMinBrightness, MAX_FOG_FLOOR);
     }
 
     // Sky atmosphere parameters

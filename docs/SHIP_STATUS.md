@@ -4,21 +4,21 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 
 | Field | Value |
 |---|---|
-| Current milestone | **M1 — Spatial Engine and Cartography** (in verification) |
+| Current milestone | **M1 + M2 (spatial) — performance, beat framing, formations** (in verification) |
 | Working branch | `dev/spatial-engine` (from `main` @ `a7f6c95`, 16 Oct 2026) |
 | Production | Untouched. No merge, no deploy. |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
-| Updated | 24 Oct 2026 |
+| Updated | 25 Oct 2026 |
 
 ## Milestones
 
 | | Milestone | Status |
 |---|---|---|
 | M1 | Spatial Engine and Cartography | In verification |
-| M2 | Historical Story, Camera Choreography and Evidence | Not started |
+| M2 | Historical Story, Camera Choreography and Evidence | In progress — all 8 beats framed; formations; Evidence Ledger affordance outstanding |
 | M3 | Ticketing and Rezdy Verification | Not started — blocked on staging credentials for live checks |
 | M4 | Site-wide UX/UI and Responsive Completion | Not started |
-| M5 | Performance, Accessibility and Regression QA | Not started |
+| M5 | Performance, Accessibility and Regression QA | Started — spatial load path (posters, caching, prefetch) |
 | M6 | Production Release Candidate | Not started |
 
 ## M1 — Root causes found (verified on `main` and on the live preview)
@@ -67,22 +67,89 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 
 **Booking:** no file under `src/lib/rezdy.ts`, `src/lib/booking-store.ts`, `src/pages/api/*`, `BookingForm.astro` changed. Rezdy suite results identical on `main` and branch.
 
+## Checkpoint 25 Oct 2026 — load performance, beat framing, formations, Zero model, Barossa canon
+
+Owner approvals (in session, 25 Oct): animated aircraft formations and sourced 3D models as a
+visitor-facing feature; SS Barossa canon correction.
+
+**Load performance**
+- Baseline on the 24 Oct preview (`qa-captures/perf/baseline-preview-load-profile.json`, headless, no GPU):
+  timeline entry → first map pixels 7.4 s desktop / 6.1 s emulated mid-range phone (4× CPU, 12 Mbps).
+  Cesium chunk 1.31 MB transferred; ~144 tiles (1.3 MB) for the first beat. Tiles served `max-age=0`.
+- Beat posters: every beat rendered by the real engine at its authored camera (canvas read-back, no page
+  chrome), WebP, desktop 2160×1350 (30–53 KB), mobile 780×1688 @2× (15–37 KB). Shown immediately; the
+  live map cross-fades in once it has drawn the same beat (tiles loaded) or has been settled on it
+  for 5 s. `src/lib/spatial/spatial-delivery.ts`.
+- Delivery tiers: live map for capable devices; posters only for no WebGL, data saver, ≤1 GB devices
+  or `?map=static` (`?map=live` forces live).
+- Caching: tiles and posters immutable 1 year with `?v=<content hash>`; `/cesium/*` and `/models/*`
+  1 week + 30 days SWR (`scripts/vercel-cache-headers.mjs`, run by `npm run build`).
+- Engine starts on page idle instead of at timeline approach; next beat's tiles prefetched (low
+  priority) from recorded per-beat lists (`beat-tiles.json`); render loop paused off-screen; MSAA off
+  on phones. Tiles were already palette-quantised (64 colours); lossless WebP would save only ~16%.
+- Risk to watch on real devices: idle start runs the Cesium module evaluation while the visitor reads
+  the opening; if that causes jank on low-end phones, move the start back to timeline approach (the
+  posters cover the wait either way).
+
+**Beats (all eight now framed; subjects from canon)**
+- 08:00 carriers & launch: Timor Sea → Bathurst Island → Darwin in one frame; four carriers marked
+  REPRESENTATIVE; first-wave formation drawn as a sparse symbol at this scale.
+- 09:35: widened to hold the mission and Darwin; formation over the mission (canon heading 140°).
+- 09:58: formation on the canon attack axis (heading 330°, out of the south-east, Howard Springs /
+  Berrimah turn). Zeros rendered with the 3D model; Vals and Kates as silhouettes.
+- 10:45 Peary: hull-only silhouette (the drawn wake read as a stray trail), approximate-area ring.
+- 12:00: RAAF Station Darwin (canon centroid); 54-bomber stepped V tightened (was scattered by
+  perspective at 6.5 km altitude); camera pulled back.
+- 13:00: Peary's surveyed wreck (27 m).
+- Dusk: every wreck with a modern surveyed position (Peary, Zealandia, Meigs, Mauna Loa, British
+  Motorist) + Kelat (grey, sank 24 Feb, outside the eight); Neptuna (salvaged, berth unresolved) and
+  luggers Mavie / Highland Warrior (positions not recorded) named without points. Label reads
+  "Lowe Commission: ~243" (canon: approximately 243).
+- Phones: compact label wording for 08:00, 09:35 and dusk (full wording on desktop and in the ledger).
+
+**A6M2 Zero model** (`public/models/a6m2-zero.glb`, 16.7 KB): owner-supplied model (generated with
+Tripo). Geometry kept; texture removed because its paint (dark green uppers, yellow leading-edge
+strips) is later-war and its national markings were garbled; outer wing span corrected 1.17 → 1.32 ×
+length (A6M2: 12.0 m / 9.06 m); real-world metres, nose +X; simplified 10.4k → 3.1k triangles;
+meshopt-compressed (was 870 KB). Rendered in muted bone, minimum 54 px (symbol size, not a scale claim).
+
+**Canon correction — SS_BAROSSA** (`data/entities/vessels.json`, sources added to `sources.json`):
+previous entry placed her at anchor in the northern anchorage at a point on land, damaged by near
+misses. Sea Power Centre – Australia (HMAS Wato) and Lewis, *Naval Action at Darwin* (NHSA 2002):
+berthed at the main wharf (other side of the pier from Neptuna), set on fire, towed clear by Wato,
+beached nearby, cargo burnt out; later salvaged. Coordinates now null / UNKNOWN, same rule as Neptuna
+(1942 wharf geometry unresolved). Previous values preserved in `canonCorrections`. No visitor-facing
+text referenced the old account.
+
+**Other fixes:** dock location/classification readouts never updated (selector returned a hidden copy;
+also on `main`); sky atmosphere and fog floor re-enabled by the atmosphere controller produced grey
+wedges at high-altitude beats; five pre-existing type errors (`'HIGH'` confidence) fixed; capture
+harness no longer reads back blank posters (requestRenderMode) and renders phone posters at 2×.
+
+**Verification (25 Oct):** identical-camera captures of all 8 beats, desktop 1440 and mobile 390
+(`qa-captures/m2f`, `m2g`; headless Chromium + SwiftShader): 0 page errors, 0 failed requests. All
+governance suites pass (truth-narrative, stage2-evidence, stage3 visual/ledger/scroll/cartography,
+stage15, phase2a formations, i18n, validate-ai-os). `npm run build` passes with the cache rules in
+`.vercel/output/config.json`. NOT verified: real GPU, iOS Safari, real-device load times.
+
 ## Outstanding defects (logged, not yet addressed)
 
 - **M3 / commerce:** `test-serverless-hardening.ts` 18/19 on both `main` and branch — "In-Progress TTL Revalidation" fails. The AI Studio report claims this was fixed; the fix is not in the repository. Its other claimed fixes (`.env.example`, dual adapter, Cesium asset move, Post Office label) are also absent from `main`.
 - **M2:** Map-label click → Evidence Ledger handler cannot fire (canvas is `pointer-events: none` so the page scrolls); needs an accessible, non-canvas affordance.
-- **M2:** Formation controller references a state id (`BEAT_0_CARRIER_FORCE`) that does not exist in `SpatialDemonstrationStateId` (type error; dead branch).
 - **M4:** Booking-bar reverence gating starts at beat index 3; the 09:58 strike beat (index 2) and the desktop "BOOK TICKETS" button are not gated.
 - **Repo hygiene:** `public/test-*.png`, `public/acceptance/*` (≈14 MB) are QA debris served publicly; unused AI-generated rasters remain in `public/images/spatial/` pending owner decision.
 
 ## Decisions required (owner)
 
-- **Canon corrections (TRUTH):** `STOKES_HILL_WHARF_CONTEMPORARY` centroid lies ~250 m SSW of the actual present-day wharf (in water); `SS_BAROSSA` and `DARWIN_HARBOUR_CONTEMPORARY` coordinates fall on land. Markers currently use OSM for the present-day wharf; canon not edited.
+- **Canon corrections (TRUTH):** `STOKES_HILL_WHARF_CONTEMPORARY` centroid lies ~250 m SSW of the actual present-day wharf (in water); `DARWIN_HARBOUR_CONTEMPORARY` falls on land. Markers use OSM for the present-day wharf; canon not edited. (`SS_BAROSSA` corrected 25 Oct with approval.)
+- **Canon inconsistency (Neptuna times):** `events.json` has EVENT_NEPTUNA_BOMBED 10:02 and EVENT_NEPTUNA_EXPLOSION 10:25; `vessels.json` MV_NEPTUNA `damageTime` is 10:12. The map label uses the explosion event (~10:25). Needs an owner/historian ruling.
+- **3D models:** only the Zero exists. Vals (D3A1), Kates (B5N2), Bettys/Nells and ships stay as silhouettes until type-accurate models are supplied or commissioned. The supplied Zero's licence/terms (Tripo) should be confirmed by the owner before production.
 - **Historical raster:** if a genuine 1942 survey (e.g. NAA A2633 wharf plans, RAAF/RAN chart) is available, supply it for proper ground-control registration. Until then, no 1942 raster is shown as cartography.
 - **AI-generated images:** confirm deletion of `public/images/spatial/archival-texture-*.png`, `darwin-1942-overlay.png`, `darwin-1942-continuous-map.png`.
 
 ## Next action
 
-1. Owner review of the Vercel preview for `dev/spatial-engine` on real devices (desktop + iPhone Safari).
-2. M2: approach/formation beat, beats 5–7 framing, Evidence Ledger affordance, canon corrections once approved.
-3. M3: Rezdy in-progress TTL revalidation defect (needs staging credentials for live verification).
+1. Owner review of the Vercel preview for `dev/spatial-engine` on real devices (desktop + iPhone Safari): load feel, poster → live hand-over, 3D Zeros at 09:58.
+2. Re-profile the new preview against the 24 Oct baseline.
+3. M2: Evidence Ledger affordance (non-canvas), motion paths for formations between beats.
+4. M3: Rezdy in-progress TTL revalidation defect (needs staging credentials for live verification).

@@ -25,6 +25,7 @@ function canonPoint(kind: 'location' | 'vessel', id: string): { lon: number; lat
 const MISSION = canonPoint('location', 'BATHURST_ISLAND_MISSION_1942');
 const POST_OFFICE = canonPoint('location', 'DARWIN_POST_OFFICE_1942');
 const PEARY = canonPoint('vessel', 'USS_PEARY_DD226');
+const RAAF = canonPoint('location', 'RAAF_STATION_DARWIN_1942');
 
 export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDemonstrationState> = {
   STATE_00_WORLD: {
@@ -243,6 +244,17 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     geographicScope: 'Timor Sea · ~220 NM NNW Darwin',
     purpose: 'Launch window of First Wave (188 aircraft) from IJN 1st Carrier Air Fleet. Broad oceanic perspective looking along transit corridor toward Northern Australia.',
     temporalContext: 'HISTORICAL_1942',
+    // 08:00 — subject: the whole first leg. Looking down the strike's track (~140°) from behind the
+    // Timor Sea launch area, so the carriers sit in the foreground and Bathurst Island and Darwin lie
+    // ahead. Composition aim point between launch area and Bathurst Island (not a historical position).
+    frame: {
+      subject: 'COMPOSITION',
+      targetLon: 129.50,
+      targetLat: -10.98,
+      headingDeg: 140,
+      pitchDeg: -44,
+      rangeM: { desktop: 470000, tablet: 540000, mobilePortrait: 840000, mobileLandscape: 510000 },
+    },
     desktopCamera: {
       latitude: -10.3,
       longitude: 127.8,
@@ -297,13 +309,15 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     temporalContext: 'HISTORICAL_1942',
     // 09:35 — subject: the mission at Nguiu. Looking SSE across Clarence Strait toward Darwin,
     // so the warning's path runs away from the viewer into the frame.
+    // Wide enough to hold the mission AND Darwin (~80 km SSE), so the visitor sees where the
+    // island is and how little warning distance there was. Aim point between the two.
     frame: {
-      subject: 'BATHURST_ISLAND_MISSION_1942',
-      targetLon: MISSION.lon,
-      targetLat: MISSION.lat,
+      subject: 'COMPOSITION',
+      targetLon: (MISSION.lon + 130.84) / 2,
+      targetLat: (MISSION.lat - 12.46) / 2,
       headingDeg: 152,
-      pitchDeg: -38,
-      rangeM: { desktop: 70000, tablet: 85000, mobilePortrait: 125000, mobileLandscape: 80000 },
+      pitchDeg: -42,
+      rangeM: { desktop: 175000, tablet: 205000, mobilePortrait: 300000, mobileLandscape: 190000 },
     },
     desktopCamera: {
       latitude: -11.65,
@@ -543,6 +557,17 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     purpose: 'Fifty-four twin-engine land bombers from Kendari and Ambon arrive from northwest at 18,000–23,000 ft, pattern-bombing military runways and hangars.',
     canonicalLocationEntityId: 'RAAF_STATION_DARWIN_1942',
     temporalContext: 'HISTORICAL_1942',
+    // 12:00 — subject: RAAF Station Darwin (canonical). Looking along the bombers' documented
+    // approach (135°, from the north-west across Beagle Gulf), high enough that the formation at
+    // ~6,500 m sits between the camera and the airfield.
+    frame: {
+      subject: 'RAAF_STATION_DARWIN_1942',
+      targetLon: RAAF.lon,
+      targetLat: RAAF.lat,
+      headingDeg: 135,
+      pitchDeg: -46,
+      rangeM: { desktop: 27000, tablet: 31000, mobilePortrait: 42000, mobileLandscape: 29000 },
+    },
     desktopCamera: {
       latitude: -12.4550,
       longitude: 130.8320,
@@ -595,6 +620,16 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     purpose: 'USS Peary sinks stern-first at approx 13:00; more than eighty of her crew lost. Somber close composition above surveyed war grave position.',
     canonicalLocationEntityId: 'DARWIN_HARBOUR_CONTEMPORARY',
     temporalContext: 'HISTORICAL_1942',
+    // 13:00 — subject: Peary's surveyed wreck (canonical). Same direction as 10:45 but steeper and
+    // closer: the ship is gone; the mark on the water is where she lies.
+    frame: {
+      subject: 'USS_PEARY_DD226',
+      targetLon: PEARY.lon,
+      targetLat: PEARY.lat,
+      headingDeg: 52,
+      pitchDeg: -33,
+      rangeM: { desktop: 3000, tablet: 3400, mobilePortrait: 5000, mobileLandscape: 3200 },
+    },
     desktopCamera: {
       latitude: -12.4840,
       longitude: 130.8175,
@@ -647,6 +682,17 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     purpose: 'Dusk falls over the devastated harbour. Fires burn into the night. Multi-source death toll 235 to 250+. Reflective evening composition returning visitor to the contemporary wharf.',
     canonicalLocationEntityId: 'STOKES_HILL_WHARF_CONTEMPORARY',
     temporalContext: 'HISTORICAL_1942',
+    // Dusk — subject: the harbour's war graves. Pulled back over the town looking south-west, so
+    // the present-day wharf is in the foreground and every surveyed wreck lies in the water beyond.
+    // Aim point: centre of the surveyed wreck field (composition, not a historical position).
+    frame: {
+      subject: 'COMPOSITION',
+      targetLon: 130.8405,
+      targetLat: -12.4790,
+      headingDeg: 214,
+      pitchDeg: -40,
+      rangeM: { desktop: 6800, tablet: 7800, mobilePortrait: 11500, mobileLandscape: 7200 },
+    },
     desktopCamera: {
       latitude: -12.4580,
       longitude: 130.8640,

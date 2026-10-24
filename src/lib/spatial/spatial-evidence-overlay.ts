@@ -36,6 +36,14 @@ function canonVessel(id: string): LonLat | null {
   const c = v?.coordinates;
   return c && c.latitude != null && c.longitude != null ? { lon: c.longitude, lat: c.latitude } : null;
 }
+/** Modern surveyed wreck position (vessels.json wreckPositionModernSurvey), with depth. */
+function canonWreck(id: string): (LonLat & { depthM: number | null }) | null {
+  const v: any = (vesselsData as any).entities.find((e: any) => e.id === id);
+  const c = v?.wreckPositionModernSurvey?.coordinates;
+  return c && c.latitude != null && c.longitude != null
+    ? { lon: c.longitude, lat: c.latitude, depthM: c.depthM ?? null }
+    : null;
+}
 function canonLocation(id: string): LonLat | null {
   const l: any = (locationsData as any).entities.find((e: any) => e.id === id);
   return l && l.latitude != null && l.longitude != null ? { lon: l.longitude, lat: l.latitude } : null;
@@ -320,12 +328,13 @@ export class SpatialEvidenceOverlay {
     // =========================================================================
     const node0Entities: CesiumType.Entity[] = [];
 
-    // Operational launch envelope (~40km uncertainty circle)
+    // Operational launch envelope: routes.json reconstructed launch centroid, 40 km uncertainty radius.
     const launchArea = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(129.0, -10.5, 50),
+      position: Cesium.Cartesian3.fromDegrees(129.0, -10.5, 0),
       ellipse: {
-        semiMajorAxis: 45000,
-        semiMinorAxis: 38000,
+        semiMajorAxis: 40000,
+        semiMinorAxis: 40000,
+        height: 0,
         material: corridorFill,
         outline: true,
         outlineColor: corridorOutline,
@@ -335,7 +344,8 @@ export class SpatialEvidenceOverlay {
     });
     node0Entities.push(launchArea);
 
-    // 4 Aircraft Carriers (Akagi, Kaga, Soryu, Hiryu) in reconstructed relative tactical grouping
+    // The four carriers (formations.json carrierUnits). Their individual positions were not recorded:
+    // the grouping inside the launch area is REPRESENTATIVE and labelled as such.
     const carriers = [
       { name: 'AKAGI', lon: 128.92, lat: -10.46, isFlagship: true },
       { name: 'KAGA', lon: 128.98, lat: -10.54, isFlagship: false },
@@ -344,19 +354,6 @@ export class SpatialEvidenceOverlay {
     ];
 
     for (const c of carriers) {
-      // 3D physical extruded plinth representing the ship at sea level
-      const plinth = this.dataSource.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(c.lon, c.lat, 10),
-        box: {
-          dimensions: new Cesium.Cartesian3(400, 120, 20),
-          material: Cesium.Color.fromCssColorString('rgba(27, 27, 24, 0.85)'),
-          outline: true,
-          outlineColor: goldColor,
-        },
-        show: false,
-      });
-      node0Entities.push(plinth);
-
       // High-DPI plan silhouette billboard
       const carrierTexture = SpatialRepresentativeAssets.getCarrierTexture({ name: c.name, isFlagship: c.isFlagship });
       if (carrierTexture) {
@@ -364,8 +361,9 @@ export class SpatialEvidenceOverlay {
           position: Cesium.Cartesian3.fromDegrees(c.lon, c.lat, 35),
           billboard: {
             image: carrierTexture,
-            width: 140,
-            height: 35,
+            // Kept small: at this scale a 260 m carrier is sub-pixel; the symbol must not dwarf the formation.
+            width: 46,
+            height: 12,
             alignedAxis: Cesium.Cartesian3.UNIT_Z,
             rotation: Cesium.Math.toRadians(140),
             scaleByDistance: new Cesium.NearFarScalar(5e4, 1.2, 3e6, 0.7),
@@ -380,7 +378,7 @@ export class SpatialEvidenceOverlay {
         const nameLabel = this.dataSource.entities.add({
           position: Cesium.Cartesian3.fromDegrees(c.lon, c.lat, 80),
           label: {
-            text: 'AKAGI (FLAGSHIP) · 1ST CARRIER AIR FLEET',
+            text: 'AKAGI · KAGA · SORYU · HIRYU\nCARRIER POSITIONS REPRESENTATIVE',
             font: geoEntityFont,
             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
             fillColor: goldColor,
@@ -389,12 +387,15 @@ export class SpatialEvidenceOverlay {
             showBackground: false,
             backgroundColor: bgBadge,
             backgroundPadding: bgPadding,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            pixelOffset: new Cesium.Cartesian2(0, -12),
+            // To the left of the group: the onward track runs up-right from it.
+            horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER,
+            pixelOffset: new Cesium.Cartesian2(-34, 6),
             scaleByDistance: new Cesium.NearFarScalar(1e5, 1.0, 3e6, 0.6),
           },
           show: false,
         });
+        if (isMobile) this.compactForPhone(nameLabel, 'FOUR CARRIERS\n(POSITIONS REPRESENTATIVE)');
         node0Entities.push(nameLabel);
       }
     }
@@ -421,7 +422,7 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['timor-launch'] }),
       position: Cesium.Cartesian3.fromDegrees(129.25, -10.75, 4200),
       label: {
-        text: 'FIRST WAVE STRIKE FORCE: 188 AIRCRAFT · 08:00\nESTIMATED LAUNCH AREA · ~220 NM NNW DARWIN',
+        text: 'FIRST WAVE: 188 AIRCRAFT · 08:00–08:45\nESTIMATED LAUNCH AREA · ~220 NM NNW OF DARWIN',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -436,6 +437,7 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
+    if (isMobile) this.compactForPhone(launchLabel, 'FIRST WAVE · 188 AIRCRAFT\n08:00–08:45 · LAUNCH AREA');
 
     this.evidenceNodes.push({
       id: 'NODE_TIMOR_LAUNCH',
@@ -531,8 +533,9 @@ export class SpatialEvidenceOverlay {
           130.627, -11.758, 3500,
           131.05, -12.30, 3200,
         ]),
-        width: 2.0,
-        material: corridorOutline,
+        width: 1.5,
+        // Dashed: the formation's onward corridor (approximate). The solid line is the radio warning.
+        material: new Cesium.PolylineDashMaterialProperty({ color: corridorOutline, dashLength: 14.0 }),
       },
       show: false,
     });
@@ -578,6 +581,7 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
+    if (isMobile) this.compactForPhone(this.communicationLabelEntity, '09:37 · WARNING SENT\nVIA COASTAL RADIO (VID)');
     node1Entities.push(this.communicationLabelEntity);
 
     // Primary mission label (16-18px primary event)
@@ -595,11 +599,13 @@ export class SpatialEvidenceOverlay {
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -16),
+        // Clear of the formation overhead (it spans ~±12 km around the mission).
+        pixelOffset: new Cesium.Cartesian2(0, -64),
         scaleByDistance: new Cesium.NearFarScalar(3e4, 1.0, 8e5, 0.7),
       },
       show: false,
     });
+    if (isMobile) this.compactForPhone(bathurstLabel, 'NGUIU MISSION · 09:35', -36);
 
     this.evidenceNodes.push({
       id: 'NODE_BATHURST_MISSION',
@@ -841,16 +847,17 @@ export class SpatialEvidenceOverlay {
     node4Entities.push(pearyArea);
 
     // Representative Destroyer (USS Peary) plan silhouette
-    const destroyerTexture = SpatialRepresentativeAssets.getDestroyerTexture();
+    // Hull only: the drawn wake read as a stray trail at harbour scale, and her actual track is not recorded.
+    const destroyerTexture = SpatialRepresentativeAssets.getDestroyerTexture(false);
     if (destroyerTexture) {
       const pearyShip = this.dataSource.entities.add({
         properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['peary-underway'] }),
         position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 15),
         billboard: {
           image: destroyerTexture,
-          // Portrait artwork (100x280, bow up, wake astern). Representative silhouette, not a track.
+          // Portrait artwork (100x190, bow up). Representative silhouette, not a track.
           width: 24,
-          height: 67,
+          height: 46,
           alignedAxis: Cesium.Cartesian3.UNIT_Z,
           rotation: Cesium.Math.toRadians(35),
           scaleByDistance: new Cesium.NearFarScalar(2e3, 1.2, 5e4, 0.7),
@@ -897,28 +904,37 @@ export class SpatialEvidenceOverlay {
     // =========================================================================
     const node5Entities: CesiumType.Entity[] = [];
 
-    // Airfield perimeter at ground level (RAAF Station Darwin at Parap)
-    const raafPerimeter = this.dataSource.entities.add({
+    // RAAF Station Darwin: canonical centroid (locations.json). No perimeter is drawn — the 1942
+    // boundary is not in canon; the basemap shows the present-day runways on the same site.
+    const raaf = canonLocation('RAAF_STATION_DARWIN_1942') ?? { lon: 130.875, lat: -12.414 };
+    const raafPoint = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['raaf-station'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.875, -12.414, 30),
+      position: Cesium.Cartesian3.fromDegrees(raaf.lon, raaf.lat, 10),
+      point: { pixelSize: 9, color: goldColor, outlineColor: darkBg, outlineWidth: 2 },
+      show: false,
+    });
+    node5Entities.push(raafPoint);
+    const raafRing = this.dataSource.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(raaf.lon, raaf.lat, 0),
       ellipse: {
-        semiMajorAxis: 2400,
-        semiMinorAxis: 1600,
-        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.10)'),
+        semiMajorAxis: 600,
+        semiMinorAxis: 600,
+        height: 0,
+        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.06)'),
         outline: true,
-        outlineColor: goldColor,
-        outlineWidth: 1.5,
+        outlineColor: goldMuted,
+        outlineWidth: 1.0,
       },
       show: false,
     });
-    node5Entities.push(raafPerimeter);
+    node5Entities.push(raafRing);
 
     // Primary formation & target label (16-18px)
     const raafLabel = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['raaf-station'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.83, -12.33, 6800),
+      position: Cesium.Cartesian3.fromDegrees(raaf.lon, raaf.lat, 40),
       label: {
-        text: 'RAAF STATION DARWIN · 12:00\nSECOND WAVE: 54 HEAVY BOMBERS AT 20,000 FT',
+        text: 'RAAF STATION DARWIN · 12:00\nSECOND RAID: 54 LAND-BASED BOMBERS AT ~20,000 FT',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -1061,7 +1077,6 @@ export class SpatialEvidenceOverlay {
         BEAT_3_POST_OFFICE: 'CONTEXTUAL',
         BEAT_4_PEARY_ATTACK: 'CONTEXTUAL',
         BEAT_6_PEARY_LOST: 'CONTEXTUAL',
-        BEAT_7_RECKONING: 'CONTEXTUAL',
         STATE_03_WHARF: 'PRIMARY',
       },
     });
@@ -1117,13 +1132,19 @@ export class SpatialEvidenceOverlay {
     });
 
     // =========================================================================
-    // BEAT 7 (DUSK): THE RECKONING · PRIMARY SYNTHESIS BOARD
+    // BEAT 7 (DUSK): THE RECKONING — THE HARBOUR'S WAR GRAVES
+    // Canon (historical-canon.json, beat 7 note): eight ships sunk on 19 February — USS Peary,
+    // MV Neptuna, MV Zealandia, USAT Meigs, USAT Mauna Loa, British Motorist, and the luggers
+    // Mavie and Highland Warrior. Kelat sank later (24 Feb). Each wreck is drawn ONLY at its modern
+    // surveyed position (vessels.json wreckPositionModernSurvey). Neptuna's wreck was salvaged and
+    // her berth is unresolved; the luggers have no recorded position. Neither is given a point.
     // =========================================================================
     const wharfLabel = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['stokes-hill-wharf'] }),
-      position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 55),
+      // Over the town behind the present-day wharf (foreground of the dusk camera).
+      position: Cesium.Cartesian3.fromDegrees(130.8478, -12.4622, 60),
       label: {
-        text: 'THE RECKONING · DUSK 19 FEBRUARY 1942\nEIGHT SHIPS SUNK IN HARBOUR · OVER 30 AIRCRAFT DESTROYED\n235 TO 250+ FATALITIES · LOWE COMMISSION ADJUDICATED: 243\nPRESENT-DAY STOKES HILL WHARF · SAME WHARF PRECINCT. SAME SKY.',
+        text: 'THE RECKONING · DUSK, 19 FEBRUARY 1942\nEIGHT SHIPS SUNK IN HARBOUR · 235 TO 250+ DEAD (LOWE COMMISSION: ~243)\nPRESENT-DAY STOKES HILL WHARF · SAME WHARF PRECINCT. SAME SKY.',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
@@ -1137,6 +1158,8 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
+    // Phones: the full three-line text wraps to ~9 lines and buries the wreck field.
+    if (isMobile) this.compactForPhone(wharfLabel, 'DUSK · 19 FEB 1942\n8 SHIPS SUNK IN HARBOUR\n235 TO 250+ DEAD');
 
     this.evidenceNodes.push({
       id: 'NODE_RECKONING_SYNTHESIS',
@@ -1148,32 +1171,29 @@ export class SpatialEvidenceOverlay {
       },
     });
 
-    // =========================================================================
-    // BEAT 7 ONLY: SURVEYED SEABED WRECKS ACROSS DARWIN HARBOUR
-    // Clean, spaced markers with concise labels. Strictly suppressed during earlier beats!
-    // =========================================================================
     const wreckEntities: CesiumType.Entity[] = [];
 
     const sunkFeb19SurveyedWrecks = [
-      { name: 'MV ZEALANDIA', id: 'MV_ZEALANDIA', depth: 19 },
-      { name: 'USAT MEIGS', id: 'USAT_MEIGS', depth: 18 },
-      { name: 'USAT MAUNA LOA', id: 'USAT_MAUNA_LOA', depth: 18 },
-      { name: 'BRITISH MOTORIST', id: 'BRITISH_MOTORIST', depth: 20 },
+      { name: 'USS PEARY', id: 'USS_PEARY_DD226' },
+      { name: 'ZEALANDIA', id: 'MV_ZEALANDIA' },
+      { name: 'MEIGS', id: 'USAT_MEIGS' },
+      { name: 'MAUNA LOA', id: 'USAT_MAUNA_LOA' },
+      { name: 'BRITISH MOTORIST', id: 'BRITISH_MOTORIST' },
     ];
     const sunkFeb19Placed = sunkFeb19SurveyedWrecks
-      .map((w) => ({ ...w, pos: canonVessel(w.id) }))
-      .filter((w): w is typeof w & { pos: LonLat } => w.pos !== null)
-      .map((w) => ({ ...w, lon: w.pos.lon, lat: w.pos.lat }));
+      .map((w) => ({ ...w, pos: canonWreck(w.id) }))
+      .filter((w): w is typeof w & { pos: LonLat & { depthM: number | null } } => w.pos !== null)
+      .map((w) => ({ ...w, lon: w.pos.lon, lat: w.pos.lat, depth: w.pos.depthM }));
 
     for (const w of sunkFeb19Placed) {
-      const wreckTex = SpatialRepresentativeAssets.getWreckSymbolTexture(w.depth);
+      const wreckTex = SpatialRepresentativeAssets.getWreckSymbolTexture(w.depth ?? undefined);
       if (wreckTex) {
         const symbol = this.dataSource.entities.add({
           position: Cesium.Cartesian3.fromDegrees(w.lon, w.lat, 5),
           billboard: {
             image: wreckTex,
-            width: 32,
-            height: 32,
+            width: 30,
+            height: 30,
             scaleByDistance: new Cesium.NearFarScalar(1e3, 1.1, 5e4, 0.7),
           },
           show: false,
@@ -1184,7 +1204,7 @@ export class SpatialEvidenceOverlay {
       const label = this.dataSource.entities.add({
         position: Cesium.Cartesian3.fromDegrees(w.lon, w.lat, 25),
         label: {
-          text: `${w.name} · ${w.depth}M`,
+          text: w.depth != null ? `${w.name} · ${w.depth} M` : w.name,
           font: geoEntityFont,
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
           fillColor: boneColor,
@@ -1194,7 +1214,7 @@ export class SpatialEvidenceOverlay {
           backgroundColor: bgBadge,
           backgroundPadding: bgPadding,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(0, -10),
+          pixelOffset: new Cesium.Cartesian2(0, -12),
           scaleByDistance: new Cesium.NearFarScalar(2e3, 1.0, 4e4, 0.7),
         },
         show: false,
@@ -1202,57 +1222,61 @@ export class SpatialEvidenceOverlay {
       wreckEntities.push(label);
     }
 
-    // Contextual Subsequent Loss: Coal Hulk Kelat
-    const kelatPos = canonVessel('COAL_HULK_KELAT') ?? { lon: 130.845, lat: -12.477 };
-    const kelatWreckTex = SpatialRepresentativeAssets.getWreckSymbolTexture(15);
-    if (kelatWreckTex) {
-      const kelatSymbol = this.dataSource.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(kelatPos.lon, kelatPos.lat, 5),
-        billboard: {
-          image: kelatWreckTex,
-          width: 30,
-          height: 30,
-          color: Cesium.Color.fromCssColorString('#8E959E'),
-          scaleByDistance: new Cesium.NearFarScalar(1e3, 0.95, 5e4, 0.6),
+    // Kelat: damaged 19 Feb, sank 24 Feb — shown in grey, outside the count of eight.
+    const kelatPos = canonWreck('COAL_HULK_KELAT');
+    if (kelatPos) {
+      const kelatWreckTex = SpatialRepresentativeAssets.getWreckSymbolTexture(kelatPos.depthM ?? undefined);
+      if (kelatWreckTex) {
+        const kelatSymbol = this.dataSource.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(kelatPos.lon, kelatPos.lat, 5),
+          billboard: {
+            image: kelatWreckTex,
+            width: 24,
+            height: 24,
+            color: Cesium.Color.fromCssColorString('#8E959E'),
+            scaleByDistance: new Cesium.NearFarScalar(1e3, 0.95, 5e4, 0.6),
+          },
+          show: false,
+        });
+        wreckEntities.push(kelatSymbol);
+      }
+      const kelatLabel = this.dataSource.entities.add({
+        properties: new Cesium.PropertyBag({
+          classification: 'CONTEXTUAL_SUBSEQUENT_LOSS',
+          lossDate: '1942-02-24',
+          damageDate: '1942-02-19',
+          ledgerData: CANONICAL_EVIDENCE_RECORDS['kelat-wreck'],
+        }),
+        position: Cesium.Cartesian3.fromDegrees(kelatPos.lon, kelatPos.lat, 25),
+        label: {
+          text: 'KELAT · 15M\nDAMAGED 19 FEB · SANK 24 FEB',
+          font: geoEntityFont,
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          fillColor: Cesium.Color.fromCssColorString('#A2A8B0'),
+          outlineColor: darkBg,
+          outlineWidth: 5,
+          showBackground: false,
+          backgroundColor: bgBadge,
+          backgroundPadding: bgPadding,
+          // Below-left of the symbol: British Motorist's label sits to its right and Zealandia's
+          // marker above-left; the space under Zealandia is clear at the dusk camera.
+          horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+          verticalOrigin: Cesium.VerticalOrigin.TOP,
+          pixelOffset: new Cesium.Cartesian2(-4, 12),
+          scaleByDistance: new Cesium.NearFarScalar(2e3, 0.9, 4e4, 0.6),
         },
         show: false,
       });
-      wreckEntities.push(kelatSymbol);
+      wreckEntities.push(kelatLabel);
     }
 
-    const kelatLabel = this.dataSource.entities.add({
-      properties: new Cesium.PropertyBag({
-        classification: 'CONTEXTUAL_SUBSEQUENT_LOSS',
-        lossDate: '1942-02-24',
-        damageDate: '1942-02-19',
-        ledgerData: CANONICAL_EVIDENCE_RECORDS['kelat-wreck'],
-      }),
-      position: Cesium.Cartesian3.fromDegrees(kelatPos.lon, kelatPos.lat, 25),
-      label: {
-        text: 'KELAT · 15M\nDAMAGED 19 FEB · SANK 24 FEB',
-        font: geoEntityFont,
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        fillColor: Cesium.Color.fromCssColorString('#A2A8B0'),
-        outlineColor: darkBg,
-        outlineWidth: 5,
-        showBackground: false,
-        backgroundColor: bgBadge,
-        backgroundPadding: bgPadding,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -10),
-        scaleByDistance: new Cesium.NearFarScalar(2e3, 0.9, 4e4, 0.6),
-      },
-      show: false,
-    });
-    wreckEntities.push(kelatLabel);
-
-    // MV Neptuna explosion marker
+    // MV Neptuna: exploded at her berth (~10:25); wreck salvaged 1959–61; berth position unresolved.
+    // Anchored to the present-day wharf precinct, offset to the side, without claiming a coordinate.
     const neptunaMarker = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['stokes-hill-wharf'] }),
-      // Anchored to the present-day wharf precinct: "alongside wharf" without claiming a berth coordinate.
       position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 10),
       label: {
-        text: 'MV NEPTUNA · EXPLODED ALONGSIDE WHARF · 10:12\n100 FT OF WHARF SEVERED',
+        text: 'MV NEPTUNA · EXPLODED ALONGSIDE WHARF · ~10:25\nWRECK SALVAGED 1959–61',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: goldColor,
@@ -1261,31 +1285,34 @@ export class SpatialEvidenceOverlay {
         showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -12),
+        horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+        verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        pixelOffset: new Cesium.Cartesian2(14, 0),
       },
       show: false,
     });
     wreckEntities.push(neptunaMarker);
 
-    // Dummy summary label for the wrecks node (individual labels are in primaryEntities)
+    // Group header for the wreck field, carrying the two luggers that have no recorded position.
     const wrecksHeader = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(130.8420, -12.4750, 45),
+      // Beyond the wreck field (south-west, top of the dusk frame), clear of the wreck markers.
+      position: Cesium.Cartesian3.fromDegrees(130.8300, -12.4960, 40),
       label: {
-        text: 'HARBOUR SEABED WRECKS · 19 FEBRUARY 1942',
+        text: 'SURVEYED WRECK POSITIONS\nLUGGERS MAVIE & HIGHLAND WARRIOR: POSITIONS NOT RECORDED',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        fillColor: goldColor,
+        fillColor: contextGrey,
         outlineColor: darkBg,
         outlineWidth: 5,
         showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -12),
+        pixelOffset: new Cesium.Cartesian2(0, -8),
       },
       show: false,
     });
+    if (isMobile) this.compactForPhone(wrecksHeader, 'SURVEYED WRECK POSITIONS');
 
     this.evidenceNodes.push({
       id: 'NODE_SUNKEN_WRECKS',
@@ -1457,6 +1484,16 @@ export class SpatialEvidenceOverlay {
    * On narrow viewports, re-wrap long label lines (map labels are canvas text: no CSS wrapping).
    * Breaks at " · " first, then at spaces, keeping each line within ~26 monospace characters.
    */
+  /**
+   * Phones: a shorter label so the map band (above the reading card) is not filled with text.
+   * The full wording stays on desktop and in the Evidence Ledger record for the entity.
+   */
+  private compactForPhone(e: CesiumType.Entity, text: string, offsetY?: number): void {
+    if (!e.label) return;
+    e.label.text = new this.Cesium.ConstantProperty(text);
+    if (offsetY !== undefined) e.label.pixelOffset = new this.Cesium.ConstantProperty(new this.Cesium.Cartesian2(0, offsetY));
+  }
+
   private wrapLabelsForViewport(): void {
     if (!this.dataSource || typeof window === 'undefined' || window.innerWidth >= 768) return;
     const C = this.Cesium;
