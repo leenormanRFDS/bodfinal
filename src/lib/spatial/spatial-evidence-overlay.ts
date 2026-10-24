@@ -268,6 +268,7 @@ export class SpatialEvidenceOverlay {
     } catch { /* fall back to system monospace */ }
 
     this.buildEvidenceEntities();
+    this.wrapLabelsForViewport();
     this.setupInteraction();
     this.updateVisibility();
   }
@@ -635,7 +636,9 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
-    node2Entities.push(approachFan);
+    // Not shown at 09:58: the 3D approach envelope reads as stray lines at harbour scale.
+    // It belongs to an approach beat (M2); entity retained but never revealed here.
+    void approachFan;
 
     // Harbour Roadstead Impact Sector (bounded polygon)
     const harbourRoadstead = this.dataSource.entities.add({
@@ -651,7 +654,9 @@ export class SpatialEvidenceOverlay {
       },
       show: false,
     });
-    node2Entities.push(harbourRoadstead);
+    // Not shown: a 1.8 km ellipse drawn over the town dominated the frame and is not a canonical
+    // boundary. The anchored shipping itself shows the roadstead.
+    void harbourRoadstead;
 
     // Anchored harbour shipping in roadstead at 09:58
     const merchantTexture = SpatialRepresentativeAssets.getMerchantVesselTexture('transport', 80);
@@ -677,8 +682,9 @@ export class SpatialEvidenceOverlay {
           position: Cesium.Cartesian3.fromDegrees(ship.lon, ship.lat, 10),
           billboard: {
             image: tex,
-            width: ship.isNaval ? 70 : 54,
-            height: ship.isNaval ? 18 : 18,
+            // Artwork is portrait (bow up): destroyer 100x280, merchant 46x104. Keep aspect.
+            width: ship.isNaval ? 22 : 13,
+            height: ship.isNaval ? 62 : 30,
             rotation: Cesium.Math.toRadians(ship.heading),
             scaleByDistance: new Cesium.NearFarScalar(2e3, 1.0, 5e4, 0.6),
           },
@@ -711,7 +717,8 @@ export class SpatialEvidenceOverlay {
     // Primary Harbour & Town Strike Label (16-18px)
     const harbourLabel = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['first-wave-approach'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.8456, -12.4634, 400),
+      // Over the town (Goyder grid, north of the Post Office): the strike fell on harbour AND town.
+      position: Cesium.Cartesian3.fromDegrees(130.8418, -12.4612, 120),
       label: {
         text: 'DARWIN HARBOUR & CIVIC PRECINCT · 09:58\nFIRST BOMBS IMPACT SHIPPING ROADSTEAD & TOWN',
         font: primaryEventFont,
@@ -820,13 +827,13 @@ export class SpatialEvidenceOverlay {
     const pearyArea = this.dataSource.entities.add({
       position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 0),
       ellipse: {
-        semiMajorAxis: 1100,
-        semiMinorAxis: 650,
+        semiMajorAxis: 750,
+        semiMinorAxis: 420,
         height: 0,
         rotation: Cesium.Math.toRadians(35),
-        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.045)'),
+        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.04)'),
         outline: true,
-        outlineColor: corridorOutline,
+        outlineColor: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.32)'),
         outlineWidth: 1.0,
       },
       show: false,
@@ -841,8 +848,9 @@ export class SpatialEvidenceOverlay {
         position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 15),
         billboard: {
           image: destroyerTexture,
-          width: 140,
-          height: 35,
+          // Portrait artwork (100x280, bow up, wake astern). Representative silhouette, not a track.
+          width: 24,
+          height: 67,
           alignedAxis: Cesium.Cartesian3.UNIT_Z,
           rotation: Cesium.Math.toRadians(35),
           scaleByDistance: new Cesium.NearFarScalar(2e3, 1.2, 5e4, 0.7),
@@ -1446,6 +1454,43 @@ export class SpatialEvidenceOverlay {
   }
 
   /**
+   * On narrow viewports, re-wrap long label lines (map labels are canvas text: no CSS wrapping).
+   * Breaks at " · " first, then at spaces, keeping each line within ~26 monospace characters.
+   */
+  private wrapLabelsForViewport(): void {
+    if (!this.dataSource || typeof window === 'undefined' || window.innerWidth >= 768) return;
+    const C = this.Cesium;
+    const max = 26;
+    const wrapLine = (line: string): string[] => {
+      if (line.length <= max) return [line];
+      const parts = line.split(' · ');
+      const out: string[] = [];
+      let cur = '';
+      for (const part of parts) {
+        const candidate = cur ? `${cur} · ${part}` : part;
+        if (candidate.length <= max) { cur = candidate; continue; }
+        if (cur) out.push(cur);
+        if (part.length <= max) { cur = part; continue; }
+        let acc = '';
+        for (const w of part.split(' ')) {
+          const c2 = acc ? `${acc} ${w}` : w;
+          if (c2.length > max && acc) { out.push(acc); acc = w; } else { acc = c2; }
+        }
+        cur = acc;
+      }
+      if (cur) out.push(cur);
+      return out;
+    };
+    const now = this.viewer.clock.currentTime;
+    for (const e of this.dataSource.entities.values) {
+      const text: string | undefined = e.label?.text?.getValue(now);
+      if (!text) continue;
+      const wrapped = text.split('\n').flatMap(wrapLine).join('\n');
+      if (wrapped !== text) e.label!.text = new C.ConstantProperty(wrapped);
+    }
+  }
+
+  /**
    * Screen-space label declutter.
    * Cesium has no built-in label collision handling. After the camera settles (and on resize) we
    * project every visible label, estimate its box from its text and font, and hide lower-priority
@@ -1462,15 +1507,25 @@ export class SpatialEvidenceOverlay {
     const ch = canvas.clientHeight;
     const transform = (C.SceneTransforms as any).worldToWindowCoordinates ?? (C.SceneTransforms as any).wgs84ToWindowCoordinates;
 
-    type Box = { e: CesiumType.Entity; p: number; x0: number; y0: number; x1: number; y1: number };
+    type Box = { e: CesiumType.Entity; kind: 'label' | 'icon'; p: number; x0: number; y0: number; x1: number; y1: number };
     const boxes: Box[] = [];
     for (const e of this.dataSource.entities.values) {
-      if (!e.isShowing || !e.label) continue;
-      e.label.show = new C.ConstantProperty(true);
+      if (!e.isShowing || (!e.label && !e.billboard)) continue;
       const pos = e.position?.getValue(now);
       if (!pos) continue;
       const win = transform(scene, pos);
       if (!win) continue;
+      if (e.billboard) e.billboard.show = new C.ConstantProperty(true);
+      if (e.label) e.label.show = new C.ConstantProperty(true);
+
+      if (e.billboard && !e.label) {
+        // Icons (ships, aircraft) are DETAIL; they yield to labels they would cover.
+        const bw = (e.billboard.width?.getValue(now) ?? 24) * 0.6;
+        const bh = (e.billboard.height?.getValue(now) ?? 24) * 0.6;
+        boxes.push({ e, kind: 'icon', p: LABEL_PRIORITY.DETAIL + 1, x0: win.x - bw / 2, y0: win.y - bh / 2, x1: win.x + bw / 2, y1: win.y + bh / 2 });
+        continue;
+      }
+      if (!e.label) continue;
       const text: string = e.label.text?.getValue(now) ?? '';
       const font: string = e.label.font?.getValue(now) ?? '12px monospace';
       const px = parseFloat((font.match(/(\d+(?:\.\d+)?)px/) || [])[1] || '12');
@@ -1484,17 +1539,32 @@ export class SpatialEvidenceOverlay {
       const ay = win.y + off.y;
       const x0 = hOrigin === C.HorizontalOrigin.LEFT ? ax : hOrigin === C.HorizontalOrigin.RIGHT ? ax - w : ax - w / 2;
       const y0 = vOrigin === C.VerticalOrigin.BOTTOM ? ay - h : vOrigin === C.VerticalOrigin.TOP ? ay : ay - h / 2;
-      boxes.push({ e, p: this.labelPriority.get(e) ?? LABEL_PRIORITY.DETAIL, x0, y0, x1: x0 + w, y1: y0 + h });
+      boxes.push({ e, kind: 'label', p: this.labelPriority.get(e) ?? LABEL_PRIORITY.DETAIL, x0, y0, x1: x0 + w, y1: y0 + h });
     }
+
+    // Reading zones occupied by the narrative HTML: labels there cannot be read.
+    // Desktop: the timeline/text column on the left. Mobile portrait: the reading card below ~48%.
+    const isPortraitMobile = cw < 768 && ch >= cw;
+    const inReadingZone = (b: Box) =>
+      isPortraitMobile ? b.y0 > ch * 0.48 : cw >= 1100 ? b.x1 < cw * 0.43 : false;
+
+    const hide = (b: Box) => {
+      if (b.kind === 'icon') b.e.billboard!.show = new C.ConstantProperty(false);
+      else b.e.label!.show = new C.ConstantProperty(false);
+    };
 
     boxes.sort((a, b) => a.p - b.p);
     const kept: Box[] = [];
     const pad = 4;
     for (const b of boxes) {
+      const isPrimary = b.kind === 'label' && b.p === LABEL_PRIORITY.PRIMARY;
       const offscreen = b.x1 < 0 || b.y1 < 0 || b.x0 > cw || b.y0 > ch;
+      const clipped = !offscreen && (b.x0 < 0 || b.x1 > cw || b.y0 < 0 || b.y1 > ch);
       const collides = kept.some((k) => b.x0 < k.x1 + pad && b.x1 > k.x0 - pad && b.y0 < k.y1 + pad && b.y1 > k.y0 - pad);
-      if (collides && b.p > LABEL_PRIORITY.PRIMARY) {
-        b.e.label!.show = new C.ConstantProperty(false);
+      if (!isPrimary && b.kind === 'label' && (clipped || inReadingZone(b))) {
+        hide(b);
+      } else if (!isPrimary && collides) {
+        hide(b);
       } else if (!offscreen) {
         kept.push(b);
       }

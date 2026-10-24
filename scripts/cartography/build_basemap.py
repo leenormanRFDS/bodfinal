@@ -59,18 +59,18 @@ from shapely.strtree import STRtree
 # Water MUST equal globe.baseColor in cartography-manager.ts so tile edges vanish.
 # --------------------------------------------------------------------------
 WATER = (7, 10, 14)            # #070A0E  deep void water
-TIDAL = (13, 17, 21)           # intertidal flats / mud: barely lifted from water
-LAND = (29, 34, 40)            # steel land, visibly lighter than water
-MANGROVE = (21, 26, 29)        # darker, faintly green-neutral fringe
-MANGROVE_DOT = (34, 41, 43)    # stipple, chart-like mangrove symbol
-SAND = (36, 39, 42)            # beaches / sand
+TIDAL = (16, 21, 26)           # intertidal flats / mud: barely lifted from water
+LAND = (40, 46, 53)            # steel land, visibly lighter than water
+MANGROVE = (30, 36, 38)        # darker, faintly green-neutral fringe
+MANGROVE_DOT = (44, 52, 53)    # stipple, chart-like mangrove symbol
+SAND = (48, 51, 54)            # beaches / sand
 INLAND_WATER = WATER
-ROAD_MINOR = (36, 42, 49)
-ROAD_MAJOR = (46, 53, 61)
-BUILDING = (33, 39, 46)
-RUNWAY = (44, 50, 57)
+ROAD_MINOR = (50, 57, 65)
+ROAD_MAJOR = (62, 70, 79)
+BUILDING = (47, 54, 62)
+RUNWAY = (58, 65, 73)
 PIER = (196, 188, 172)         # bone, applied at partial alpha — present-day wharf structure
-SHALLOW = (15, 20, 25)         # chart-style shallow-water tint at the shoreline, fades to WATER
+SHALLOW = (17, 23, 29)         # chart-style shallow-water tint at the shoreline, fades to WATER
 COAST = (238, 233, 223)        # archive ivory, applied with low alpha
 
 TILE = 512
@@ -443,7 +443,7 @@ class Renderer:
         overlay = Image.new('RGBA', (WM, WM), (0, 0, 0, 0))
         od = ImageDraw.Draw(overlay)
         # 2. Coastline hairline: chart precision, not a glow.
-        alpha = 52 if z < 8 else (70 if z < 13 else 92)
+        alpha = 70 if z < 8 else (95 if z < 13 else 120)
         cw = max(1, int(round((0.7 if z < 10 else 0.9 if z < 14 else 1.1) * SS)))
         for poly in polys(land):
             od.line(px(poly.exterior.coords), fill=COAST + (alpha,), width=cw, joint='curve')

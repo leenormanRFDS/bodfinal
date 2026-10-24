@@ -127,6 +127,8 @@ export class SpatialFormationController {
           image: image || undefined,
           width: size,
           height: size,
+          // Muted bone tint: representative formation, not a bright game sprite.
+          color: Cesium.Color.fromCssColorString('rgba(206, 199, 186, 0.72)'),
           alignedAxis: Cesium.Cartesian3.UNIT_Z,
           rotation: -Cesium.Math.toRadians(heading),
           scaleByDistance: new Cesium.NearFarScalar(5e4, 1.25, 3e6, 0.7),
@@ -282,6 +284,8 @@ export class SpatialFormationController {
           image: image || undefined,
           width: size,
           height: size,
+          // Muted bone tint: representative formation, not a bright game sprite.
+          color: Cesium.Color.fromCssColorString('rgba(206, 199, 186, 0.72)'),
           alignedAxis: Cesium.Cartesian3.UNIT_Z,
           rotation: -Cesium.Math.toRadians(heading),
           scaleByDistance: new Cesium.NearFarScalar(2e3, 1.2, 5e4, 0.65),
@@ -398,6 +402,7 @@ export class SpatialFormationController {
           image: image || undefined,
           width: 36,
           height: 36,
+          color: Cesium.Color.fromCssColorString('rgba(206, 199, 186, 0.72)'),
           alignedAxis: Cesium.Cartesian3.UNIT_Z,
           rotation: -Cesium.Math.toRadians(heading),
           scaleByDistance: new Cesium.NearFarScalar(5e3, 1.1, 2.5e5, 0.65),

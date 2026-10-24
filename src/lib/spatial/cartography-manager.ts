@@ -59,7 +59,7 @@ export class CartographyManager {
     // Light distance haze for oblique depth; restrained so the horizon never glows.
     if (scene.fog) {
       scene.fog.enabled = true;
-      scene.fog.density = 0.00012;
+      scene.fog.density = 0.00005; // harbour views (2–6 km) stay crisp; 100 km views still recede
       scene.fog.minimumBrightness = 0.03;
     }
   }
