@@ -8,6 +8,8 @@
  *
  *   /tiles/darwin-basemap/*  immutable, 1 year  — URLs carry ?v=<content hash> (basemap-manifest.json)
  *   /spatial-posters/*       immutable, 1 year  — URLs carry ?v=<content hash> (poster-manifest.json)
+ *   /audio/*, /video/*, /images/opening/*  immutable, 1 year — the opening's master, paper video and poster; URLs
+ *                            carry ?v=<md5 prefix> (OPENING in src/consts.ts). Change the hash when the file changes.
  *   /cesium/*                1 week + 30 days stale-while-revalidate — unversioned URLs, change only
  *                            when the cesium package is upgraded.
  *   /models/*                same as /cesium (unversioned glTF models; rename the file if it changes).
@@ -28,6 +30,8 @@ const IMMUTABLE = 'public, max-age=31536000, immutable';
 const RULES = [
   { src: '^/tiles/darwin-basemap/(.*)$', headers: { 'cache-control': IMMUTABLE }, continue: true },
   { src: '^/spatial-posters/(.*)$', headers: { 'cache-control': IMMUTABLE }, continue: true },
+  { src: '^/(audio|video)/(.*)$', headers: { 'cache-control': IMMUTABLE }, continue: true },
+  { src: '^/images/opening/(.*)$', headers: { 'cache-control': IMMUTABLE }, continue: true },
   { src: '^/cesium/(.*)$', headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' }, continue: true },
   { src: '^/models/(.*)$', headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=2592000' }, continue: true },
 ];
