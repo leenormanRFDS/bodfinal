@@ -1,0 +1,26 @@
+<!--
+  Rezdy > Integrations > Custom Conversion Tracking > "Custom code for thank-you page"
+  NOT INSTALLED. Requires product-owner approval (live Rezdy configuration change).
+
+  What it does: when a booking completes, tells thebombingofdarwin.com.au (the page that
+  embedded Rezdy, or the tab that opened it) the order number. That page then shows its
+  verified confirmation and records the purchase in GA4/Meta.
+
+  Safe for other sites using the same Rezdy account: postMessage with an explicit target
+  origin is silently dropped unless the receiving page is one of the listed origins.
+  Nothing is redirected; Rezdy's own thank-you page still shows.
+-->
+<script>
+(function () {
+  var msg = { action: 'rezdy:orderConfirmed', orderNumber: '###ORDER_NUMBER###', total: '###ORDER_TOTAL###' };
+  var origins = ['https://thebombingofdarwin.com.au', 'https://www.thebombingofdarwin.com.au', 'https://bombingofdarwinexperience.vercel.app'];
+  var targets = [];
+  try { if (window.parent && window.parent !== window) targets.push(window.parent); } catch (e) {}
+  try { if (window.opener) targets.push(window.opener); } catch (e) {}
+  for (var i = 0; i < targets.length; i++) {
+    for (var j = 0; j < origins.length; j++) {
+      try { targets[i].postMessage(msg, origins[j]); } catch (e) {}
+    }
+  }
+})();
+</script>

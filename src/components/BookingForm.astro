@@ -1042,8 +1042,23 @@ const icon = (n: string) =>
       } catch {
         data = null;
       }
-      if (!data || !data.sessions) data = { mock: true, sessions: [] };
-      el('[data-mocknote]').hidden = !data.mock;
+      if (!data || !data.sessions) data = { mock: true, reason: 'network', sessions: [] };
+      // TRUTH: mock sessions are invented. Previews without a Rezdy key ('no-key') show them as
+      // labelled examples for testing. If live availability fails anywhere else, offer dates only
+      // and let the visitor choose their real session inside Rezdy's checkout.
+      const liveFailed = !!data.mock && data.reason !== 'no-key';
+      state.mock = !!data.mock;
+      state.liveFailed = liveFailed;
+      const mockNote = el('[data-mocknote]');
+      mockNote.textContent = liveFailed
+        ? "Live session times couldn't be loaded. Choose your date here; you'll pick your time in the secure checkout."
+        : 'Example times (preview — live availability is not connected).';
+      mockNote.hidden = !data.mock;
+      if (liveFailed) {
+        const seen = new Set<string>();
+        data.sessions = (data.sessions as any[]).filter((s) => !seen.has(s.date) && seen.add(s.date))
+          .map((s) => ({ id: `${s.date}-any`, date: s.date, time: '00:00', seatsAvailable: null }));
+      }
 
       // Update tiers & checkout URL dynamically from product query if provided
       if (Array.isArray(data.tiers) && data.tiers.length > 0) {
@@ -1124,7 +1139,7 @@ const icon = (n: string) =>
         return;
       }
       (state.byDate[state.date] || []).sort((a: any, b: any) => a.time.localeCompare(b.time)).forEach((s: any) => {
-        const low = s.seatsAvailable != null && s.seatsAvailable <= 8;
+        const low = !state.mock && s.seatsAvailable != null && s.seatsAvailable <= 8; // never show invented seat counts
         const b = document.createElement('button');
         b.type = 'button'; b.className = 'slot'; b.setAttribute('aria-pressed', 'false');
         b.innerHTML = `<span class="slot__t">${s.time}</span>${low ? `<span class="slot__seats">${s.seatsAvailable} left</span>` : ''}`;
@@ -1195,7 +1210,10 @@ const icon = (n: string) =>
       const parts = state.pkg.tiers
         .filter((t: any) => state.qty[t.code] > 0)
         .map((t: any) => `${state.qty[t.code]} × ${t.label}`);
-      const when = [state.date || '', state.allDay ? 'Flexible entry' : (state.session ? state.session.time : '')].filter(Boolean).join(' · ');
+      const timeLabel = state.liveFailed ? 'choose your time' : (state.allDay ? 'Flexible entry' : (state.session ? state.session.time : ''));
+      let dateLabel = state.date || '';
+      try { if (state.date) dateLabel = new Date(`${state.date}T12:00:00`).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); } catch {}
+      const when = [dateLabel, timeLabel].filter(Boolean).join(' · ');
       return { parts: parts.join(', '), when };
     }
 
@@ -1261,7 +1279,7 @@ const icon = (n: string) =>
       coTitle.textContent = state.pkg.name;
       const descEl = modal.querySelector<HTMLElement>('[data-codesc]');
       if (descEl) {
-        const timeStr = state.allDay ? 'Flexible Entry' : (state.session ? state.session.time : '');
+        const timeStr = state.liveFailed ? '' : (state.allDay ? 'Flexible Entry' : (state.session ? state.session.time : ''));
         descEl.textContent = `${state.date || ''} ${timeStr ? '· ' + timeStr : ''} · Royal Flying Doctor Service`;
       }
 
