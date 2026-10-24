@@ -1560,7 +1560,9 @@ export class SpatialEvidenceOverlay {
       const isPrimary = b.kind === 'label' && b.p === LABEL_PRIORITY.PRIMARY;
       const offscreen = b.x1 < 0 || b.y1 < 0 || b.x0 > cw || b.y0 > ch;
       const clipped = !offscreen && (b.x0 < 0 || b.x1 > cw || b.y0 < 0 || b.y1 > ch);
-      const collides = kept.some((k) => b.x0 < k.x1 + pad && b.x1 > k.x0 - pad && b.y0 < k.y1 + pad && b.y1 > k.y0 - pad);
+      // Icons only yield to PRIMARY/CONTEXT labels (never to their own DETAIL name label).
+      const blockers = b.kind === 'icon' ? kept.filter((k) => k.kind === 'label' && k.p <= LABEL_PRIORITY.CONTEXT) : kept;
+      const collides = blockers.some((k) => b.x0 < k.x1 + pad && b.x1 > k.x0 - pad && b.y0 < k.y1 + pad && b.y1 > k.y0 - pad);
       if (!isPrimary && b.kind === 'label' && (clipped || inReadingZone(b))) {
         hide(b);
       } else if (!isPrimary && collides) {
