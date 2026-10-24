@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+.vercel/
+
+# Generated: CesiumJS runtime assets, synced from node_modules/cesium
+# by scripts/sync-cesium-assets.mjs before dev/build.
+public/cesium/
+
+# bun.lock is the project lockfile (Vercel detects bun from it).
+# Do not commit an npm lockfile alongside it.
+package-lock.json
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# QA output
+qa-captures/
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc

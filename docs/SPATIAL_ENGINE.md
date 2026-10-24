@@ -84,13 +84,24 @@ Core meaning must survive:
 - low-end devices;
 - slow networks.
 
-## Cartographic Infrastructure & Raster Lifecycle
+## Cartographic Infrastructure (revised Oct 2026)
 
-### CARTO Raster Basemap Service Lifecycle
-- **Active Endpoint:** `https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${PUBLIC_CARTO_BASEMAP_KEY}`.
-- **Allowance & Terms:** The CARTO free basemap allowance is currently 5 million tile requests per calendar month. Commercial or high-volume use may require review with CARTO.
-- **Mandatory Attribution:** CARTO + OpenStreetMap attribution is strictly mandatory and must remain visible in both the Cesium credit provider and the application interface footer.
-- **Service Status & Replacement Risk:** CARTO designates raster PNG basemaps as legacy infrastructure and indicates vector tiles (MVT) are its preferred future direction; raster basemaps should be treated as replaceable.
-- **Architectural Policy:** Do NOT introduce MapLibre, deck.gl, or another map engine. CesiumJS remains the sole Historical Spatial Engine and world-space authority. If CARTO discontinues raster tiles in the future, evaluate Cesium-native vector tile/MVT pipelines or self-hosted PMTiles/TMS before considering any runtime changes.
-- **Fallback Guarantee:** If `PUBLIC_CARTO_BASEMAP_KEY` is absent or remote tile requests fail, the spatial engine automatically falls back to the bundled offline Natural Earth II TMS tiles (`/cesium/Assets/Textures/NaturalEarthII`). Unauthenticated external requests to CARTO are strictly prohibited in production.
-- **Referer Restriction:** Production CARTO basemap keys must be restricted to authorized domains: `thebombingofdarwin.com.au` and `www.thebombingofdarwin.com.au` (with preview and dev hosts added only as necessary).
+### Project-owned basemap
+- **Source of the visible map:** static 512px Web Mercator tiles in `public/tiles/darwin-basemap/`, rendered by `scripts/cartography/build_basemap.py` from **OpenStreetMap** (© OpenStreetMap contributors, ODbL) and **Natural Earth** (public domain), in the project palette. No labels, no POIs, no API key, no per-view cost, works offline.
+- **Layers** (`src/lib/spatial/basemap-manifest.json`): global z0–4 → Timor Sea/Darwin regional z5–9 → Tiwi Islands/Darwin z10–12 → Port Darwin harbour z13–15 → town core z16. Each is opaque within its rectangle; same palette, so transitions are invisible. Tile water colour equals `globe.baseColor`.
+- **Content:** OSM coastline assembled into land; mangroves (chart-style stipple); intertidal flats; inland water; present-day wharves, piers and breakwaters; roads; buildings (z14+); runways; chart-style shallow-water tint along every shore.
+- **Temporal status:** the basemap is **PRESENT DAY**. 1942 features are overlays from canon, never baked into tiles.
+- **Attribution:** "© OpenStreetMap contributors · Natural Earth" must remain visible in the stage/dock credits.
+- **Rebuild:** see the script header (needs the NT `.osm.pbf` extract and `ne_10m_land.geojson`; ~30 min on 2 cores). Re-run when cartography style changes or OSM coastline updates matter.
+
+### Architectural policy (unchanged)
+The basemap is infrastructure beneath the story; raster basemaps should be treated as replaceable. Do NOT introduce MapLibre, deck.gl, or another map engine. CesiumJS remains the sole Historical Spatial Engine and world-space authority. If the static basemap approach ever proves insufficient, evaluate Cesium-native vector tile/MVT pipelines or self-hosted PMTiles/TMS before considering any runtime changes.
+
+### Why CARTO was removed
+CARTO raster basemaps now require an API key. Anonymous requests return HTTP **200** "API KEY REQUIRED" placeholder images, so the previous error-based fallback never fired and the live site showed a watermarked void. Do not reintroduce a keyed third-party tile service without an owner decision on account, quota and billing.
+
+### Cesium runtime assets
+`public/cesium/` (Workers, Widgets, Assets, ThirdParty) is generated from `node_modules/cesium` by `scripts/sync-cesium-assets.mjs` before `dev` and `build`, and is git-ignored. The previously committed copy was Cesium 1.145, lacked Workers/ and Widgets/, and nested NaturalEarthII inside LensFlare/, which broke geometry, tile loading and canvas sizing in production.
+
+### Historical rasters
+Raster overlays may only be presented as cartography when they are genuine archival sources registered with documented ground-control points and residuals. The former `archival-texture-*.png` and `darwin-1942-overlay.png` files are AI-generated illustrations with invented geography; they are not used by the engine.

@@ -59,7 +59,8 @@ export class CameraChoreographer {
     if (typeof window === 'undefined') return state.desktopCamera;
     const w = window.innerWidth;
     const h = window.innerHeight;
-    return this.grammar.resolvePose(state, w, h);
+    const fov = (this.camera.frustum as any).fov ?? Math.PI / 3;
+    return this.grammar.resolvePose(state, w, h, fov);
   }
 
   /**

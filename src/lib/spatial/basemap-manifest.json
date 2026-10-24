@@ -1,0 +1,65 @@
+{
+  "description": "Project-owned basemap tile layers (see scripts/cartography/build_basemap.py).",
+  "urlTemplate": "/tiles/darwin-basemap/{z}/{x}/{y}.png",
+  "tileSize": 512,
+  "waterColor": "#070A0E",
+  "attribution": "\u00a9 OpenStreetMap contributors (ODbL) \u00b7 Natural Earth",
+  "builtAt": "2026-10-24",
+  "layers": [
+    {
+      "id": "global",
+      "rect": [
+        -180.0,
+        -85.0,
+        180.0,
+        85.0
+      ],
+      "minimumLevel": 0,
+      "maximumLevel": 4
+    },
+    {
+      "id": "regional",
+      "rect": [
+        126.0,
+        -15.0,
+        133.5,
+        -8.5
+      ],
+      "minimumLevel": 5,
+      "maximumLevel": 9
+    },
+    {
+      "id": "tiwi-darwin",
+      "rect": [
+        129.85,
+        -12.85,
+        131.55,
+        -11.15
+      ],
+      "minimumLevel": 10,
+      "maximumLevel": 12
+    },
+    {
+      "id": "harbour",
+      "rect": [
+        130.66,
+        -12.62,
+        131.0,
+        -12.36
+      ],
+      "minimumLevel": 13,
+      "maximumLevel": 15
+    },
+    {
+      "id": "core",
+      "rect": [
+        130.805,
+        -12.495,
+        130.885,
+        -12.43
+      ],
+      "minimumLevel": 16,
+      "maximumLevel": 16
+    }
+  ]
+}

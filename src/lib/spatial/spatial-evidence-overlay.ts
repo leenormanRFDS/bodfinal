@@ -9,8 +9,9 @@
  * 1. TRUTH FIRST: Every marker, silhouette and boundary corresponds to verified or approximate canonical entities.
  * 2. NEGATIVE CONSTRAINTS:
  *    - NO 1:1 individual aircraft tracks (corridors and representative formations only).
- *    - 1942 Stokes Hill Wharf geometry remains unresolved (null coordinates).
- *    - MV Neptuna 1942 berth remains unresolved (null coordinates).
+ *    - 1942 Stokes Hill Wharf geometry remains unresolved (null coordinates) — never drawn.
+ *    - MV Neptuna 1942 berth remains unresolved (null coordinates) — never drawn as a point.
+ *    - All marker coordinates are read from canon (data/entities/*) or present-day OSM anchors.
  *    - NO game-like HUDs, neon target reticles, or radar pulses.
  * 3. AESTHETICS: Restrained, archival, institutional palette (Bone #ECE7DB, Gold #C6A15B, Dark #07090B).
  * 4. TRANSITION LIFECYCLE: Strict phase management (IDLE -> FLYING -> SETTLED) to eliminate label leakage.
@@ -20,7 +21,33 @@ import type * as CesiumType from 'cesium';
 import type { SpatialDemonstrationStateId } from './spatial-types';
 import { SpatialRepresentativeAssets } from './spatial-representative-assets';
 import { SpatialFormationController } from './spatial-formation-controller';
-import { Spatial1942Traces } from './spatial-1942-traces';
+import vesselsData from '../../../data/entities/vessels.json';
+import locationsData from '../../../data/entities/locations.json';
+import presentDayAnchors from './present-day-anchors.json';
+
+/**
+ * Canonical coordinates. Components must not invent positions: every marker
+ * below reads from data/entities/* (historical canon) or present-day-anchors.json
+ * (present-day OSM geometry). A null canonical coordinate means "do not draw".
+ */
+type LonLat = { lon: number; lat: number };
+function canonVessel(id: string): LonLat | null {
+  const v: any = (vesselsData as any).entities.find((e: any) => e.id === id);
+  const c = v?.coordinates;
+  return c && c.latitude != null && c.longitude != null ? { lon: c.longitude, lat: c.latitude } : null;
+}
+function canonLocation(id: string): LonLat | null {
+  const l: any = (locationsData as any).entities.find((e: any) => e.id === id);
+  return l && l.latitude != null && l.longitude != null ? { lon: l.longitude, lat: l.latitude } : null;
+}
+function presentDay(id: string): LonLat {
+  const a = (presentDayAnchors as any).anchors[id];
+  return { lon: a.longitude, lat: a.latitude };
+}
+
+/** Map annotation typography: IBM Plex Mono (config/design-tokens.json → typography.evidence). */
+const MAP_FONT_FAMILY = '"IBM Plex Mono", ui-monospace, monospace';
+const LABEL_PRIORITY = { PRIMARY: 0, CONTEXT: 1, DETAIL: 2 } as const;
 
 export interface EvidenceSource {
   title: string;
@@ -208,7 +235,7 @@ export class SpatialEvidenceOverlay {
   private activeStateId: SpatialDemonstrationStateId = 'STATE_00_WORLD';
   private phase: TransitionPhase = TransitionPhase.IDLE;
   private formationController: SpatialFormationController | null = null;
-  private historical1942Traces: Spatial1942Traces | null = null;
+  private labelPriority: Map<CesiumType.Entity, number> = new Map();
 
   // Dedicated scene-choreography entities
   private communicationLineEntity: CesiumType.Entity | null = null;
@@ -229,7 +256,16 @@ export class SpatialEvidenceOverlay {
     this.formationController = new SpatialFormationController(this.Cesium, this.viewer, this.dataSource);
     this.formationController.initialize();
 
-    this.historical1942Traces = new Spatial1942Traces(this.Cesium, this.dataSource);
+    // Cesium rasterises label glyphs once; make sure the annotation face is loaded first.
+    try {
+      const fonts = (document as any).fonts;
+      if (fonts?.load) {
+        await Promise.race([
+          Promise.all([fonts.load(`500 15px ${MAP_FONT_FAMILY}`), fonts.load(`500 12px ${MAP_FONT_FAMILY}`)]),
+          new Promise((r) => setTimeout(r, 2500)),
+        ]);
+      }
+    } catch { /* fall back to system monospace */ }
 
     this.buildEvidenceEntities();
     this.setupInteraction();
@@ -267,16 +303,13 @@ export class SpatialEvidenceOverlay {
     // Priority 3 Typography Hierarchy:
     // Primary event: 16–18px desktop / 14–16px mobile
     // Important geography / vessels: 12–13px desktop / 11–12px mobile
-    const primaryEventFont = isMobile
-      ? '600 15px "Museo Sans", -apple-system, BlinkMacSystemFont, sans-serif'
-      : '600 17px "Museo Sans", -apple-system, BlinkMacSystemFont, sans-serif';
+    const primaryEventFont = isMobile ? `500 13px ${MAP_FONT_FAMILY}` : `500 15px ${MAP_FONT_FAMILY}`;
+    const geoEntityFont = isMobile ? `500 11px ${MAP_FONT_FAMILY}` : `500 12px ${MAP_FONT_FAMILY}`;
 
-    const geoEntityFont = isMobile
-      ? '500 12px "Museo Sans", -apple-system, BlinkMacSystemFont, sans-serif'
-      : '500 13px "Museo Sans", -apple-system, BlinkMacSystemFont, sans-serif';
-
-    // High-contrast archival dark badge backdrop to guarantee legibility over land and water
-    const bgBadge = Cesium.Color.fromCssColorString('rgba(7, 10, 14, 0.90)');
+    // Labels carry a dark halo (outline) instead of opaque boxes: legible over land and water
+    // without a field of black rectangles. bgBadge retained only for type compatibility.
+    const bgBadge = Cesium.Color.fromCssColorString('rgba(7, 10, 14, 0.0)');
+    const contextGrey = Cesium.Color.fromCssColorString('#A9AEB2');
     const bgPadding = new Cesium.Cartesian2(8, 5);
 
     // =========================================================================
@@ -351,8 +384,8 @@ export class SpatialEvidenceOverlay {
             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
             fillColor: goldColor,
             outlineColor: darkBg,
-            outlineWidth: 3,
-            showBackground: true,
+            outlineWidth: 5,
+            showBackground: false,
             backgroundColor: bgBadge,
             backgroundPadding: bgPadding,
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -392,8 +425,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -430,8 +463,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         scaleByDistance: new Cesium.NearFarScalar(3e4, 1.1, 8e5, 0.7),
@@ -448,8 +481,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: goldColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         scaleByDistance: new Cesium.NearFarScalar(3e4, 1.0, 8e5, 0.7),
@@ -535,8 +568,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -556,8 +589,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -594,7 +627,8 @@ export class SpatialEvidenceOverlay {
           131.02, -12.62, 3200,    // Southern flank
           131.08, -12.54, 3200,    // Eastern flank
         ]),
-        material: corridorFill,
+        perPositionHeight: true,
+        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.035)'),
         outline: true,
         outlineColor: corridorOutline,
         outlineWidth: 1.5,
@@ -609,7 +643,8 @@ export class SpatialEvidenceOverlay {
       ellipse: {
         semiMajorAxis: 1800,
         semiMinorAxis: 1100,
-        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.10)'),
+        height: 0,
+        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.05)'),
         outline: true,
         outlineColor: goldMuted,
         outlineWidth: 1.2,
@@ -622,14 +657,18 @@ export class SpatialEvidenceOverlay {
     const merchantTexture = SpatialRepresentativeAssets.getMerchantVesselTexture('transport', 80);
     const destroyerTex = SpatialRepresentativeAssets.getDestroyerTexture();
 
+    // Shipping at anchor in the roadstead at 09:58. Positions are canonical surveyed wreck/anchorage
+    // coordinates (data/entities/vessels.json). MV Neptuna (berth unresolved) and USS Peary
+    // (09:58 position unknown) are deliberately not placed here.
     const roadsteadShips = [
-      { name: 'MV ZEALANDIA', lon: 130.8508, lat: -12.4814, heading: 110, isNaval: false },
-      { name: 'USAT MEIGS', lon: 130.8425, lat: -12.4861, heading: 125, isNaval: false },
-      { name: 'USAT MAUNA LOA', lon: 130.8354, lat: -12.4822, heading: 105, isNaval: false },
-      { name: 'BRITISH MOTORIST', lon: 130.8431, lat: -12.4742, heading: 115, isNaval: false },
-      { name: 'MV NEPTUNA (BERTHED)', lon: 130.8505, lat: -12.4725, heading: 145, isNaval: false },
-      { name: 'USS PEARY (UNDERWAY)', lon: 130.8320, lat: -12.4730, heading: 35, isNaval: true },
-    ];
+      { id: 'MV_ZEALANDIA', name: 'ZEALANDIA', heading: 110, isNaval: false },
+      { id: 'USAT_MEIGS', name: 'MEIGS', heading: 125, isNaval: false },
+      { id: 'USAT_MAUNA_LOA', name: 'MAUNA LOA', heading: 105, isNaval: false },
+      { id: 'BRITISH_MOTORIST', name: 'BRITISH MOTORIST', heading: 115, isNaval: false },
+    ]
+      .map((v) => ({ ...v, pos: canonVessel(v.id) }))
+      .filter((v): v is typeof v & { pos: LonLat } => v.pos !== null)
+      .map((v) => ({ ...v, lon: v.pos.lon, lat: v.pos.lat }));
 
     for (const ship of roadsteadShips) {
       const tex = ship.isNaval ? destroyerTex : merchantTexture;
@@ -654,10 +693,10 @@ export class SpatialEvidenceOverlay {
           text: ship.name,
           font: geoEntityFont,
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          fillColor: Cesium.Color.fromCssColorString('#D6D0C4'),
+          fillColor: contextGrey,
           outlineColor: darkBg,
-          outlineWidth: 3,
-          showBackground: true,
+          outlineWidth: 5,
+          showBackground: false,
           backgroundColor: bgBadge,
           backgroundPadding: new Cesium.Cartesian2(4, 3),
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -679,8 +718,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -704,7 +743,7 @@ export class SpatialEvidenceOverlay {
     // =========================================================================
     // BEAT 3 (10:00): DARWIN POST OFFICE TRENCH DIRECT HIT · ABSTRACT ARCHIVAL SITE MONUMENT
     // Corner Mitchell & Bennett Streets. Extruded 3D gold architectural plinth (32m x 20m x 35m).
-    // Verified civic shelter trench fatality site (9 killed).
+    // Civilian shelter trench direct hit. Casualty count is disputed (9 vs 10) — held in the Evidence Ledger only.
     // =========================================================================
     const node3Entities: CesiumType.Entity[] = [];
 
@@ -742,13 +781,13 @@ export class SpatialEvidenceOverlay {
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['post-office'] }),
       position: Cesium.Cartesian3.fromDegrees(130.8443, -12.4647, 35),
       label: {
-        text: 'DARWIN POST & TELEGRAPH OFFICE · 10:00\nCIVILIAN TRENCH SHELTER · DIRECT HIT · NINE KILLED',
+        text: 'DARWIN POST & TELEGRAPH OFFICE · 10:00\nTHE SHELTER TRENCH RECEIVED A DIRECT HIT',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -774,16 +813,21 @@ export class SpatialEvidenceOverlay {
     // =========================================================================
     const node4Entities: CesiumType.Entity[] = [];
 
-    // Approximate Harbour Channel Manoeuvre Sector
+    // Anchor: canonical surveyed wreck position (vessels.json USS_PEARY_DD226). Peary's surface track
+    // during the attack is reconstructed from testimony and is not drawn; the ring is an explicitly
+    // APPROXIMATE manoeuvre area around where she was lost.
+    const pearyAnchor = canonVessel('USS_PEARY_DD226') ?? { lon: 130.829, lat: -12.475 };
     const pearyArea = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(130.832, -12.473, 5),
+      position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 0),
       ellipse: {
-        semiMajorAxis: 1600,
-        semiMinorAxis: 800,
-        material: corridorFill,
+        semiMajorAxis: 1100,
+        semiMinorAxis: 650,
+        height: 0,
+        rotation: Cesium.Math.toRadians(35),
+        material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.045)'),
         outline: true,
         outlineColor: corridorOutline,
-        outlineWidth: 1.5,
+        outlineWidth: 1.0,
       },
       show: false,
     });
@@ -794,13 +838,13 @@ export class SpatialEvidenceOverlay {
     if (destroyerTexture) {
       const pearyShip = this.dataSource.entities.add({
         properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['peary-underway'] }),
-        position: Cesium.Cartesian3.fromDegrees(130.832, -12.473, 15),
+        position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 15),
         billboard: {
           image: destroyerTexture,
           width: 140,
           height: 35,
           alignedAxis: Cesium.Cartesian3.UNIT_Z,
-          rotation: Cesium.Math.toRadians(35), // heading up-channel
+          rotation: Cesium.Math.toRadians(35),
           scaleByDistance: new Cesium.NearFarScalar(2e3, 1.2, 5e4, 0.7),
         },
         show: false,
@@ -808,52 +852,22 @@ export class SpatialEvidenceOverlay {
       node4Entities.push(pearyShip);
     }
 
-    // Extruded hull plinth at sea level
-    const pearyHullPlinth = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(130.832, -12.473, 5),
-      box: {
-        dimensions: new Cesium.Cartesian3(95, 20, 10),
-        material: Cesium.Color.fromCssColorString('rgba(29, 30, 32, 0.8)'),
-        outline: true,
-        outlineColor: goldColor,
-      },
-      show: false,
-    });
-    node4Entities.push(pearyHullPlinth);
-
-    // Contextual dashed leader line to Modern Surveyed Wreck Site (~700m SW)
-    const wreckLeaderLine = this.dataSource.entities.add({
-      polyline: {
-        positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-          130.832, -12.473, 20,
-          130.8292, -12.4754, 5,
-        ]),
-        width: 1.5,
-        material: new Cesium.PolylineDashMaterialProperty({
-          color: goldMuted,
-          dashLength: 8.0,
-        }),
-      },
-      show: false,
-    });
-    node4Entities.push(wreckLeaderLine);
-
-    // Primary USS Peary Label (16-18px)
+    // Primary USS Peary Label
     const pearyLabel = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['peary-underway'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.832, -12.473, 50),
+      position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 50),
       label: {
-        text: 'USS PEARY (DD-226) · 10:15–10:45\nACTIVE EVASIVE MANOEUVRE · FIVE BOMB HITS',
+        text: 'USS PEARY (DD-226) · 10:15–10:45\nSTRUCK BY FIVE BOMBS · APPROXIMATE AREA',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -14),
+        pixelOffset: new Cesium.Cartesian2(0, -26),
       },
       show: false,
     });
@@ -901,8 +915,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -933,7 +947,7 @@ export class SpatialEvidenceOverlay {
     const wreckSymbolTexture = SpatialRepresentativeAssets.getWreckSymbolTexture(27);
     if (wreckSymbolTexture) {
       const wreckSymbol = this.dataSource.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(130.8292, -12.4754, 5),
+        position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 5),
         billboard: {
           image: wreckSymbolTexture,
           width: 48,
@@ -947,15 +961,15 @@ export class SpatialEvidenceOverlay {
 
     const pearyWreckLabel = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['peary-wreck'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.8292, -12.4754, 30),
+      position: Cesium.Cartesian3.fromDegrees(pearyAnchor.lon, pearyAnchor.lat, 30),
       label: {
         text: 'USS PEARY (DD-226) · MODERN SURVEYED WRECK POSITION\nDEPTH 27M · PROTECTED HISTORIC SHIPWRECK (CHART AUS 26)',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -979,10 +993,11 @@ export class SpatialEvidenceOverlay {
     // Always clearly legible in context across all harbour scenes without clutter
     // =========================================================================
     const wharfAnchorEntities: CesiumType.Entity[] = [];
+    const shw = presentDay('STOKES_HILL_WHARF_PRESENT');
 
     const wharfPoint = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['stokes-hill-wharf'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.8490, -12.4720, 10),
+      position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 10),
       point: {
         pixelSize: 8,
         color: goldColor,
@@ -994,10 +1009,11 @@ export class SpatialEvidenceOverlay {
     wharfAnchorEntities.push(wharfPoint);
 
     const wharfRing = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(130.8490, -12.4720, 10),
+      position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 10),
       ellipse: {
         semiMajorAxis: 80,
         semiMinorAxis: 80,
+        height: 0,
         material: Cesium.Color.fromCssColorString('rgba(198, 161, 91, 0.15)'),
         outline: true,
         outlineColor: goldColor,
@@ -1008,19 +1024,20 @@ export class SpatialEvidenceOverlay {
     wharfAnchorEntities.push(wharfRing);
 
     const stokesHillWharfLabel = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(130.8490, -12.4720, 25),
+      position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 25),
       label: {
         text: 'STOKES HILL WHARF',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
+        horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -12),
+        verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        pixelOffset: new Cesium.Cartesian2(12, 0),
       },
       show: false,
     });
@@ -1043,8 +1060,11 @@ export class SpatialEvidenceOverlay {
 
     // Fort Hill Geographic Anchor
     const fortHillEntities: CesiumType.Entity[] = [];
+    // Fort Hill: canonical 14th HAA Battery position (locations.json). The promontory itself was
+    // excavated in the 1960s; the label marks the place, not a present-day landform.
+    const fortHill = canonLocation('AA_BATTERY_14_FORT_HILL_1942') ?? presentDay('FORT_HILL_WHARF_PRESENT');
     const fortHillPoint = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(130.8415, -12.4715, 10),
+      position: Cesium.Cartesian3.fromDegrees(fortHill.lon, fortHill.lat, 10),
       point: {
         pixelSize: 6,
         color: goldColor,
@@ -1056,19 +1076,20 @@ export class SpatialEvidenceOverlay {
     fortHillEntities.push(fortHillPoint);
 
     const fortHillLabel = this.dataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(130.8415, -12.4715, 25),
+      position: Cesium.Cartesian3.fromDegrees(fortHill.lon, fortHill.lat, 25),
       label: {
         text: 'FORT HILL',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        fillColor: boneColor,
+        fillColor: contextGrey,
+        horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -12),
+        verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        pixelOffset: new Cesium.Cartesian2(-12, 0),
       },
       show: false,
     });
@@ -1092,15 +1113,15 @@ export class SpatialEvidenceOverlay {
     // =========================================================================
     const wharfLabel = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['stokes-hill-wharf'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.8485, -12.4725, 55),
+      position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 55),
       label: {
         text: 'THE RECKONING · DUSK 19 FEBRUARY 1942\nEIGHT SHIPS SUNK IN HARBOUR · OVER 30 AIRCRAFT DESTROYED\n235 TO 250+ FATALITIES · LOWE COMMISSION ADJUDICATED: 243\nPRESENT-DAY STOKES HILL WHARF · SAME WHARF PRECINCT. SAME SKY.',
         font: primaryEventFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: boneColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -1126,13 +1147,17 @@ export class SpatialEvidenceOverlay {
     const wreckEntities: CesiumType.Entity[] = [];
 
     const sunkFeb19SurveyedWrecks = [
-      { name: 'MV ZEALANDIA', lon: 130.8508, lat: -12.4814, depth: 19 },
-      { name: 'USAT MEIGS', lon: 130.8425, lat: -12.4861, depth: 18 },
-      { name: 'USAT MAUNA LOA', lon: 130.8354, lat: -12.4822, depth: 18 },
-      { name: 'BRITISH MOTORIST', lon: 130.8431, lat: -12.4742, depth: 20 },
+      { name: 'MV ZEALANDIA', id: 'MV_ZEALANDIA', depth: 19 },
+      { name: 'USAT MEIGS', id: 'USAT_MEIGS', depth: 18 },
+      { name: 'USAT MAUNA LOA', id: 'USAT_MAUNA_LOA', depth: 18 },
+      { name: 'BRITISH MOTORIST', id: 'BRITISH_MOTORIST', depth: 20 },
     ];
+    const sunkFeb19Placed = sunkFeb19SurveyedWrecks
+      .map((w) => ({ ...w, pos: canonVessel(w.id) }))
+      .filter((w): w is typeof w & { pos: LonLat } => w.pos !== null)
+      .map((w) => ({ ...w, lon: w.pos.lon, lat: w.pos.lat }));
 
-    for (const w of sunkFeb19SurveyedWrecks) {
+    for (const w of sunkFeb19Placed) {
       const wreckTex = SpatialRepresentativeAssets.getWreckSymbolTexture(w.depth);
       if (wreckTex) {
         const symbol = this.dataSource.entities.add({
@@ -1156,8 +1181,8 @@ export class SpatialEvidenceOverlay {
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
           fillColor: boneColor,
           outlineColor: darkBg,
-          outlineWidth: 3,
-          showBackground: true,
+          outlineWidth: 5,
+          showBackground: false,
           backgroundColor: bgBadge,
           backgroundPadding: bgPadding,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -1170,10 +1195,11 @@ export class SpatialEvidenceOverlay {
     }
 
     // Contextual Subsequent Loss: Coal Hulk Kelat
+    const kelatPos = canonVessel('COAL_HULK_KELAT') ?? { lon: 130.845, lat: -12.477 };
     const kelatWreckTex = SpatialRepresentativeAssets.getWreckSymbolTexture(15);
     if (kelatWreckTex) {
       const kelatSymbol = this.dataSource.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(130.8450, -12.4770, 5),
+        position: Cesium.Cartesian3.fromDegrees(kelatPos.lon, kelatPos.lat, 5),
         billboard: {
           image: kelatWreckTex,
           width: 30,
@@ -1193,15 +1219,15 @@ export class SpatialEvidenceOverlay {
         damageDate: '1942-02-19',
         ledgerData: CANONICAL_EVIDENCE_RECORDS['kelat-wreck'],
       }),
-      position: Cesium.Cartesian3.fromDegrees(130.8450, -12.4770, 25),
+      position: Cesium.Cartesian3.fromDegrees(kelatPos.lon, kelatPos.lat, 25),
       label: {
         text: 'KELAT · 15M\nDAMAGED 19 FEB · SANK 24 FEB',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: Cesium.Color.fromCssColorString('#A2A8B0'),
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -1215,15 +1241,16 @@ export class SpatialEvidenceOverlay {
     // MV Neptuna explosion marker
     const neptunaMarker = this.dataSource.entities.add({
       properties: new Cesium.PropertyBag({ ledgerData: CANONICAL_EVIDENCE_RECORDS['stokes-hill-wharf'] }),
-      position: Cesium.Cartesian3.fromDegrees(130.8490, -12.4735, 10),
+      // Anchored to the present-day wharf precinct: "alongside wharf" without claiming a berth coordinate.
+      position: Cesium.Cartesian3.fromDegrees(shw.lon, shw.lat, 10),
       label: {
         text: 'MV NEPTUNA · EXPLODED ALONGSIDE WHARF · 10:12\n100 FT OF WHARF SEVERED',
         font: geoEntityFont,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: goldColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -1242,8 +1269,8 @@ export class SpatialEvidenceOverlay {
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
         fillColor: goldColor,
         outlineColor: darkBg,
-        outlineWidth: 3,
-        showBackground: true,
+        outlineWidth: 5,
+        showBackground: false,
         backgroundColor: bgBadge,
         backgroundPadding: bgPadding,
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
@@ -1306,13 +1333,13 @@ export class SpatialEvidenceOverlay {
     this.phase = TransitionPhase.SETTLED;
     this.updateVisibility();
     this.formationController?.completeTransition(stateId);
-    this.historical1942Traces?.updateState(stateId);
 
     // Trigger one-time schematic communication event for Beat 1
     if (stateId === 'BEAT_1_BATHURST_WARNING') {
       this.runBathurstCommunicationEvent();
     }
 
+    this.declutterLabels();
     this.viewer.scene.requestRender();
   }
 
@@ -1364,6 +1391,7 @@ export class SpatialEvidenceOverlay {
         if (this.communicationLabelEntity) {
           this.communicationLabelEntity.show = true;
         }
+        this.declutterLabels();
         this.viewer.scene.requestRender();
       }
     }, 25);
@@ -1376,7 +1404,6 @@ export class SpatialEvidenceOverlay {
    * - UNRELATED nodes: 0% opacity (completely hidden).
    */
   private updateVisibility(): void {
-    this.historical1942Traces?.updateState(this.activeStateId);
 
     // Strictly suppress the Beat 1 warning transmission line on all other beats
     if (this.activeStateId !== 'BEAT_1_BATHURST_WARNING') {
@@ -1387,6 +1414,10 @@ export class SpatialEvidenceOverlay {
     for (const node of this.evidenceNodes) {
       const relevance = node.relevanceMap[this.activeStateId] || 'HIDDEN';
 
+      this.labelPriority.set(
+        node.labelEntity,
+        relevance === 'PRIMARY' ? LABEL_PRIORITY.PRIMARY : relevance === 'CONTEXTUAL' ? LABEL_PRIORITY.CONTEXT : LABEL_PRIORITY.DETAIL
+      );
       if (relevance === 'PRIMARY') {
         for (const ent of node.primaryEntities) {
           // Keep communication entities controlled by communication event
@@ -1414,13 +1445,67 @@ export class SpatialEvidenceOverlay {
     }
   }
 
+  /**
+   * Screen-space label declutter.
+   * Cesium has no built-in label collision handling. After the camera settles (and on resize) we
+   * project every visible label, estimate its box from its text and font, and hide lower-priority
+   * labels that would overlap a higher-priority one (PRIMARY event > CONTEXT geography > DETAIL).
+   * Only the label is hidden; the marker it belongs to stays visible.
+   */
+  public declutterLabels(): void {
+    if (!this.dataSource || this.phase !== TransitionPhase.SETTLED) return;
+    const C = this.Cesium;
+    const scene = this.viewer.scene;
+    const now = this.viewer.clock.currentTime;
+    const canvas = scene.canvas;
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    const transform = (C.SceneTransforms as any).worldToWindowCoordinates ?? (C.SceneTransforms as any).wgs84ToWindowCoordinates;
+
+    type Box = { e: CesiumType.Entity; p: number; x0: number; y0: number; x1: number; y1: number };
+    const boxes: Box[] = [];
+    for (const e of this.dataSource.entities.values) {
+      if (!e.isShowing || !e.label) continue;
+      e.label.show = new C.ConstantProperty(true);
+      const pos = e.position?.getValue(now);
+      if (!pos) continue;
+      const win = transform(scene, pos);
+      if (!win) continue;
+      const text: string = e.label.text?.getValue(now) ?? '';
+      const font: string = e.label.font?.getValue(now) ?? '12px monospace';
+      const px = parseFloat((font.match(/(\d+(?:\.\d+)?)px/) || [])[1] || '12');
+      const lines = text.split('\n');
+      const w = Math.max(...lines.map((l) => l.length)) * px * 0.62 + 6;
+      const h = lines.length * px * 1.3 + 4;
+      const off = e.label.pixelOffset?.getValue(now) ?? new C.Cartesian2(0, 0);
+      const hOrigin = e.label.horizontalOrigin?.getValue(now) ?? C.HorizontalOrigin.CENTER;
+      const vOrigin = e.label.verticalOrigin?.getValue(now) ?? C.VerticalOrigin.CENTER;
+      const ax = win.x + off.x;
+      const ay = win.y + off.y;
+      const x0 = hOrigin === C.HorizontalOrigin.LEFT ? ax : hOrigin === C.HorizontalOrigin.RIGHT ? ax - w : ax - w / 2;
+      const y0 = vOrigin === C.VerticalOrigin.BOTTOM ? ay - h : vOrigin === C.VerticalOrigin.TOP ? ay : ay - h / 2;
+      boxes.push({ e, p: this.labelPriority.get(e) ?? LABEL_PRIORITY.DETAIL, x0, y0, x1: x0 + w, y1: y0 + h });
+    }
+
+    boxes.sort((a, b) => a.p - b.p);
+    const kept: Box[] = [];
+    const pad = 4;
+    for (const b of boxes) {
+      const offscreen = b.x1 < 0 || b.y1 < 0 || b.x0 > cw || b.y0 > ch;
+      const collides = kept.some((k) => b.x0 < k.x1 + pad && b.x1 > k.x0 - pad && b.y0 < k.y1 + pad && b.y1 > k.y0 - pad);
+      if (collides && b.p > LABEL_PRIORITY.PRIMARY) {
+        b.e.label!.show = new C.ConstantProperty(false);
+      } else if (!offscreen) {
+        kept.push(b);
+      }
+    }
+  }
+
   public getFormationController(): SpatialFormationController | null {
     return this.formationController;
   }
 
   public destroy(): void {
-    this.historical1942Traces?.destroy();
-    this.historical1942Traces = null;
     this.formationController?.destroy();
     this.formationController = null;
     if (this.communicationTimer) {

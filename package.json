@@ -4,8 +4,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev --host 0.0.0.0 --port 3000",
-    "build": "astro build",
+    "cesium:assets": "node scripts/sync-cesium-assets.mjs",
+    "dev": "node scripts/sync-cesium-assets.mjs && astro dev --host 0.0.0.0 --port 3000",
+    "build": "node scripts/sync-cesium-assets.mjs && astro build",
+    "capture:spatial": "node scripts/capture-spatial.mjs",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
     "lint": "astro sync",

@@ -130,6 +130,68 @@ export const AUTHORED_CAMERA_GRAMMAR: Record<string, AuthoredBeatGrammar> = {
   },
 };
 
+/**
+ * Where the subject should sit on screen for each layout (normalised 0..1, y down).
+ *  - desktop: the narrative column occupies roughly the left 12–42%; subject sits right of it.
+ *  - mobile portrait: the reading card occupies the lower ~55%; subject sits in the clear upper band.
+ */
+export const LAYOUT_FOCAL: Record<'desktop' | 'tablet' | 'mobilePortrait' | 'mobileLandscape', [number, number]> = {
+  desktop: [0.66, 0.5],
+  tablet: [0.62, 0.46],
+  mobilePortrait: [0.5, 0.28],
+  mobileLandscape: [0.64, 0.46],
+};
+
+/**
+ * Pure geometry, no Cesium dependency: place the camera so that a subject at (lon, lat, h),
+ * viewed with heading H and pitch P from distance R, projects to the layout focal point.
+ * Works in the subject's local East-North-Up frame (error < 1° at 100 km ranges).
+ */
+export function framedPose(
+  frame: NonNullable<SpatialDemonstrationState['frame']>,
+  layout: keyof typeof LAYOUT_FOCAL,
+  vw: number,
+  vh: number,
+  fovRad: number
+): CameraPose {
+  const toRad = Math.PI / 180;
+  const H = frame.headingDeg * toRad;
+  const P = frame.pitchDeg * toRad;
+  const range = frame.rangeM[layout] ?? (layout === 'mobileLandscape' ? frame.rangeM.desktop : frame.rangeM.tablet ?? frame.rangeM.desktop);
+  const aspect = vw / Math.max(1, vh);
+  // Cesium: frustum.fov spans the larger viewport dimension.
+  const tanX = aspect >= 1 ? Math.tan(fovRad / 2) : Math.tan(fovRad / 2) * aspect;
+  const tanY = aspect >= 1 ? Math.tan(fovRad / 2) / aspect : Math.tan(fovRad / 2);
+  const [fx, fy] = LAYOUT_FOCAL[layout];
+  const a = (2 * fx - 1) * tanX; // subject right of centre -> look left of it
+  const b = (1 - 2 * fy) * tanY; // subject above centre -> look below it
+
+  const dir = [Math.cos(P) * Math.sin(H), Math.cos(P) * Math.cos(H), Math.sin(P)];
+  const right = [Math.cos(H), -Math.sin(H), 0];
+  const up = [
+    right[1] * dir[2] - right[2] * dir[1],
+    right[2] * dir[0] - right[0] * dir[2],
+    right[0] * dir[1] - right[1] * dir[0],
+  ];
+  const d = [0, 1, 2].map((i) => dir[i] + a * right[i] + b * up[i]);
+  const n = Math.hypot(d[0], d[1], d[2]);
+  const east = (-range * d[0]) / n;
+  const north = (-range * d[1]) / n;
+  const upM = (-range * d[2]) / n;
+
+  const lat0 = frame.targetLat * toRad;
+  const mPerDegLat = 111132.92 - 559.82 * Math.cos(2 * lat0) + 1.175 * Math.cos(4 * lat0);
+  const mPerDegLon = 111412.84 * Math.cos(lat0) - 93.5 * Math.cos(3 * lat0);
+  return {
+    latitude: frame.targetLat + north / mPerDegLat,
+    longitude: frame.targetLon + east / mPerDegLon,
+    altitudeM: (frame.targetHeightM ?? 0) + upM,
+    headingDeg: frame.headingDeg,
+    pitchDeg: frame.pitchDeg,
+    rollDeg: 0,
+  };
+}
+
 export class CameraGrammar {
   private Cesium: typeof CesiumType;
 
@@ -143,11 +205,17 @@ export class CameraGrammar {
   public resolvePose(
     state: SpatialDemonstrationState,
     viewportWidth: number,
-    viewportHeight: number
+    viewportHeight: number,
+    fovRad: number = Math.PI / 3
   ): CameraPose {
     const isMobilePortrait = viewportWidth < 768 && viewportHeight >= viewportWidth;
     const isTablet = viewportWidth >= 768 && viewportWidth < 1100;
     const isMobileLandscape = viewportWidth < 1024 && viewportWidth > viewportHeight;
+
+    if (state.frame) {
+      const layout = viewportWidth >= 1100 ? 'desktop' : isMobilePortrait ? 'mobilePortrait' : isMobileLandscape ? 'mobileLandscape' : 'tablet';
+      return framedPose(state.frame, layout, viewportWidth, viewportHeight, fovRad);
+    }
 
     if (viewportWidth >= 1100) {
       return state.desktopCamera;

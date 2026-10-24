@@ -292,25 +292,23 @@ assert(mythCas?.supportClassification === 'DISPUTED', 'Unsupported 1,000+ casual
 const totalCas = canonFile.claims.find(c => c.id === 'CLAIM_CASUALTIES_TOTAL');
 assert(totalCas?.supportClassification === 'SUPPORTED_BY_SYNTHESIS', 'Overall casualties claim reflects synthesis of multiple accounts rather than single dogmatic official total');
 
-// 12. Stage 2.3 CARTO Production Patch & Aircraft Conflict Verification
-console.log('\n[12. Stage 2.3 CARTO Production Patch & Aircraft Conflict Verification]');
+// 12. Basemap provenance & attribution (revised Oct 2026: project-owned OSM basemap replaces keyless CARTO)
+console.log('\n[12. Basemap Provenance & Attribution]');
 const cartoManagerCode = fs.readFileSync(path.join(root, 'src/lib/spatial/cartography-manager.ts'), 'utf8');
-assert(cartoManagerCode.includes('PUBLIC_CARTO_BASEMAP_KEY'), 'CartographyManager references PUBLIC_CARTO_BASEMAP_KEY');
-assert(cartoManagerCode.includes('rastertiles/dark_all/{z}/{x}/{y}.png?key='), 'CartographyManager uses documented CARTO rastertiles endpoint with key parameter');
-assert(!cartoManagerCode.includes('CARTO_API_KEY'), 'CartographyManager does NOT reference or expose private CARTO_API_KEY');
-assert(!cartoManagerCode.includes('PUBLIC_CARTO_BASEMAP_KEY ||'), 'CartographyManager does NOT implement private-to-public fallback');
-assert(cartoManagerCode.includes('applyLocalFallbackBasemap'), 'CartographyManager falls back to local Natural Earth II when key is unavailable');
-assert(cartoManagerCode.includes('unauthenticated production CARTO requests are prohibited'), 'CartographyManager explicitly prohibits unauthenticated production CARTO requests');
+assert(!/cartocdn|basemaps\.carto/.test(cartoManagerCode), 'CartographyManager makes no CARTO requests (anonymous CARTO returns "API KEY REQUIRED" tiles)');
+assert(!cartoManagerCode.includes('CARTO_API_KEY'), 'CartographyManager does NOT reference or expose any private tile key');
+assert(cartoManagerCode.includes('basemap-manifest.json'), 'CartographyManager loads the project-owned basemap manifest');
+assert(cartoManagerCode.includes('OpenStreetMap contributors'), 'Cesium credit attributes OpenStreetMap contributors');
 
 const spatialEngineCode = fs.readFileSync(path.join(root, 'src/components/SpatialEngine.astro'), 'utf8');
-assert(spatialEngineCode.includes('© OpenStreetMap') && spatialEngineCode.includes('© CARTO'), 'SpatialEngine footer includes visible attribution to both OpenStreetMap and CARTO');
-assert(spatialEngineCode.includes('carto.com/attributions') && spatialEngineCode.includes('openstreetmap.org/copyright'), 'SpatialEngine footer includes hyperlinked compliance URLs');
+assert(spatialEngineCode.includes('© OpenStreetMap contributors') && spatialEngineCode.includes('openstreetmap.org/copyright'), 'SpatialEngine footer includes visible, hyperlinked OpenStreetMap (ODbL) attribution');
+assert(!spatialEngineCode.includes('© CARTO'), 'SpatialEngine footer does not credit a provider that is no longer used');
 
 const astroConfigCode = fs.readFileSync(path.join(root, 'astro.config.mjs'), 'utf8');
 assert(!astroConfigCode.includes('PUBLIC_CARTO_BASEMAP_KEY') && !astroConfigCode.includes('vite:'), 'astro.config.mjs does NOT use vite.define (uses standard Astro import.meta.env.PUBLIC_* mechanism)');
 
 const spatialDoc = fs.readFileSync(path.join(root, 'docs/SPATIAL_ENGINE.md'), 'utf8');
-assert(spatialDoc.includes('5 million tile requests per calendar month'), 'docs/SPATIAL_ENGINE.md records CARTO free allowance of 5 million tile requests');
+assert(spatialDoc.includes('Why CARTO was removed') && spatialDoc.includes('Do NOT introduce MapLibre'), 'docs/SPATIAL_ENGINE.md records the basemap decision and preserves the single-engine policy');
 assert(spatialDoc.includes('raster basemaps should be treated as replaceable'), 'docs/SPATIAL_ENGINE.md notes raster basemaps as legacy replaceable infrastructure');
 
 const aircraftVal = data['data/entities/aircraft.json'].entities.find(e => e.id === 'AIRCRAFT_D3A1_VAL');

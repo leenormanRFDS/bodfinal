@@ -11,7 +11,6 @@ import type * as CesiumType from 'cesium';
 import { CameraChoreographer } from './camera-choreographer';
 import { CartographyManager } from './cartography-manager';
 import { SpatialEvidenceOverlay } from './spatial-evidence-overlay';
-import { SpatialCoastlineOverlay } from './spatial-coastline-overlay';
 import { HistoricalTimeController } from './historical-time-controller';
 import { SpatialAtmosphereController } from './spatial-atmosphere-controller';
 import type { SpatialFormationController } from './spatial-formation-controller';
@@ -36,7 +35,6 @@ export class SpatialViewer {
   private choreographer: CameraChoreographer | null = null;
   private cartography: CartographyManager | null = null;
   private evidenceOverlay: SpatialEvidenceOverlay | null = null;
-  private coastlineOverlay: SpatialCoastlineOverlay | null = null;
   private timeController: HistoricalTimeController | null = null;
   private atmosphereController: SpatialAtmosphereController | null = null;
   private container: HTMLElement;
@@ -130,6 +128,9 @@ export class SpatialViewer {
         navigationHelpButton: false,
         navigationInstructionsInitiallyVisible: false,
         scene3DOnly: true,
+        // No default Cesium ion imagery/terrain: the authored basemap is added by CartographyManager.
+        // (Without this, Cesium requests ion imagery with its demo token and shows the ion logo.)
+        baseLayer: false,
         shouldAnimate: false,
         useDefaultRenderLoop: true,
         targetFrameRate: 60,
@@ -165,14 +166,10 @@ export class SpatialViewer {
       this.evidenceOverlay = new SpatialEvidenceOverlay(Cesium, this.viewer);
       await this.evidenceOverlay.initialize();
 
-      this.coastlineOverlay = new SpatialCoastlineOverlay(Cesium, this.viewer);
-      await this.coastlineOverlay.initialize();
-
       // Set initial composition (State 00 World Context)
       const initialState = DEMONSTRATION_STATES[this.activeStateId];
       this.choreographer.transitionTo(initialState, { forceInstant: true });
       this.evidenceOverlay.setActiveState(this.activeStateId);
-      this.coastlineOverlay.setActiveState(this.activeStateId);
       this.atmosphereController.applyBeatAtmosphere(this.activeStateId);
 
       // Handle fluid resize with dynamic resolution scaling
@@ -186,6 +183,7 @@ export class SpatialViewer {
           if (this.choreographer && this.activeStateId && DEMONSTRATION_STATES[this.activeStateId]) {
             this.choreographer.updatePoseOnResize(DEMONSTRATION_STATES[this.activeStateId]);
           }
+          this.evidenceOverlay?.declutterLabels();
           this.viewer.scene.requestRender();
         }
       });
@@ -228,7 +226,6 @@ export class SpatialViewer {
 
     this.activeStateId = stateId;
     this.evidenceOverlay?.prepareTransition(stateId);
-    this.coastlineOverlay?.setActiveState(stateId);
     this.cartography?.setBeatExposure(stateId);
     this.atmosphereController?.applyBeatAtmosphere(stateId);
 
@@ -287,10 +284,6 @@ export class SpatialViewer {
     return this.evidenceOverlay;
   }
 
-  public getCoastlineOverlay(): SpatialCoastlineOverlay | null {
-    return this.coastlineOverlay;
-  }
-
   public getTimeController(): HistoricalTimeController | null {
     return this.timeController;
   }
@@ -312,11 +305,6 @@ export class SpatialViewer {
     }
 
     this.timeController = null;
-
-    if (this.coastlineOverlay) {
-      this.coastlineOverlay.destroy();
-      this.coastlineOverlay = null;
-    }
 
     if (this.evidenceOverlay) {
       this.evidenceOverlay.destroy();

@@ -79,7 +79,7 @@ const { className = '' } = Astro.props;
   <footer class="spatial-stage__foot" aria-label="Spatial Engine Metadata and Attribution">
     <span class="spatial-stage__scope" data-spatial-scope>AUSTRALIA & INDO-PACIFIC</span>
     <div class="spatial-stage__credits" data-spatial-credits id="spatial-credits">
-      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> · <a href="https://carto.com/attributions" target="_blank" rel="noopener">© CARTO</a> · GEOSCIENCE AUSTRALIA
+      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a> · <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> · GEOSCIENCE AUSTRALIA
     </div>
   </footer>
 </div>
@@ -108,6 +108,13 @@ const { className = '' } = Astro.props;
   /* Remove default Cesium canvas focus ring / border */
   .spatial-stage__canvas :global(canvas) {
     outline: none !important;
+  }
+
+  /* Default Cesium credit widget is replaced by the explicit attribution in the stage/dock
+     (© OpenStreetMap contributors · Natural Earth). No Cesium ion services are used. */
+  .spatial-stage__canvas :global(.cesium-widget-credits),
+  .spatial-stage__canvas :global(.cesium-credit-lightbox-overlay) {
+    display: none !important;
   }
 
   /* WebGL Fallback */

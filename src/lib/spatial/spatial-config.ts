@@ -8,6 +8,23 @@
  */
 
 import type { SpatialDemonstrationState, SpatialDemonstrationStateId } from './spatial-types';
+import locationsData from '../../../data/entities/locations.json';
+import vesselsData from '../../../data/entities/vessels.json';
+
+/** Canonical subject coordinates for camera framing (never duplicated by hand). */
+function canonPoint(kind: 'location' | 'vessel', id: string): { lon: number; lat: number } {
+  if (kind === 'location') {
+    const e: any = (locationsData as any).entities.find((x: any) => x.id === id);
+    if (e?.latitude == null) throw new Error(`[spatial-config] canonical location ${id} has no coordinates`);
+    return { lon: e.longitude, lat: e.latitude };
+  }
+  const v: any = (vesselsData as any).entities.find((x: any) => x.id === id);
+  if (v?.coordinates?.latitude == null) throw new Error(`[spatial-config] canonical vessel ${id} has no coordinates`);
+  return { lon: v.coordinates.longitude, lat: v.coordinates.latitude };
+}
+const MISSION = canonPoint('location', 'BATHURST_ISLAND_MISSION_1942');
+const POST_OFFICE = canonPoint('location', 'DARWIN_POST_OFFICE_1942');
+const PEARY = canonPoint('vessel', 'USS_PEARY_DD226');
 
 export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDemonstrationState> = {
   STATE_00_WORLD: {
@@ -278,6 +295,16 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     purpose: 'Father McGrath sights large formation over Sacred Heart Mission, Nguiu, and radios warning at 09:37. Perspective looks southeast across Clarence Strait.',
     canonicalLocationEntityId: 'BATHURST_ISLAND_MISSION_1942',
     temporalContext: 'HISTORICAL_1942',
+    // 09:35 — subject: the mission at Nguiu. Looking SSE across Clarence Strait toward Darwin,
+    // so the warning's path runs away from the viewer into the frame.
+    frame: {
+      subject: 'BATHURST_ISLAND_MISSION_1942',
+      targetLon: MISSION.lon,
+      targetLat: MISSION.lat,
+      headingDeg: 152,
+      pitchDeg: -38,
+      rangeM: { desktop: 70000, tablet: 85000, mobilePortrait: 125000, mobileLandscape: 80000 },
+    },
     desktopCamera: {
       latitude: -11.65,
       longitude: 130.45,
@@ -330,6 +357,17 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     purpose: 'Coordinated first wave attack ingress along 315°–345° axis from southeast out of the rising sun. First detonations at 09:58.',
     canonicalLocationEntityId: 'DARWIN_HARBOUR_CONTEMPORARY',
     temporalContext: 'HISTORICAL_1942',
+    // 09:58 — subject: the harbour roadstead and the town that faces it. Composition aim point
+    // (not a historical position) between the Post Office precinct and the anchored shipping.
+    // Looking SE over the town, past the wharves, into the roadstead and the approach beyond.
+    frame: {
+      subject: 'COMPOSITION',
+      targetLon: 130.8445,
+      targetLat: -12.4730,
+      headingDeg: 148,
+      pitchDeg: -36,
+      rangeM: { desktop: 5200, tablet: 6000, mobilePortrait: 9000, mobileLandscape: 5600 },
+    },
     desktopCamera: {
       latitude: -12.4490,
       longitude: 130.8310,
@@ -382,6 +420,15 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     purpose: 'Direct bomb hit on open civilian trench behind Darwin Post and Telegraph Office, killing shelter occupants. Restrained civic perspective.',
     canonicalLocationEntityId: 'DARWIN_POST_OFFICE_1942',
     temporalContext: 'HISTORICAL_1942',
+    // 10:00 — subject: the Post Office site in the Goyder grid. Close, steep, urban.
+    frame: {
+      subject: 'DARWIN_POST_OFFICE_1942',
+      targetLon: POST_OFFICE.lon,
+      targetLat: POST_OFFICE.lat,
+      headingDeg: 36,
+      pitchDeg: -50,
+      rangeM: { desktop: 1500, tablet: 1750, mobilePortrait: 2600, mobileLandscape: 1600 },
+    },
     desktopCamera: {
       latitude: -12.4682,
       longitude: 130.8418,
@@ -434,6 +481,16 @@ export const DEMONSTRATION_STATES: Record<SpatialDemonstrationStateId, SpatialDe
     purpose: 'USS Peary (DD-226) conducts violent evasive manoeuvres under repeated dive-bombing attacks in mid-harbour; struck by 5 bombs.',
     canonicalLocationEntityId: 'DARWIN_HARBOUR_CONTEMPORARY',
     temporalContext: 'HISTORICAL_1942',
+    // 10:45 — subject: USS Peary at her canonical surveyed position. Low over the harbour looking
+    // NE, so the destroyer sits on open water with Fort Hill and Stokes Hill Wharf on the shore behind.
+    frame: {
+      subject: 'USS_PEARY_DD226',
+      targetLon: PEARY.lon,
+      targetLat: PEARY.lat,
+      headingDeg: 52,
+      pitchDeg: -27,
+      rangeM: { desktop: 2700, tablet: 3100, mobilePortrait: 4600, mobileLandscape: 2900 },
+    },
     desktopCamera: {
       latitude: -12.4830,
       longitude: 130.8245,

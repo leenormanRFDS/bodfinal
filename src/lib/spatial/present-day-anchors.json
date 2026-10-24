@@ -1,0 +1,8 @@
+{
+  "description": "Present-day geographic anchors taken from the same OpenStreetMap data the basemap is rendered from, so markers and map geometry always agree. PRESENT DAY only — these never define 1942 structures (see data/entities/locations.json: STOKES_HILL_WHARF_1942 and FORT_HILL_WHARF_1942 remain null).",
+  "source": "© OpenStreetMap contributors (ODbL). Northern Territory extract, download.openstreetmap.fr, retrieved 2026-10-24. Area centroids of named man_made=pier features.",
+  "anchors": {
+    "STOKES_HILL_WHARF_PRESENT": { "name": "Stokes Hill Wharf", "longitude": 130.84918, "latitude": -12.47042, "osm": "man_made=pier, name=Stokes Hill Wharf" },
+    "FORT_HILL_WHARF_PRESENT": { "name": "Fort Hill Wharf", "longitude": 130.84539, "latitude": -12.47157, "osm": "name=Fort Hill Wharf" }
+  }
+}

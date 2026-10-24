@@ -52,8 +52,26 @@ export type SpatialDemonstrationStateId =
 
 export type SpatialCameraStateId = SpatialDemonstrationStateId;
 
+/**
+ * Subject-framed composition. The camera keeps the authored heading/pitch exactly and is
+ * translated so the subject projects onto the clear zone of each layout (right of the text
+ * column on desktop, above the reading card on mobile). Horizon stays level at every aspect.
+ */
+export interface SubjectFrame {
+  /** Aim point. For canonical subjects this is read from data/entities/* in spatial-config. */
+  targetLon: number;
+  targetLat: number;
+  targetHeightM?: number;
+  /** What the aim point is: a canonical entity id, or 'COMPOSITION' for a pure framing point. */
+  subject: string;
+  headingDeg: number;
+  pitchDeg: number;
+  rangeM: { desktop: number; tablet?: number; mobilePortrait: number; mobileLandscape?: number };
+}
+
 export interface SpatialDemonstrationState {
   id: SpatialDemonstrationStateId;
+  frame?: SubjectFrame;
   index: number;
   code: string;
   label: string;
