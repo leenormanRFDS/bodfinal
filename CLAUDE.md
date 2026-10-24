@@ -44,6 +44,13 @@ meaningful checkpoint. Do not create parallel status/plan documents.
   type it depicts; other types stay as silhouettes until type-accurate models exist.
 - `node scripts/profile-spatial-load.mjs --url <preview> --share <token>` — load profile (desktop and
   throttled mobile). No GPU here: frame-gated timings are pessimistic; compare run to run only.
+- `node scripts/profile-pages.mjs --url <base> [--share <token>] --label <name>` — per-page weight/FCP/LCP
+  on a throttled mid-range phone; writes `qa-captures/perf/<label>-pages.json` (baseline: `baseline-pages.json`).
+  `node scripts/capture-pages.mjs --url <base> --out <dir> --pages /,/story [--selector css] [--full]` — page captures.
+- Cesium must stay out of every page's static import graph (load only via `import('cesium')`). After a build,
+  `grep -lE 'from"./[Cc]esium' .vercel/output/static/_astro/*.js` may list only Cesium's own deps (zip-reader).
+  Never dynamically import a module that is also statically imported (see astro.config.mjs).
+- Tracking runs only on production hostnames; append `?bod_track=1` to test elsewhere. IDs in `src/consts.ts`.
 - `npm run build` also patches `.vercel/output/config.json` with immutable caching for tiles/posters
   (`scripts/vercel-cache-headers.mjs`). Tile and poster URLs carry `?v=<content hash>`.
 

@@ -4,11 +4,11 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 
 | Field | Value |
 |---|---|
-| Current milestone | **M1 + M2 (spatial) — performance, beat framing, formations** (in verification) |
-| Working branch | `dev/spatial-engine` (from `main` @ `a7f6c95`, 16 Oct 2026) |
+| Current milestone | **M4/M5 site pass — speed, unused files, TV witness, tracking** (on `dev/site-pass`, awaiting owner review) |
+| Working branch | `dev/site-pass` (from `dev/spatial-engine` @ `65b71e5`). Previous: `dev/spatial-engine`. |
 | Production | `dev/spatial-engine` fast-forwarded into `main` and deployed 25 Oct 2026, on the product owner's explicit approval ("Merge them all and deploy"). Previous production: `main` @ `a7f6c95`. |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
-| Updated | 25 Oct 2026 |
+| Updated | 25 Oct 2026 (site pass) |
 
 ## Milestones
 
@@ -17,8 +17,8 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 | M1 | Spatial Engine and Cartography | In verification |
 | M2 | Historical Story, Camera Choreography and Evidence | In progress — all 8 beats framed; formations; Evidence Ledger affordance outstanding |
 | M3 | Ticketing and Rezdy Verification | Not started — blocked on staging credentials for live checks |
-| M4 | Site-wide UX/UI and Responsive Completion | Not started |
-| M5 | Performance, Accessibility and Regression QA | Started — spatial load path (posters, caching, prefetch) |
+| M4 | Site-wide UX/UI and Responsive Completion | Started — site pass on `dev/site-pass` |
+| M5 | Performance, Accessibility and Regression QA | Started — spatial load path; site-wide page weight (site pass) |
 | M6 | Production Release Candidate | Not started |
 
 ## M1 — Root causes found (verified on `main` and on the live preview)
@@ -168,12 +168,61 @@ Owner wrote "Post & Telegram Office"; the label keeps the historical name "Post 
   returns live Rezdy products (Family Pass $90 = 2 adults + 3 children, 5 seats); `/tickets` renders
   all four products; `/book` redirects to `/tickets` as before. Real-device / iOS Safari check by owner.
 
+## Checkpoint 25 Oct 2026 (c) — site pass: speed, unused files, TV witness, tracking (`dev/site-pass`)
+
+Owner request: style/UX/speed pass with special attention to loading; delete unused files that matter;
+replace the story "cinema screen" with the TV set (The Witness); install tracking (GA4, Meta, GTM).
+
+**Speed** (`scripts/profile-pages.mjs`, mobile mid-range: 390×844@3x, 12 Mbps/60 ms, 4× CPU;
+baseline = production `6b3a387`, after = preview of `dev/site-pass`):
+
+| Page | Transfer before → after | LCP ms before → after |
+|---|---|---|
+| / | 2321 KB → 950 KB | 3560 → 2000 |
+| /story | 3688 KB → 2314 KB* | 2492 → 1272 |
+| /experience | 6923 KB → 562 KB | 2416 → 1328 |
+| /tickets | 2011 KB → 539 KB | 2288 → 1680 |
+| /visit · /witness · /memorial | ~1.7–2.2 MB → 251–737 KB | ~2.2–2.4 s → 1.25–1.87 s |
+
+*/story includes the live-tier Cesium download (~1.3 MB compressed) — now fetched only when the map initialises.
+
+Causes fixed:
+- `/brand/logo-1942.svg` embedded six PNGs (2.3 MB, 1.29 MB transferred on EVERY page) → WebP 360/820/1640 + srcset; SVG master moved to `design/brand/`.
+- `/experience` interstitial was a 5 MB PNG (and an aerial 3D render, likely a Google Earth capture — not usable) → real exhibition-floor photo (WebP, 1000 px).
+- Google Fonts CSS (render-blocking) removed; IBM Plex Mono self-hosted via `@fontsource/ibm-plex-mono`. Typekit CSS remains render-blocking (needed for the display faces).
+- Hero plates: 1000w WebP + srcset/sizes.
+- Client bundling: `/story`'s main script statically imported Cesium (4.9 MB raw). Cause: EvidenceLedger dynamically imported `spatial-evidence-overlay` (also statically imported elsewhere) → module namespace object → Rolldown's `__export` helper placed in the Cesium chunk. Fixed by sharing records via `window.__BOD_EVIDENCE_RECORDS__` (SpatialEngine) plus a client-only `helpers` chunk group in `astro.config.mjs`. A separate Cesium chunk group was tried and broke Cesium init ("D is not a function", live map dead) — do not reintroduce.
+
+**Unused files:** ~70 unreferenced files removed from `public/` (acceptance shots, test PNGs, old hero
+layers, AI rasters incl. `images/spatial/*`, `story/raid-wide.webp`, superseded portraits/badges) and six
+old capture scripts that wrote into `public/`. `public/` ≈100 MB → ≈30 MB. `src/assets` (6.8 MB, unserved) left.
+
+**Style/UX:** hero corner ticks render as corners (specificity bug); hero plate caption legible over both
+halves; cultural advice keeps its gutter on phones; experience banner image corrected.
+
+**The Witness:** `/story` film section uses `TvWitness` — the TV set image (transparent screen) with the
+archival film behind the glass. Click-to-load youtube-nocookie; ≥720 px plays inside the screen, phones
+open a full-width lightbox (Esc / close / click-outside). Verified by scripted click on desktop and mobile.
+
+**Tracking** (`src/components/Analytics.astro`, `src/lib/tracking.ts`, `src/consts.ts`):
+- Fires only on `thebombingofdarwin.com.au` / `www.` — or any host with `?bod_track=1` for testing. Previews no longer pollute GA4.
+- GA4 `G-MQ9641V0NY` direct (gtag), loaded after window load.
+- `begin_checkout` / Meta `InitiateCheckout` when the Rezdy checkout opens; `purchase` / Meta `Purchase` once per Rezdy order on the confirmation page (`transaction_id` / `eventID` = order number; localStorage de-dupe). Previously no purchase was ever recorded (the old dataLayer push was never read by gtag).
+- GTM: owner's account has no container for this site (only rfdsdarwin.com.au `GTM-MRLQWGR7` and RFDS sites). Decision: no GTM — direct tags are lighter. `gtmContainerId` switch kept in config.
+- Meta pixel: code ready, inactive until the dedicated dataset ID is supplied.
+
+Live map verified on preview `386eaaa` (ready, no console errors, Evidence Ledger opens from roster).
+Verification: all governance suites pass (formations 31/31, resilience 26/26, evidence 124/124,
+cartography 33/33, ledger 78/78, scroll lifecycle 32/32, truth/narrative); `npm run build` passes;
+tsc error count unchanged (31, pre-existing). Captures: `qa-captures/pass*`, `qa-captures/perf/*`.
+
 ## Outstanding defects (logged, not yet addressed)
 
 - **M3 / commerce:** `test-serverless-hardening.ts` 18/19 on both `main` and branch — "In-Progress TTL Revalidation" fails. The AI Studio report claims this was fixed; the fix is not in the repository. Its other claimed fixes (`.env.example`, dual adapter, Cesium asset move, Post Office label) are also absent from `main`.
 - **M2:** Map-label click → Evidence Ledger handler cannot fire (canvas is `pointer-events: none` so the page scrolls); needs an accessible, non-canvas affordance.
 - **M4:** Booking-bar reverence gating starts at beat index 3; the 09:58 strike beat (index 2) and the desktop "BOOK TICKETS" button are not gated.
-- **Repo hygiene:** `public/test-*.png`, `public/acceptance/*` (≈14 MB) are QA debris served publicly; unused AI-generated rasters remain in `public/images/spatial/` pending owner decision.
+- ~~Repo hygiene~~ — resolved in the site pass (QA debris and unused AI rasters deleted on owner instruction "If there are unused files - get rid of them").
+- **Typecheck:** `tsc --noEmit` reports 31 pre-existing errors (Rezdy/webhook typing, i18n scripts, missing @types/node). Unchanged by the site pass; address in M3.
 
 ## Decisions required (owner)
 
@@ -181,11 +230,14 @@ Owner wrote "Post & Telegram Office"; the label keeps the historical name "Post 
 - **Canon inconsistency (Neptuna times):** `events.json` has EVENT_NEPTUNA_BOMBED 10:02 and EVENT_NEPTUNA_EXPLOSION 10:25; `vessels.json` MV_NEPTUNA `damageTime` is 10:12. The map label uses the explosion event (~10:25). Needs an owner/historian ruling.
 - **3D models:** only the Zero exists. Vals (D3A1), Kates (B5N2), Bettys/Nells and ships stay as silhouettes until type-accurate models are supplied or commissioned. The supplied Zero's licence/terms (Tripo) should be confirmed by the owner before production.
 - **Historical raster:** if a genuine 1942 survey (e.g. NAA A2633 wharf plans, RAAF/RAN chart) is available, supply it for proper ground-control registration. Until then, no 1942 raster is shown as cartography.
-- **AI-generated images:** confirm deletion of `public/images/spatial/archival-texture-*.png`, `darwin-1942-overlay.png`, `darwin-1942-continuous-map.png`.
+- **Custom domain:** `thebombingofdarwin.com.au` (+ www) is attached to the OLD Vercel project `bombingofdarwin`, which still serves the old site. Move to `bombingofdarwinexperience` after the site pass is approved (owner: "Wait until passes done"). Keep the old project as rollback.
+- **Meta pixel:** dedicated "Bombing of Darwin" dataset ID needed (do not reuse shared RFDS pixel 773978734609862 — Meta health-flagged). Set `ANALYTICS.metaPixelId` in `src/consts.ts`.
+- **Privacy wording:** the site terms say personal information is not shared; a Meta pixel shares browsing/purchase events with Meta. Update the privacy statement before enabling the pixel.
 
 ## Next action
 
-1. Owner review of the Vercel preview for `dev/spatial-engine` on real devices (desktop + iPhone Safari): load feel, poster → live hand-over, 3D Zeros at 09:58.
-2. Re-profile the new preview against the 24 Oct baseline.
-3. M2: Evidence Ledger affordance (non-canvas), motion paths for formations between beats.
+1. Owner review of the `dev/site-pass` preview; on approval merge to `main`, then move the custom domain to `bombingofdarwinexperience`.
+2. Meta dataset ID + privacy wording, then enable the pixel.
+3. M3 ticketing (owner: "Do ticketing after"): Rezdy in-progress TTL revalidation, mobile Safari checkout, Family Pass mapping.
+4. M2: Evidence Ledger affordance (non-canvas), motion paths for formations between beats.
 4. M3: Rezdy in-progress TTL revalidation defect (needs staging credentials for live verification).
