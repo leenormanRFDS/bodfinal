@@ -43,7 +43,7 @@ async function syncToTolgee() {
       const res = await fetch(`${API_URL}/v2/projects/${PROJECT_ID}/keys`, {
         method: 'POST',
         headers: {
-          'X-API-Key': API_KEY,
+          'X-API-Key': API_KEY as string, // guaranteed: script exits above when unset
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
@@ -57,7 +57,7 @@ async function syncToTolgee() {
         const updateRes = await fetch(`${API_URL}/v2/projects/${PROJECT_ID}/translations`, {
           method: 'PUT',
           headers: {
-            'X-API-Key': API_KEY,
+            'X-API-Key': API_KEY as string, // guaranteed: script exits above when unset
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({

@@ -93,7 +93,7 @@ export function hasBookingRecord(orderNumber: string): boolean {
  * Normalizes a raw Rezdy booking payload (from API or Webhook) into our
  * privacy-safe AuthoritativeBookingRecord.
  */
-export function normalizeRezdyBooking(raw: any, source: 'webhook' | 'rezdy_api' = 'rezdy_api'): AuthoritativeBookingRecord {
+export function normalizeRezdyBooking(raw: any, source: AuthoritativeBookingRecord['source'] = 'rezdy_api'): AuthoritativeBookingRecord {
   const orderNumber = String(raw.orderNumber || raw.bookingNumber || raw.orderRef || '').trim().toUpperCase();
   const rawStatus = String(raw.status || raw.orderStatus || 'UNKNOWN').trim().toUpperCase();
 

@@ -745,6 +745,21 @@ const icon = (n: string) =>
   .co-modal__close { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; color: var(--bone); font-size: 1.3rem; line-height: 1; cursor: pointer; display: grid; place-items: center; transition: border-color 0.2s var(--ease), color 0.2s var(--ease); }
   .co-modal__close:hover { border-color: var(--gold); color: var(--gold-bright); }
   .co-modal__frame { flex: 1; position: relative; background: #fff; }
+  /* Rezdy cannot receive quantities by link, so remind the visitor what to select there. */
+  .co-modal__remind {
+    margin: 0; padding: 10px 18px; background: var(--char); border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--bone-dim);
+  }
+  .co-modal__remind b { color: var(--gold-bright); font-weight: 500; }
+  /* Apple devices: checkout runs in its own tab (Safari blocks Rezdy's cookies inside an iframe). */
+  .co-modal__tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 40px 24px; text-align: center; background: var(--ink); }
+  .co-modal__tab[hidden] { display: none; }
+  .co-modal__tab-h { margin: 0; font-family: var(--font-display-reg); font-size: 1.35rem; color: var(--bone); }
+  .co-modal__tab-p { margin: 0; max-width: 34ch; color: var(--bone-dim); line-height: 1.55; }
+  .co-modal__tab-btn {
+    margin-top: 6px; padding: 14px 22px; border-radius: 6px; background: var(--gold); color: var(--ink);
+    font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; text-decoration: none;
+  }
   .co-modal__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .co-modal__load {
     position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
@@ -769,6 +784,12 @@ const icon = (n: string) =>
         <a class="co-modal__ext" data-coext target="_blank" rel="noopener noreferrer" href="#">New window ↗</a>
         <button class="co-modal__close" data-coclose aria-label="Close checkout">×</button>
       </div>
+    </div>
+    <p class="co-modal__remind" data-coremind hidden></p>
+    <div class="co-modal__tab" data-cotab hidden>
+      <p class="co-modal__tab-h">Your secure checkout is open in a new tab.</p>
+      <p class="co-modal__tab-p">Finish your booking there. When it's done, this page will show your confirmation.</p>
+      <a class="co-modal__tab-btn" data-cotablink target="_blank" rel="opener" href="#">Reopen checkout</a>
     </div>
     <div class="co-modal__frame">
       <div class="co-modal__load" data-coload>
@@ -1152,36 +1173,90 @@ const icon = (n: string) =>
     const coTitle = modal.querySelector<HTMLElement>('[data-cotitle]')!;
     let lenisPaused = false;
 
-    function openCheckout() {
+    const tabPanel = modal.querySelector<HTMLElement>('[data-cotab]')!;
+    const tabLink = modal.querySelector<HTMLAnchorElement>('[data-cotablink]');
+    const remind = modal.querySelector<HTMLElement>('[data-coremind]');
+
+    /**
+     * Apple devices run Rezdy in its own tab, not an iframe. Safari's cross-site tracking
+     * prevention (on by default; every iOS browser is WebKit) blocks Rezdy's cookies inside
+     * an iframe, and Rezdy's own advice is for guests to switch that protection off.
+     * As a first-party page in its own tab, Rezdy's checkout works normally.
+     */
+    const needsOwnTab = (() => {
+      const ua = navigator.userAgent;
+      const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const macSafari = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/.test(ua);
+      return iOS || macSafari || new URLSearchParams(location.search).get('checkout') === 'tab';
+    })();
+
+    /** Reminder of the selection: Rezdy ignores quantities passed by link (verified 25 Oct 2026). */
+    function selectionText() {
+      const parts = state.pkg.tiers
+        .filter((t: any) => state.qty[t.code] > 0)
+        .map((t: any) => `${state.qty[t.code]} × ${t.label}`);
+      const when = [state.date || '', state.allDay ? 'Flexible entry' : (state.session ? state.session.time : '')].filter(Boolean).join(' · ');
+      return { parts: parts.join(', '), when };
+    }
+
+    function openCheckout(tab: Window | null = null) {
       const returnTarget = `${window.location.origin}/tickets/confirmation?product=${encodeURIComponent(state.pkg.slug)}&date=${encodeURIComponent(state.date || '')}&time=${encodeURIComponent(state.session ? (state.allDay ? 'Flexible Entry' : state.session.time) : '')}`;
       const params = new URLSearchParams({
-        iframe: 'true',
         redirectUrl: returnTarget,
         returnUrl: returnTarget,
       });
+      if (!needsOwnTab) params.set('iframe', 'true');
+      // Rezdy honours `date` (pre-selects the day). Quantities/time are passed for completeness
+      // but Rezdy ignores them; the reminder bar tells the visitor what to choose.
       if (state.date) params.set('date', state.date);
       if (state.session && state.session.time && !state.allDay) params.set('time', state.session.time);
       state.pkg.tiers.forEach((t: any) => {
         if (state.qty[t.code]) params.set(t.code, String(state.qty[t.code]));
       });
-      // fresh iframe each open so availability is current
-      frame.querySelectorAll('iframe').forEach((f) => f.remove());
-      const load = modal.querySelector<HTMLElement>('[data-coload]');
-      if (load) load.style.display = 'flex';
-      const iframe = document.createElement('iframe');
       const baseCheckout = state.pkg.checkoutUrl || 'https://rfdsdarwin1.rezdy.com';
       const sep = baseCheckout.includes('?') ? '&' : '?';
       const checkoutUrl = `${baseCheckout}${sep}${params.toString()}`;
-      iframe.src = checkoutUrl;
-      iframe.title = 'Secure checkout';
-      iframe.allow = 'payment';
-      iframe.addEventListener('load', () => {
-        if (load) load.style.display = 'none';
-      });
-      frame.appendChild(iframe);
+
+      const sel = selectionText();
+      if (remind) {
+        remind.innerHTML = '';
+        remind.append('In checkout, choose ');
+        const b = document.createElement('b'); b.textContent = sel.parts || 'your tickets'; remind.append(b);
+        if (sel.when) remind.append(` · ${sel.when}`);
+        remind.hidden = false;
+      }
+
+      // fresh iframe each open so availability is current
+      frame.querySelectorAll('iframe').forEach((f) => f.remove());
+      const load = modal.querySelector<HTMLElement>('[data-coload]');
+
+      if (needsOwnTab) {
+        frame.hidden = true;
+        tabPanel.hidden = false;
+        if (tabLink) tabLink.href = checkoutUrl;
+        if (tab && !tab.closed) {
+          tab.location.href = checkoutUrl;
+        } else {
+          // Popup blocked: continue in this tab (purchase is still verified on return via Rezdy).
+          window.location.href = checkoutUrl;
+          return;
+        }
+      } else {
+        frame.hidden = false;
+        tabPanel.hidden = true;
+        if (load) load.style.display = 'flex';
+        const iframe = document.createElement('iframe');
+        iframe.src = checkoutUrl;
+        iframe.title = 'Secure checkout';
+        iframe.allow = 'payment';
+        iframe.addEventListener('load', () => {
+          if (load) load.style.display = 'none';
+        });
+        frame.appendChild(iframe);
+      }
 
       const extLink = modal.querySelector<HTMLAnchorElement>('[data-coext]');
-      if (extLink) extLink.href = checkoutUrl;
+      if (extLink) { extLink.href = checkoutUrl; extLink.hidden = needsOwnTab; }
 
       coTitle.textContent = state.pkg.name;
       const descEl = modal.querySelector<HTMLElement>('[data-codesc]');
@@ -1211,12 +1286,17 @@ const icon = (n: string) =>
     modal.querySelectorAll('[data-coclose]').forEach((b) => b.addEventListener('click', closeCheckout));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('is-open')) closeCheckout(); });
 
-    // Listen for Rezdy booking confirmation postMessage
+    // Booking-complete message from Rezdy's thank-you page (iframe parent or opener tab).
+    // Only Rezdy origins are trusted; the confirmation page re-verifies the order server-side.
     window.addEventListener('message', (event) => {
       try {
+        let host = '';
+        try { host = new URL(event.origin).hostname; } catch {}
+        if (!(host === 'rezdy.com' || host.endsWith('.rezdy.com'))) return;
         const d = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
         if (d && (d.action === 'rezdy:orderConfirmed' || d.event === 'order_confirmed' || d.type === 'rezdy:bookingComplete' || d.orderNumber)) {
-          const orderNum = d.orderNumber || d.bookingNumber || '';
+          const orderNum = String(d.orderNumber || d.bookingNumber || '').replace(/[^A-Za-z0-9-]/g, '');
+          if (!orderNum) return;
           window.location.href = `/tickets/confirmation?orderNumber=${encodeURIComponent(orderNum)}&product=${encodeURIComponent(state.pkg.slug)}&date=${encodeURIComponent(state.date || '')}&time=${encodeURIComponent(state.session ? (state.allDay ? 'Flexible Entry' : state.session.time) : '')}`;
         }
       } catch {}
@@ -1227,6 +1307,19 @@ const icon = (n: string) =>
       if (count() === 0) { openStep(2); return; }
       if (!state.date) { openStep(3); return; }
       if (!state.session && !state.allDay) { openStep(4); return; }
+
+      // Open the checkout tab now, inside the tap: iOS blocks window.open after an await.
+      let tab: Window | null = null;
+      if (needsOwnTab) {
+        tab = window.open('', '_blank');
+        if (tab) {
+          try {
+            tab.document.title = 'Secure checkout';
+            tab.document.body.style.cssText = 'margin:0;display:grid;place-items:center;height:100vh;background:#0c0c0b;color:#e8e2d4;font:16px system-ui,sans-serif';
+            tab.document.body.textContent = 'Opening secure checkout…';
+          } catch {}
+        }
+      }
 
       const alertEl = root.querySelector<HTMLElement>('[data-verifyalert]');
       if (alertEl) alertEl.hidden = true;
@@ -1252,8 +1345,9 @@ const icon = (n: string) =>
 
         if (verifyData && verifyData.available) {
           sync();
-          openCheckout();
+          openCheckout(tab);
         } else {
+          if (tab) tab.close();
           sync();
           if (alertEl) {
             alertEl.textContent = verifyData?.message || 'The selected session is no longer available. Please choose another time or date.';
@@ -1265,7 +1359,7 @@ const icon = (n: string) =>
       } catch (err) {
         // Resilient fallback: if network probe times out, allow proceeding to Rezdy hosted checkout
         sync();
-        openCheckout();
+        openCheckout(tab);
       }
     });
     sync();

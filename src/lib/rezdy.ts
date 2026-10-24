@@ -129,7 +129,7 @@ function pad(n: number) { return String(n).padStart(2, '0'); }
 function ymd(d: Date) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
 function mockSessionsForProduct(def: RezdyProductDef) {
-  const out = [];
+  const out: { id: string; date: string; time: string; seatsAvailable: number }[] = [];
   const today = new Date();
   const times = def.isAllDay ? ['00:00'] : ['09:30', '11:00', '13:00', '14:30'];
 
@@ -581,6 +581,25 @@ export interface FetchAuthoritativeOptions {
  * If Rezdy API returns 404 / no order found, any spurious in-memory record is purged,
  * ensuring forged webhooks cannot poison the status.
  */
+/**
+ * Degraded fallback when Rezdy cannot be reached (no key, 5xx, network).
+ * Only TERMINAL statuses (CONFIRMED, CANCELLED) may be served from cache: they do not change on
+ * their own. An expired in-progress status (PROCESSING, PENDING_*) is exactly what needs
+ * re-verification, so serving it would pin the visitor to a stale state; report the failure and
+ * let the confirmation page keep polling instead.
+ */
+function degradedFallback(existing: AuthoritativeBookingRecord | null | undefined, reason: string): FetchBookingResult | null {
+  if (!existing) return null;
+  // 'CANCELED' (US spelling) is accepted defensively in case Rezdy returns it unnormalised.
+  const st = existing.status as string;
+  const terminal = st === 'CONFIRMED' || st === 'CANCELLED' || st === 'CANCELED';
+  if (terminal) {
+    console.warn(`[Rezdy] ${reason} for ${existing.orderNumber}; using cached ${existing.status} record as degraded fallback`);
+    return { success: true, record: existing };
+  }
+  return { success: false, error: `Booking status could not be re-verified (${reason}).` };
+}
+
 export async function fetchAuthoritativeBooking(
   orderNumber: string,
   options?: FetchAuthoritativeOptions
@@ -597,7 +616,7 @@ export async function fetchAuthoritativeBooking(
     let ttlMs = 0;
     if (existing.status === 'CONFIRMED') {
       ttlMs = options?.maxAgeMs ?? 30_000;
-    } else if (existing.status === 'CANCELLED' || existing.status === 'CANCELED') {
+    } else if (existing.status === 'CANCELLED' || (existing.status as string) === 'CANCELED') {
       ttlMs = options?.maxAgeMs ?? 60_000;
     } else {
       // PROCESSING, PENDING_SUPPLIER, PENDING_CUSTOMER, UNKNOWN
@@ -631,7 +650,8 @@ export async function fetchAuthoritativeBooking(
 
   const apiKey = process.env.REZDY_API_KEY;
   if (!apiKey) {
-    if (existing) return { success: true, record: existing };
+    const fallback = degradedFallback(existing, 'Rezdy API key not configured');
+    if (fallback) return fallback;
     if (cleanKey === 'R11NS1R') {
       const mockRecord = normalizeRezdyBooking({
         orderNumber: cleanKey,
@@ -680,10 +700,8 @@ export async function fetchAuthoritativeBooking(
     }
 
     // If Rezdy returned a 5xx server error, fall back to cached record only if available as degraded service
-    if (existing) {
-      console.warn(`[Rezdy] Upstream ${res.status} for ${cleanKey}; using cached record as degraded fallback`);
-      return { success: true, record: existing };
-    }
+    const upstreamFallback = degradedFallback(existing, `Rezdy upstream HTTP ${res.status}`);
+    if (upstreamFallback) return upstreamFallback;
 
     return {
       success: false,
@@ -691,10 +709,8 @@ export async function fetchAuthoritativeBooking(
     };
   } catch (err: any) {
     // Network/fetch exception: use cached record only if available as degraded fallback
-    if (existing) {
-      console.warn(`[Rezdy] Network exception for ${cleanKey}; using cached record as degraded fallback:`, err.message);
-      return { success: true, record: existing };
-    }
+    const networkFallback = degradedFallback(existing, `network error: ${err?.message ?? 'unknown'}`);
+    if (networkFallback) return networkFallback;
     console.warn(`[Rezdy] Failed to fetch authoritative booking for ${cleanKey}:`, err.message);
     return {
       success: false,
