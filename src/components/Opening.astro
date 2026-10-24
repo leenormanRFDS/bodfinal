@@ -110,7 +110,7 @@ const cfg = JSON.stringify({
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
   /* ---------- gate ---------- */
-  .opening__gate { position: absolute; inset: 0; z-index: 3; padding: 0 clamp(20px, 5vw, 48px); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .opening__gate { position: absolute; inset: 0; z-index: 4; padding: 0 clamp(20px, 5vw, 48px); display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .opening__gate > * { max-width: 640px; }
   .opening__gate[hidden] { display: none; }
   .opening__gate-title { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.7rem, 4.4vw, 2.8rem); line-height: 1.2; color: var(--bone); margin: 0 0 14px; }
@@ -129,7 +129,7 @@ const cfg = JSON.stringify({
   .opening__gate-note { color: var(--bone-mute); letter-spacing: 0.16em; margin: 0; }
 
   /* ---------- silent path beats ---------- */
-  .opening__stage { position: relative; z-index: 3; padding: 0 clamp(20px, 5vw, 48px); max-width: 940px; display: grid; }
+  .opening__stage { position: relative; z-index: 3; padding: 0 clamp(20px, 5vw, 48px); max-width: 940px; display: grid; pointer-events: none; }
   .opening__stage > * { grid-area: 1 / 1; align-self: center; }
 
   .opening__beat { opacity: 0; visibility: hidden; }
