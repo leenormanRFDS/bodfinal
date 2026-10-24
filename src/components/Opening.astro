@@ -6,8 +6,8 @@
 // bombs, then the next morning's newspaper.
 //
 // Two paths, one visual language:
-//   SOUND  — a black screen and one 59 s soundscape (city, radio, engines, hard cut, heartbeat,
-//            the paper on the porch). Only the two voice lines are captioned. The whole timeline
+//   SOUND  — a black screen and one 44 s soundscape (city, radio, engines closing in, hard cut,
+//            then foley as the paper lands on the porch). Only the two voice lines are captioned. The whole timeline
 //            is slaved to audio.currentTime, so it cannot drift.
 //   SILENT — the typed-transmission sequence (compressed), the newspaper, the monument.
 //
@@ -20,14 +20,16 @@ import { OPENING } from '../consts';
 const MESSAGE = 'An unusually large air formation bearing south, heading south, observed over Bathurst Island.';
 const VOICE_2 = 'It’s probably just the P-40s returning to base.';
 
-// Cue times in seconds on the master soundscape (measured from the mix, 25 Oct 2026):
-// voice 1 speech 10.1–15.5; voice 2 16.5–19.3; hard cut 43.36; heartbeat 45.0–51.0;
-// porch bed from 51.1 with the paper landing at 51.8 (video lands 0.55 s in, so it starts 51.25).
+// Cue times in seconds on the master soundscape (44.05 s; measured from the 25 Oct 2026 09:23 mix):
+// voice 1 speech 10.1–17.0; voice 2 17.9–20.5; engines 21 → cut at 29.845 (digital silence to ~29.9);
+// foley fades in from 30.0 with the paper's first impact at 30.85. The video's own first impact is
+// 0.23 s in (confirmed by cross-correlating its audio with the master: best alignment 30.62), so it
+// starts at 30.62. Audio ends 44.05; the monument holds to 45.4.
 const CUES = {
   sound: {
-    cap1: [10.1, 15.9], cap2: [16.5, 19.8],
-    paper: 51.25, paperOut: 56.3,
-    rec2: 56.9, end: 60.6,
+    cap1: [10.1, 17.4], cap2: [17.8, 21.0],
+    paper: 30.62, paperOut: 37.2,
+    rec2: 38.4, end: 45.4,
   },
 };
 
@@ -369,7 +371,7 @@ const cfg = JSON.stringify({
           setTimeout(loadVideo, 1500); // fetch the paper while the engines build
           const tick = () => {
             if (done) return;
-            const t = a.ended ? (a.duration || 59.02) + (performance.now() - endedAt) / 1000 : a.currentTime;
+            const t = a.ended ? (a.duration || 44.05) + (performance.now() - endedAt) / 1000 : a.currentTime;
             lastT = t;
             tl!.time(t);
             progress.style.transform = `scaleX(${Math.min(1, t / C.end)})`;
