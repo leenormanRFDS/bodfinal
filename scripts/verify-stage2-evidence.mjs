@@ -305,7 +305,8 @@ assert(spatialEngineCode.includes('© OpenStreetMap contributors') && spatialEng
 assert(!spatialEngineCode.includes('© CARTO'), 'SpatialEngine footer does not credit a provider that is no longer used');
 
 const astroConfigCode = fs.readFileSync(path.join(root, 'astro.config.mjs'), 'utf8');
-assert(!astroConfigCode.includes('PUBLIC_CARTO_BASEMAP_KEY') && !astroConfigCode.includes('vite:'), 'astro.config.mjs does NOT use vite.define (uses standard Astro import.meta.env.PUBLIC_* mechanism)');
+// Intent: no secrets/keys injected through vite.define. A `vite:` block for plugins (client chunking) is allowed.
+assert(!astroConfigCode.includes('PUBLIC_CARTO_BASEMAP_KEY') && !/\bdefine\s*:/.test(astroConfigCode), 'astro.config.mjs does NOT use vite.define (uses standard Astro import.meta.env.PUBLIC_* mechanism)');
 
 const spatialDoc = fs.readFileSync(path.join(root, 'docs/SPATIAL_ENGINE.md'), 'utf8');
 assert(spatialDoc.includes('Why CARTO was removed') && spatialDoc.includes('Do NOT introduce MapLibre'), 'docs/SPATIAL_ENGINE.md records the basemap decision and preserves the single-engine policy');

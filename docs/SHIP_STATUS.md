@@ -246,9 +246,18 @@ Rezdy in a new tab with the waiting panel; availability-failure path. **Owner iP
 25 Oct (reached Rezdy's booking form in its own tab). NOT verified: a real completed booking → our
 confirmation page + GA4 purchase (needs the merge to production + domain move, then one real booking).
 
-Finding (not changed): Rezdy's thank-you page already loads Google Ads `AW-17121250128` but only
-`gtag('config', ...)` — no `conversion` event with a send_to label — so Google Ads likely records no
-booking conversions from Rezdy. Owner to confirm the Ads conversion action/label before adding it.
+Finding (not changed): Rezdy's thank-you page loads Google Ads `AW-17121250128` with only
+`gtag('config', ...)` — no conversion event. That tag belongs to the **cancelled** Ads account
+"RFDS Darwin Tourist Facility" (359-238-9847; action "RFDS Ticket Purchase", label
+`voFKCNTPwYgbENCWhuQ_`, status Inactive). The "The Bombing of Darwin" Ads account (544-…) is still
+in first-campaign setup: no campaigns, no payment. → No Ads conversion line added (it would report
+into a cancelled account). Recommendation when BoD ads launch: import the GA4 `purchase` event
+(now sent by the site) as the Ads conversion, rather than a Rezdy-side Ads tag.
+
+Correction (25 Oct): `verify-stage2-evidence` failed (123/124) from `386eaaa` onward — its check
+rejected any `vite:` key in astro.config.mjs, not just `vite.define`. The site-pass checkpoint's
+"all suites pass" was run before that config change. Check narrowed to its intent (`define:` /
+CARTO key); 124/124.
 
 ## Outstanding defects (logged, not yet addressed)
 
