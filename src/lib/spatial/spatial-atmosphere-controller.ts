@@ -56,30 +56,20 @@ export class SpatialAtmosphereController {
     const globe = scene.globe;
     const Cesium = this.Cesium;
 
-    // Base scene void styling: Deep charcoal background
-    scene.backgroundColor = Cesium.Color.fromCssColorString('#07090B');
-    globe.baseColor = Cesium.Color.fromCssColorString('#0E1217');
+    // Background and globe base colours are owned by CartographyManager (they must equal the
+    // basemap's water colour so the edge of tile coverage is invisible). Not set here.
 
-    // Enable directional astronomical sunlight from Cesium's solar ephemeris
+    // Sun as the scene light: shades 3D models (A6M2 Zero) by the beat's historical sun position.
+    // The globe itself stays unlit: the authored basemap carries its own tonal hierarchy, and
+    // globe lighting / ground atmosphere produced grey haze wedges at high-altitude beats (08:00).
     try {
       this.sunLight = new Cesium.SunLight();
       scene.light = this.sunLight;
-      globe.enableLighting = true;
     } catch (err) {
       console.warn('[SpatialAtmosphereController] SunLight initialization fallback:', err);
-      globe.enableLighting = false;
     }
-
-    // Dynamic ground atmosphere enabled with sunlight coupling
-    globe.showGroundAtmosphere = true;
-    try {
-      if ((globe as any).dynamicAtmosphereLightingType !== undefined) {
-        (globe as any).dynamicAtmosphereLighting = true;
-        (globe as any).dynamicAtmosphereLightingType = (Cesium as any).DynamicAtmosphereLightingType?.SUNLIGHT ?? 1;
-      }
-    } catch {
-      // Dynamic lighting type fallback
-    }
+    globe.enableLighting = false;
+    globe.showGroundAtmosphere = false;
 
     // SkyAtmosphere tuning for restrained Northern Australian tropical marine horizon
     // The sky atmosphere stays OFF (CartographyManager's quiet scene): at high-altitude beats it
