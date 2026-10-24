@@ -14,7 +14,8 @@
 
 <style>
   .cw { border-block: 1px solid var(--line); background: rgba(0, 0, 0, 0.25); }
-  .cw__inner { padding: 22px 0; max-width: 74ch; }
+  /* padding-block only: the .container side gutter must survive (text touched the screen edge on phones) */
+  .cw__inner { padding-block: 22px; max-width: 74ch; }
   .cw__label { color: var(--gold); margin: 0 0 6px; font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 300; }
   .cw__body { font-family: var(--font-sans); font-size: 0.96rem; line-height: 1.6; color: var(--bone-dim); margin: 0; font-style: normal; font-weight: 300; }
 </style>

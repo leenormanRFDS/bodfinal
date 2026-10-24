@@ -137,9 +137,17 @@ export const CONTACT = {
   email: 'rfdsdarwin@flyingdoctor.net',
 };
 
-// Google Analytics 4 — the tag itself lives in components/Analytics.astro
-// (kept here for reference). Property ID is for the GA4 admin, not the tag.
+// Measurement & advertising tags — loaded by components/Analytics.astro, events sent via
+// src/lib/tracking.ts. Tags only run on the production hostnames below, so previews,
+// *.vercel.app and localhost never pollute GA4 or the Meta dataset.
 export const ANALYTICS = {
   ga4MeasurementId: 'G-MQ9641V0NY',
-  ga4PropertyId: '545435638',
+  ga4PropertyId: '545435638', // GA4 admin reference only
+  // Dedicated "Bombing of Darwin" Meta dataset (pixel). null = Meta not loaded.
+  // Do not use the shared RFDS pixel 773978734609862: Meta has flagged it as serving
+  // health-related sites, which restricts optimisation.
+  metaPixelId: null as string | null,
+  // Google Tag Manager container. null = GA4 loads directly (lighter). See SHIP_STATUS.
+  gtmContainerId: null as string | null,
+  productionHosts: ['thebombingofdarwin.com.au', 'www.thebombingofdarwin.com.au'],
 };

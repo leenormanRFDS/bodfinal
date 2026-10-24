@@ -632,6 +632,7 @@ import PageHeader from '../../components/PageHeader.astro';
 
 <script>
   import { bindTranslations } from '../../i18n/client';
+  import { trackPurchase } from '../../lib/tracking';
 
   // Authoritative status resolution logic.
   // Polling bounded to 8 attempts (every 2.5s -> max 20s).
@@ -705,6 +706,16 @@ import PageHeader from '../../components/PageHeader.astro';
 
     // Custom window event for listener integrations
     window.dispatchEvent(new CustomEvent('bod:booking_confirmed', { detail: payload }));
+
+    // GA4 purchase + Meta Purchase (once per order per browser; see src/lib/tracking.ts)
+    trackPurchase({
+      orderNumber: data.orderNumber,
+      productSlug: payload.productSlug,
+      productName: data.productName || 'The Bombing of Darwin Experience',
+      value: Number(payload.value) || 0,
+      currency: payload.currency,
+      quantity: Number(payload.ticketCount) || 1,
+    });
   }
 
   let verifiedBookingData: any = null;

@@ -781,6 +781,7 @@ const icon = (n: string) =>
 
 <script>
   import { t, bindTranslations } from '../i18n/client';
+  import { trackBeginCheckout } from '../lib/tracking';
 
   const root = document.querySelector<HTMLElement>('[data-booking]');
   if (root) {
@@ -1188,6 +1189,15 @@ const icon = (n: string) =>
         const timeStr = state.allDay ? 'Flexible Entry' : (state.session ? state.session.time : '');
         descEl.textContent = `${state.date || ''} ${timeStr ? '· ' + timeStr : ''} · Royal Flying Doctor Service`;
       }
+
+      trackBeginCheckout({
+        productSlug: state.pkg.slug,
+        productName: state.pkg.name,
+        value: total(),
+        items: state.pkg.tiers
+          .filter((t: any) => state.qty[t.code])
+          .map((t: any) => ({ item_id: state.pkg.slug, item_name: state.pkg.name, item_variant: t.label, price: t.price, quantity: state.qty[t.code] })),
+      });
 
       modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false');
       document.body.classList.add('co-open');

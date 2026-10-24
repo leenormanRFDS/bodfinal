@@ -5,7 +5,7 @@ import { SITE } from '../consts';
   <div class="whero__grid container">
     <div class="whero__void">
       <p class="record whero__rec">19 February 1942 — 09:58 (Darwin Local Time)</p>
-      <img class="whero__logo" src="/brand/logo-1942.svg" alt={SITE.name} width="820" height="260" fetchpriority="high" />
+      <img class="whero__logo" src="/brand/logo-1942-820.webp" srcset="/brand/logo-1942-820.webp 820w, /brand/logo-1942-1640.webp 1640w" sizes="(min-width: 980px) 820px, 92vw" alt={SITE.name} width="820" height="259" fetchpriority="high" decoding="async" />
       <h1 class="whero__tagline">WW2 Happened Here</h1>
       <p class="whero__lede">
         The same wharf. The same sky. Draw back the morning of <em>19 February 1942</em> —
@@ -20,10 +20,10 @@ import { SITE } from '../consts';
     <figure class="whero__window" data-reveal-window>
       <div class="rv" data-rv>
         <!-- Present day (base) -->
-        <img class="rv__img" src="/images/hero/then-now.webp" alt="A family walks toward the visitor pavilion on Stokes Hill Wharf today" width="1500" height="1898" loading="eager" fetchpriority="high" decoding="async" />
+        <img class="rv__img" src="/images/hero/then-now-1000.webp" srcset="/images/hero/then-now-1000.webp 1000w, /images/hero/then-now.webp 1500w" sizes="(min-width: 980px) 52vw, 100vw" alt="A family walks toward the visitor pavilion on Stokes Hill Wharf today" width="1500" height="1898" loading="eager" fetchpriority="high" decoding="async" />
         <!-- 1942 (clipped reveal) -->
         <div class="rv__then" data-then>
-          <img class="rv__img" src="/images/hero/then-1942.webp" alt="The same wharf on 19 February 1942, under attack" width="1500" height="1898" loading="eager" fetchpriority="high" decoding="async" />
+          <img class="rv__img" src="/images/hero/then-1942-1000.webp" srcset="/images/hero/then-1942-1000.webp 1000w, /images/hero/then-1942.webp 1500w" sizes="(min-width: 980px) 52vw, 100vw" alt="The same wharf on 19 February 1942, under attack" width="1500" height="1898" loading="eager" fetchpriority="high" decoding="async" />
         </div>
 
         <div class="rv__bar" data-bar aria-hidden="true">
@@ -101,11 +101,12 @@ import { SITE } from '../consts';
   .rv__range::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 100%; }
 
   .whero__window .tk { position: absolute; width: 15px; height: 15px; border: 1px solid var(--bone); opacity: 0.55; z-index: 7; pointer-events: none; }
-  .tk.tl { top: 9px; left: 9px; border-right: 0; border-bottom: 0; }
-  .tk.tr { top: 9px; right: 9px; border-left: 0; border-bottom: 0; }
-  .tk.bl { bottom: 9px; left: 9px; border-right: 0; border-top: 0; }
-  .tk.br { bottom: 9px; right: 9px; border-left: 0; border-top: 0; }
-  .whero__plate { position: absolute; bottom: 12px; left: 15px; z-index: 7; color: var(--bone-dim); font-size: 0.66rem; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.85); pointer-events: none; }
+  .whero__window .tk.tl { top: 9px; left: 9px; border-right: 0; border-bottom: 0; }
+  .whero__window .tk.tr { top: 9px; right: 9px; border-left: 0; border-bottom: 0; }
+  .whero__window .tk.bl { bottom: 9px; left: 9px; border-right: 0; border-top: 0; }
+  .whero__window .tk.br { bottom: 9px; right: 9px; border-left: 0; border-top: 0; }
+  /* starts after the bottom-left bracket (9px inset + 15px) so the two never overlap */
+  .whero__plate { position: absolute; bottom: 9px; left: 32px; right: 32px; line-height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 7; color: var(--bone); font-size: 0.66rem; text-shadow: 0 0 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.9), 0 1px 14px rgba(0, 0, 0, 0.8); pointer-events: none; }
 
   /* Mobile hierarchy: LOGO · TAGLINE · SLIDER · COPY · CTA+badge.
      The void becomes display:contents so its children + the window share one

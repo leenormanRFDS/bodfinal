@@ -22,6 +22,7 @@ const timeline = beatsData.beats.map((beat, idx) => ({
   d: beat.description,
   evidence: BEAT_EVIDENCE_MAP[idx] || null,
 }));
+import TvWitness from '../components/TvWitness.astro';
 ---
 <Base title="The Story — 19 February 1942" description="A chronological account of the first attacks on the Australian mainland — before the town's air-raid sirens could sound." depth="descent">
   <!-- Intro — a full screen of silence -->
@@ -146,20 +147,13 @@ const timeline = beatsData.beats.map((beat, idx) => ({
     </div>
   </section>
 
-  <!-- Archival footage -->
+  <!-- The Witness — archival footage on a period television -->
   <section class="s-film">
     <div class="container">
-      <p class="eyebrow" data-reveal>Archival footage</p>
+      <p class="eyebrow" data-reveal>The Witness · archival footage</p>
       <h2 class="s-film__h" data-reveal>See it for yourself.</h2>
-      <div class="film" data-reveal>
-        <div class="film__screen">
-          <button class="film__player" data-yt="inqvsMqvrrE" aria-label="Play archival footage of the Bombing of Darwin">
-            <img class="film__poster" src="https://i.ytimg.com/vi/inqvsMqvrrE/maxresdefault.jpg" alt="" loading="lazy" decoding="async" width="1280" height="720" />
-            <span class="film__scrim"></span>
-            <span class="film__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.2v13.6L19 12z" /></svg></span>
-            <span class="tk tl"></span><span class="tk tr"></span><span class="tk bl"></span><span class="tk br"></span>
-          </button>
-        </div>
+      <div data-reveal>
+        <TvWitness youtubeId="inqvsMqvrrE" title="Archival footage — the Bombing of Darwin" caption="Archival footage · 19 February 1942" />
       </div>
     </div>
   </section>
@@ -623,39 +617,6 @@ const timeline = beatsData.beats.map((beat, idx) => ({
   /* ---------- archival footage ---------- */
   .s-film { padding-block: clamp(60px, 10vh, 130px); border-top: 1px solid var(--line); }
   .s-film__h { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.8rem, 4vw, 3rem); color: var(--bone); margin: 14px 0 clamp(28px, 4vw, 44px); letter-spacing: 0.01em; }
-  .film { position: relative; width: 100%; }
-  .film__screen {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: var(--ink);
-    border: 1px solid var(--line-strong);
-    overflow: hidden;
-  }
-  .film__player {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    padding: 0;
-  }
-  .film__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.55) contrast(1.05); transition: filter 0.5s var(--ease), transform 0.6s var(--ease); }
-  .film__player:hover .film__poster { filter: grayscale(0.15) contrast(1.05); transform: scale(1.02); }
-  .film__scrim { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(12,12,11,0.15) 0%, rgba(12,12,11,0.6) 100%); }
-  .film__play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(66px, 8vw, 92px); height: clamp(66px, 8vw, 92px); border-radius: 50%; display: grid; place-items: center; background: rgba(12,12,11,0.55); border: 1px solid rgba(236,231,219,0.6); backdrop-filter: blur(6px); color: var(--bone); transition: background 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease); }
-  .film__play svg { width: 40%; height: 40%; margin-left: 8%; }
-  .film__player:hover .film__play { background: var(--gold); border-color: var(--gold); color: var(--ink); transform: translate(-50%, -50%) scale(1.06); }
-  .film__iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: var(--ink); }
-  .film .tk { position: absolute; width: 15px; height: 15px; border: 1px solid var(--bone); opacity: 0.5; z-index: 3; pointer-events: none; }
-  .film .tk.tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
-  .film .tk.tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
-  .film .tk.bl { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
-  .film .tk.br { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
-  .film iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
   /* ---------- the clock ---------- */
   .s-clock {
@@ -735,21 +696,6 @@ const timeline = beatsData.beats.map((beat, idx) => ({
       { rootMargin: '0px 0px -30% 0px', threshold: 0.1 }
     );
     items.forEach((i) => io.observe(i));
-  }
-
-  // Archival footage: swap the poster for the YouTube player only on click (fast first paint)
-  const player = document.querySelector<HTMLButtonElement>('[data-yt]');
-  if (player) {
-    player.addEventListener('click', () => {
-      const id = player.dataset.yt;
-      const iframe = document.createElement('iframe');
-      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
-      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-      iframe.allowFullscreen = true;
-      iframe.title = 'Archival footage — the Bombing of Darwin';
-      iframe.className = 'film__iframe';
-      player.replaceWith(iframe);
-    });
   }
 
   // The morning's clock + the 09:58 moment.

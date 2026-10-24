@@ -1,21 +1,54 @@
 ---
-// The period television as artefact — static, its screen a window to the archive.
-// A short montage crossfades through the transparent screen; when the real
-// footage exists, swap the <img> frames for a <video> in .tv__screen.
-const frames = ['frame1', 'frame2', 'frame3'];
+// The Witness — a period television as artefact. Its transparent screen is a window to
+// the archive: either a short image montage (default) or archival film (youtubeId).
+//
+// tv-set.webp has a transparent CRT opening at 15.5% / 22.0% (left/top), 37.2% × 40.9%.
+// The screen layer sits behind the set image and slightly over-covers that opening.
+//
+// Film mode: a poster and play button first (no YouTube cost until pressed). Wide screens
+// play inside the set; on phones the set's screen is ~140 px wide, so the film opens in a
+// full-width player instead.
+interface Props {
+  youtubeId?: string;
+  poster?: string;
+  title?: string;
+  caption?: string;
+  frames?: string[];
+}
+const {
+  youtubeId,
+  poster = youtubeId ? `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg` : undefined,
+  title = 'Archival footage — the Bombing of Darwin',
+  caption = 'Period television · the window to the archive',
+  frames = ['frame1', 'frame2', 'frame3'],
+} = Astro.props;
 ---
-<figure class="tv" data-tv aria-label="A period television showing archival scenes of 19 February 1942">
+<figure class="tv" data-tv data-yt={youtubeId} data-yt-title={title}>
   <div class="tv__set-wrap">
-    <div class="tv__screen" aria-hidden="true">
-      {frames.map((f, i) => (
-        <img class:list={['tv__frame', { 'is-on': i === 0 }]} src={`/images/witness/${f}.webp`} alt="" loading="lazy" decoding="async" />
-      ))}
-      <div class="tv__crt"></div>
+    <div class="tv__screen" data-tv-screen>
+      {youtubeId ? (
+        <button class="tv__play" type="button" data-tv-play aria-label={`Play: ${title}`}>
+          <img class="tv__poster" src={poster} alt="" loading="lazy" decoding="async" width="480" height="360" />
+          <span class="tv__playicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6L19 12z" /></svg></span>
+        </button>
+      ) : (
+        frames.map((f, i) => (
+          <img class:list={['tv__frame', { 'is-on': i === 0 }]} src={`/images/witness/${f}.webp`} alt="" loading="lazy" decoding="async" aria-hidden="true" />
+        ))
+      )}
+      <div class="tv__crt" aria-hidden="true"></div>
     </div>
-    <img class="tv__set" src="/images/witness/tv-set.webp" alt="A period television set" width="1600" height="1160" loading="lazy" decoding="async" />
+    <img
+      class="tv__set"
+      src="/images/witness/tv-set-900.webp"
+      srcset="/images/witness/tv-set-900.webp 900w, /images/witness/tv-set.webp 1600w"
+      sizes="(min-width: 820px) 760px, 92vw"
+      alt="A 1940s wooden television set"
+      width="1600" height="1160" loading="lazy" decoding="async"
+    />
     <div class="tv__shroud" aria-hidden="true"></div>
   </div>
-  <figcaption class="tv__cap record">Period television · the window to the archive</figcaption>
+  {caption && <figcaption class="tv__cap record">{caption}</figcaption>}
 </figure>
 
 <style>
@@ -30,22 +63,19 @@ const frames = ['frame1', 'frame2', 'frame3'];
     background: radial-gradient(circle, rgba(150,170,190,0.16) 0%, rgba(130,115,90,0.08) 34%, transparent 66%);
   }
 
-  /* the shroud — the set falls away into darkness, the screen stays lit */
+  /* the set falls away into darkness; the screen stays lit */
   .tv__shroud {
     position: absolute; inset: 0; z-index: 5; pointer-events: none;
     background: radial-gradient(118% 115% at 34% 42%, transparent 23%, rgba(7,7,6,0.52) 58%, rgba(7,7,6,0.93) 100%);
   }
 
-  /* screen positioned over the transparent hole (15.5% / 22% · 37% × 41%), slightly over-covered */
   .tv__screen {
     position: absolute; left: 14.6%; top: 20.8%; width: 39.2%; height: 43.4%;
     z-index: 1; overflow: hidden; background: #070a0c;
   }
-  .tv__frame {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-    opacity: 0; transition: opacity 1.6s ease;
-  }
+  .tv__frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.6s ease; }
   .tv__frame.is-on { opacity: 1; }
+
   .tv__crt {
     position: absolute; inset: 0; z-index: 2; pointer-events: none;
     background:
@@ -53,9 +83,37 @@ const frames = ['frame1', 'frame2', 'frame3'];
       radial-gradient(120% 120% at 50% 42%, rgba(150,180,200,0.05), transparent 55%),
       radial-gradient(130% 130% at 50% 50%, transparent 52%, rgba(0,0,0,0.5) 100%);
   }
-  .tv__set { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; }
-
+  .tv__set { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; pointer-events: none; }
   .tv__cap { color: var(--bone-mute); }
+
+  /* film mode: poster + play, then the player, all inside the screen */
+  .tv__play { position: absolute; inset: 0; z-index: 1; padding: 0; border: 0; background: none; cursor: pointer; }
+  .tv__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) sepia(0.25) contrast(1.08) brightness(0.85); transition: filter 0.5s var(--ease); }
+  .tv__play:hover .tv__poster, .tv__play:focus-visible .tv__poster { filter: grayscale(0.6) sepia(0.15) contrast(1.05) brightness(0.95); }
+  .tv__playicon {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: clamp(46px, 7vw, 72px); height: clamp(46px, 7vw, 72px); border-radius: 50%;
+    display: grid; place-items: center; color: var(--bone);
+    background: rgba(12,12,11,0.55); border: 1px solid rgba(236,231,219,0.6);
+    transition: background 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease);
+  }
+  .tv__playicon svg { width: 42%; height: 42%; margin-left: 8%; }
+  .tv__play:hover .tv__playicon, .tv__play:focus-visible .tv__playicon { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .tv__play:focus-visible { outline: 2px solid var(--gold); outline-offset: -4px; }
+  :global(.tv__iframe) { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; border: 0; background: #000; }
+  /* while the film plays, nothing may sit over the player's controls */
+  .tv.is-playing .tv__crt, .tv.is-playing .tv__shroud { display: none; }
+  .tv.is-playing .tv__screen { z-index: 6; }
+
+  /* phones: full-width player */
+  :global(.tvx) { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; background: rgba(7,7,6,0.94); }
+  :global(.tvx__frame) { position: relative; width: min(100%, 960px); aspect-ratio: 16 / 9; background: #000; }
+  :global(.tvx__frame iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  :global(.tvx__close) {
+    position: absolute; top: max(12px, env(safe-area-inset-top)); right: 12px; width: 44px; height: 44px;
+    border: 1px solid rgba(236,231,219,0.5); border-radius: 50%; background: rgba(12,12,11,0.7); color: var(--bone);
+    font-size: 1.4rem; line-height: 1; cursor: pointer;
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     .tv__crt { animation: crtFlicker 6s steps(48) infinite; }
@@ -65,10 +123,11 @@ const frames = ['frame1', 'frame2', 'frame3'];
 </style>
 
 <script>
-  const tv = document.querySelector('[data-tv]');
-  if (tv) {
-    const frames = Array.from(tv.querySelectorAll<HTMLElement>('.tv__frame'));
+  document.querySelectorAll<HTMLElement>('[data-tv]').forEach((tv) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Montage mode
+    const frames = Array.from(tv.querySelectorAll<HTMLElement>('.tv__frame'));
     if (!reduce && frames.length > 1) {
       let i = 0;
       setInterval(() => {
@@ -77,5 +136,54 @@ const frames = ['frame1', 'frame2', 'frame3'];
         frames[i].classList.add('is-on');
       }, 4500);
     }
-  }
+
+    // Film mode
+    const id = tv.dataset.yt;
+    const play = tv.querySelector<HTMLButtonElement>('[data-tv-play]');
+    if (!id || !play) return;
+    const title = tv.dataset.ytTitle || 'Archival footage';
+    const makeFrame = () => {
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      f.allowFullscreen = true;
+      f.title = title;
+      return f;
+    };
+    play.addEventListener('click', () => {
+      if (window.matchMedia('(max-width: 719px)').matches) {
+        const shell = document.createElement('div');
+        shell.className = 'tvx';
+        shell.setAttribute('role', 'dialog');
+        shell.setAttribute('aria-modal', 'true');
+        shell.setAttribute('aria-label', title);
+        const box = document.createElement('div');
+        box.className = 'tvx__frame';
+        box.appendChild(makeFrame());
+        const close = document.createElement('button');
+        close.className = 'tvx__close';
+        close.type = 'button';
+        close.setAttribute('aria-label', 'Close film');
+        close.textContent = '×';
+        const shut = () => { shell.remove(); document.removeEventListener('keydown', onKey); play.focus(); };
+        const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') shut(); };
+        close.addEventListener('click', shut);
+        shell.addEventListener('click', (e) => { if (e.target === shell) shut(); });
+        document.addEventListener('keydown', onKey);
+        shell.append(box, close);
+        // astro scoped styles: carry the component's scope attribute onto the injected nodes
+        const scope = Array.from(tv.attributes).find((a) => a.name.startsWith('data-astro-cid'));
+        if (scope) [shell, box, close].forEach((n) => n.setAttribute(scope.name, ''));
+        document.body.appendChild(shell);
+        close.focus();
+        return;
+      }
+      const f = makeFrame();
+      f.className = 'tv__iframe';
+      const scope = Array.from(tv.attributes).find((a) => a.name.startsWith('data-astro-cid'));
+      if (scope) f.setAttribute(scope.name, '');
+      play.replaceWith(f);
+      tv.classList.add('is-playing');
+    });
+  });
 </script>
