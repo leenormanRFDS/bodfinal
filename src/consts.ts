@@ -151,3 +151,15 @@ export const ANALYTICS = {
   gtmContainerId: null as string | null,
   productionHosts: ['thebombingofdarwin.com.au', 'www.thebombingofdarwin.com.au'],
 };
+
+// The opening cinematic (components/Opening.astro). Voices are dramatised re-creations.
+// soundApproved stays false until the owner signs off the recorded voice lines against the
+// logged record (docs/SHIP_STATUS.md, "Opening"). While false, the sound gate is hidden
+// everywhere; add ?opening=sound to a URL to preview the sound path.
+export const OPENING = {
+  soundApproved: false,
+  audio: '/audio/bod-opening.m4a?v=42b21e1e',
+  videoWide: '/video/bod-paper-wide.mp4?v=91d565c3',
+  videoPhone: '/video/bod-paper-phone.mp4?v=c29d4c11',
+  poster: '/images/opening/paper-poster.webp',
+};

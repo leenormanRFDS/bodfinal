@@ -60,3 +60,11 @@ export function trackPurchase(p: {
     }, { eventID: p.orderNumber });
   } catch { /* never block the confirmation page */ }
 }
+
+/**
+ * Opening cinematic engagement (GA4 only). mode: 'sound' | 'silent'.
+ *   opening_start / opening_skip (at_s = seconds in) / opening_complete / opening_audio_fallback
+ */
+export function trackOpening(name: 'opening_start' | 'opening_skip' | 'opening_complete' | 'opening_audio_fallback', params: Record<string, string | number> = {}): void {
+  try { gtag('event', name, params); } catch { /* never block the page */ }
+}

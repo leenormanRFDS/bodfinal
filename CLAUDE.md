@@ -68,3 +68,8 @@ meaningful checkpoint. Do not create parallel status/plan documents.
   data saver, ≤1 GB devices, or `?map=static`. `?map=live` forces live.
 - Visual QA means looking at rendered captures. A passing string-match test or HTTP 200 is not
   visual acceptance.
+- Opening cinematic (`src/components/Opening.astro`): sound is gated by `OPENING.soundApproved` in `src/consts.ts`
+  (false until the voice lines are approved against the record); `?opening=sound` previews, `?opening=silent` forces
+  the silent path. Assets are rebuilt with `scripts/encode-opening-assets.sh`; cue times live in `CUES` and were
+  measured from the master, so re-measure them if the mix changes. Voices are dramatised re-creations — never
+  present them as archival audio.

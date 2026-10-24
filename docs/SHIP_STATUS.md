@@ -4,8 +4,8 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 
 | Field | Value |
 |---|---|
-| Current milestone | **M4/M5 site pass — speed, unused files, TV witness, tracking** (on `dev/site-pass`, awaiting owner review) |
-| Working branch | `dev/site-pass` (from `dev/spatial-engine` @ `65b71e5`). Previous: `dev/spatial-engine`. |
+| Current milestone | **Opening cinematic — sound first** (`dev/opening`, built; blocked on the voice-line decision) |
+| Working branch | `dev/opening` (from `dev/ticketing` @ `aaf9829`). Previous: `dev/site-pass`, `dev/spatial-engine`. |
 | Production | `main` @ `8b7c2d9` (site pass + ticketing), deployed 25 Oct 2026 07:28 ACDT on owner approval. Previous: `6b3a387`. Custom domain still on old project (move pending, owner). |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
 | Updated | 25 Oct 2026 (site pass) |
@@ -274,6 +274,28 @@ Correction (25 Oct): `verify-stage2-evidence` failed (123/124) from `386eaaa` on
 rejected any `vite:` key in astro.config.mjs, not just `vite.define`. The site-pass checkpoint's
 "all suites pass" was run before that config change. Check narrowed to its intent (`define:` /
 CARTO key); 124/124.
+
+## Checkpoint 25 Oct 2026 (e) — the opening cinematic: sound first (`dev/opening`, from `dev/ticketing`)
+
+Owner brief: replace the silent title sequence with a sound-first opening (calm tropical morning → the radio transmission → the dismissal → engines closing in → hard cut to black → heartbeat), ending on the newspaper video (`BOD_paper.mp4`) and the "WW2 Happened Here" monument. Owner supplied `bod1.mp3`, `bod2.mp3`, the 59.0 s soundscape master and the paper video; newspaper plays at the end of the intro.
+
+**Built (`src/components/Opening.astro`, `src/consts.ts` OPENING, `src/lib/tracking.ts` `trackOpening`):**
+- Sound gate ("Headphones recommended" · Enter with sound / Enter silently): browsers only start audio on a tap. Gate states "Voices are re-created from the written record."
+- SOUND path: black screen; one master `/audio/bod-opening.m4a` (AAC 112 k, 817 KB, -1.5 dB so encode cannot clip; -15.8 LUFS, peak -1.7 dBFS). The whole timeline is slaved to `audio.currentTime`, so it cannot drift; pauses with the tab; hairline progress; Mute and Skip (audio fades 0.4 s; iOS ignores volume and stops at once). Only the two voice lines are captioned.
+- Cues measured from the mix: voice 1 10.1–15.5 s; voice 2 16.5–19.3 s; hard cut 43.36 s then digital silence (a −50 dB blip at 43.74 s is inaudible); heartbeat first beat 44.99 s, last 50.97 s (lub-dub pairs, accelerating); porch bed from 51.1 s with a transient at 51.79 s. Paper video starts 51.25 s (it lands 0.55 s into the clip); monument 56.9 s; leaves 60.6 s.
+- SILENT path: the original typed transmission, compressed, plus the paper (silent) and the monument; about 24 s; tap or Skip to leave. Also used if audio is blocked, errors, or fails to start in 10 s (GA4 `opening_audio_fallback`).
+- Paper video: `bod-paper-wide.mp4` 1.16 MB (1920×820) and `bod-paper-phone.mp4` 0.56 MB (1500×940 crop framed on the paper, so the headline stays legible at 390 px; chosen by `max-aspect-ratio: 1/1`). Source was 11.4 MB. If the video has not arrived when its cue passes the paper is skipped, never an empty porch. Fetched ~1.5 s after the sound starts, so nothing competes with the hero.
+- Keyboard: Esc skips (previously any key). Dialog semantics added. GA4: `opening_start` / `opening_skip` (`at_s`) / `opening_complete` / `opening_audio_fallback`, each with `mode`.
+- `scripts/encode-opening-assets.sh` rebuilds all four assets from the masters.
+
+**Verified (headless Chromium, real clock, 1440×900 and 390×844; `qa-captures/opening/`):**
+- Default (no gate) → silent path starts immediately, completes in 24 s, `opening_start` + `opening_complete`, 0 console errors.
+- `?opening=sound` → gate centred (fixed: it was sharing the flex row with the stage), tap starts audio, captions at 12 s and 18 s, black from 30 s, paper at 52–58 s, monument at 60 s, overlay gone at ~62 s, 0 console errors; phone variant loads the phone crop. `npm run build` OK; Cesium still not in any static import graph (only zip-reader). `verify-truth-narrative.mjs` passes.
+- NOT verified: actual audible output (headless has no sound device; levels were measured, not heard), real iPhone/Android autoplay behaviour, sync as heard (cue times are from the file; the paper-landing offset 51.25 s is derived from the 51.79 s transient and should be checked by ear).
+
+**BLOCKER for release — voice line vs the record (TRUTH):** a speech check of `bod1.mp3` (and of the master at 10.1–15.5 s) hears "there's an unusually large air formation bearing **down on us from the northeast**" (opening "Ah/Uh"). The logged transmission in canon / `verify-truth-narrative.mjs` is "An unusually large air formation bearing south, heading south, observed over Bathurst Island." and the check specifically rejects an earlier "bearing down on us from the north-west" paraphrase. The caption uses the logged wording, so it does not match the audio. `OPENING.soundApproved = false` keeps the gate off everywhere (`?opening=sound` previews it) until the owner either re-records line 1 with the logged words and re-bounces the master, or explicitly approves the dramatisation. `bod2` ("It's probably just the P-40s returning to base") fits the documented dismissal. Recorded voices are dramatised; the gate and the first caption say so.
+
+**Open items / owner:** (1) re-record line 1 or approve; (2) provenance of the newspaper clip: it reads as a Courier-Mail front page dated Friday 20 Feb 1942 — confirm it is a genuine page (Trove) or label it a reconstruction (text such as "93 Enemy Planes in First Swoop" is legible); (3) confirm rights for the voices and ambience; (4) "Replay the opening" link not built; plays once per session as before.
 
 ## Outstanding defects (logged, not yet addressed)
 
