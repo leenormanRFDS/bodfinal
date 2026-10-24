@@ -161,6 +161,13 @@ Owner wrote "Post & Telegram Office"; the label keeps the historical name "Post 
   `src/pages/api/*`, `BookingForm.astro`). `test-serverless-hardening` 18/19 — same pre-existing
   failure as on `a7f6c95` (In-Progress TTL Revalidation, M3), not introduced by this release.
 
+- Deployed: `dpl_9XueCRV5G9e8njfW2eQN8wFNUDC3` (commit `6b3a387`), READY, aliased to
+  `bombingofdarwinexperience.vercel.app` (no custom domain attached to the Vercel project).
+  Rollback candidate: `dpl_9P7aFxBX7chfrL1mrTEAVyT6ndtM` (`a7f6c95`).
+- Post-deploy smoke test: `/story` renders all eight beats; poster served `immutable`; `/api/products`
+  returns live Rezdy products (Family Pass $90 = 2 adults + 3 children, 5 seats); `/tickets` renders
+  all four products; `/book` redirects to `/tickets` as before. Real-device / iOS Safari check by owner.
+
 ## Outstanding defects (logged, not yet addressed)
 
 - **M3 / commerce:** `test-serverless-hardening.ts` 18/19 on both `main` and branch — "In-Progress TTL Revalidation" fails. The AI Studio report claims this was fixed; the fix is not in the repository. Its other claimed fixes (`.env.example`, dual adapter, Cesium asset move, Post Office label) are also absent from `main`.
