@@ -16,7 +16,7 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 |---|---|---|
 | M1 | Spatial Engine and Cartography | In verification |
 | M2 | Historical Story, Camera Choreography and Evidence | In progress — all 8 beats framed; formations; Evidence Ledger affordance outstanding |
-| M3 | Ticketing and Rezdy Verification | Not started — blocked on staging credentials for live checks |
+| M3 | Ticketing and Rezdy Verification | In progress on `dev/ticketing` — code fixes done; Rezdy thank-you snippet and real-device test pending owner |
 | M4 | Site-wide UX/UI and Responsive Completion | Started — site pass on `dev/site-pass` |
 | M5 | Performance, Accessibility and Regression QA | Started — spatial load path; site-wide page weight (site pass) |
 | M6 | Production Release Candidate | Not started |
@@ -216,13 +216,40 @@ Verification: all governance suites pass (formations 31/31, resilience 26/26, ev
 cartography 33/33, ledger 78/78, scroll lifecycle 32/32, truth/narrative); `npm run build` passes;
 tsc error count unchanged (31, pre-existing). Captures: `qa-captures/pass*`, `qa-captures/perf/*`.
 
+## Checkpoint 25 Oct 2026 (d) — M3 ticketing audit (`dev/ticketing`, from `dev/site-pass`)
+
+Findings (verified against the live Rezdy product page in the owner's Chrome, view only, nothing submitted):
+1. **Rezdy ignores quantities passed by link.** `adult=`, `child=`, `family=` and Rezdy's own
+   `ItemQuantity[433258][n][quantity]` params are not applied (Adult stays at default 1, others 0).
+   `date=` IS honoured. Visitors re-enter tickets in Rezdy. Rezdy documents no prefill parameters.
+   → Checkout now shows a reminder bar: "In checkout, choose 1 × Family Pass · Tue 28 Oct · 10:00".
+2. **Safari / iOS:** Rezdy's own help article ("Cross-Site Tracking Prevention on iOS/Mac OS") says
+   its embedded booking is impacted by Safari's default tracking prevention; its only advice is for
+   guests to disable it. → Apple devices now open Rezdy in its own tab (opened within the tap; falls
+   back to same tab if blocked). `?checkout=tab` forces this path. Real iPhone test by owner pending.
+3. **Purchase tracking depends on a Rezdy setting.** Rezdy has no redirect-after-booking parameter;
+   `redirectUrl`/`returnUrl` are not documented. Rezdy runs custom code on its thank-you page
+   (Integrations › Custom Conversion Tracking, `###ORDER_NUMBER###`). Snippet prepared in
+   `docs/evidence/rezdy-thankyou-snippet.html` — **not installed, needs owner approval** (live Rezdy
+   config). Until installed, GA4/Meta purchase events will not fire for most bookings.
+4. **Stale in-progress status served as verified** when Rezdy unreachable → fixed (only CONFIRMED /
+   CANCELLED served from cache). `test-serverless-hardening` 19/19 (was 18/19).
+5. **Invented availability on Rezdy failure:** production silently fell back to mock sessions with
+   fabricated seat counts. → Now dates only, real session chosen in Rezdy; mock seat counts never shown.
+   Previews show labelled example times (no `REZDY_API_KEY` in Preview env — production is live).
+6. postMessage listener now accepts only `*.rezdy.com` origins.
+7. Typecheck: 31 → 0 errors.
+
+Verified on preview (Playwright, Rezdy stubbed): desktop iframe path + reminder; own-tab path opens
+Rezdy in a new tab with the waiting panel. NOT verified: real iPhone Safari, a real completed booking.
+
 ## Outstanding defects (logged, not yet addressed)
 
-- **M3 / commerce:** `test-serverless-hardening.ts` 18/19 on both `main` and branch — "In-Progress TTL Revalidation" fails. The AI Studio report claims this was fixed; the fix is not in the repository. Its other claimed fixes (`.env.example`, dual adapter, Cesium asset move, Post Office label) are also absent from `main`.
+- ~~M3 TTL revalidation~~ — fixed on `dev/ticketing` (see checkpoint d).
 - **M2:** Map-label click → Evidence Ledger handler cannot fire (canvas is `pointer-events: none` so the page scrolls); needs an accessible, non-canvas affordance.
 - **M4:** Booking-bar reverence gating starts at beat index 3; the 09:58 strike beat (index 2) and the desktop "BOOK TICKETS" button are not gated.
 - ~~Repo hygiene~~ — resolved in the site pass (QA debris and unused AI rasters deleted on owner instruction "If there are unused files - get rid of them").
-- **Typecheck:** `tsc --noEmit` reports 31 pre-existing errors (Rezdy/webhook typing, i18n scripts, missing @types/node). Unchanged by the site pass; address in M3.
+- ~~Typecheck~~ — 0 errors on `dev/ticketing`.
 
 ## Decisions required (owner)
 
@@ -238,6 +265,6 @@ tsc error count unchanged (31, pre-existing). Captures: `qa-captures/pass*`, `qa
 
 1. Owner review of the `dev/site-pass` preview; on approval merge to `main`, then move the custom domain to `bombingofdarwinexperience`.
 2. Meta dataset ID + privacy wording, then enable the pixel.
-3. M3 ticketing (owner: "Do ticketing after"): Rezdy in-progress TTL revalidation, mobile Safari checkout, Family Pass mapping.
+3. M3: owner approval to install the Rezdy thank-you snippet; owner iPhone test of `dev/ticketing` preview (book → own tab → confirmation).
 4. M2: Evidence Ledger affordance (non-canvas), motion paths for formations between beats.
 4. M3: Rezdy in-progress TTL revalidation defect (needs staging credentials for live verification).
