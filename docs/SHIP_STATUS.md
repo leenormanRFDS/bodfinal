@@ -5,10 +5,10 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 | Field | Value |
 |---|---|
 | Current milestone | **Opening cinematic — sound first** (released to production 25 Oct 2026). Next: Google Ads launch prerequisites (see Open items) |
-| Working branch | `dev/opening` (from `dev/ticketing` @ `aaf9829`). Previous: `dev/site-pass`, `dev/spatial-engine`. |
+| Working branch | `dev/ads-tracking` (from `main` @ `8060d6d`; docs only so far). Previous: `dev/opening`, `dev/site-pass`, `dev/spatial-engine`. |
 | Production | `main` @ `92a5e1c` (opening cinematic on top of site pass + ticketing), deployment `dpl_8dR5VjSufnrErYPzH5JLCXj1YHF1`, 25 Oct 2026, on owner approval. Previous: `8b7c2d9`. `www.thebombingofdarwin.com.au` now serves this project; the apex `thebombingofdarwin.com.au` still serves the OLD project (owner/dashboard action pending). |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
-| Updated | 25 Oct 2026 (opening release) |
+| Updated | 26 Oct 2026 (Google Ads launch prerequisites: purchase tracking diagnosis) |
 
 ## Milestones
 
@@ -303,8 +303,38 @@ Owner brief: replace the silent title sequence with a sound-first opening (calm 
 
 **Open items / owner:** (1) move the apex `thebombingofdarwin.com.au` to this project (owner dashboard action; `www` is done); (2) real-phone test of the sound gate (iPhone Safari and Android Chrome); (3) "Replay the opening" link not built; the opening plays once per session; (4) Google Ads: account, billing, budget and conversion import still to be settled before any campaign is created.
 
+## Checkpoint 26 Oct 2026 (f) — Google Ads launch prerequisites: purchase tracking (`dev/ads-tracking`, docs only)
+
+No site code changed in this checkpoint. Ads campaign NOT created; no spend.
+
+**GA4 on this site (property 545435638, `G-MQ9641V0NY`).** Confirmed arriving: `page_view`, `session_start`, `first_visit`, `user_engagement`, `scroll`, `opening_start`, `opening_skip`, `begin_checkout`. `purchase` NOT observed.
+
+**Why `purchase` does not fire here (verified).** In a desktop Chrome test (order `RMPB020`, created 25 Oct 4:42 PM, General Entry for 27 Oct 9:00 AM, order total $30.00, discount code used, source Online) Rezdy's thank-you page loaded as the top-level window: no `window.parent` other than itself and no `window.opener`. Our `postMessage` snippet therefore has no target, so `/tickets/confirmation` and `trackPurchase` never run in that flow. Cause of the frame breakout is unknown. Not yet tested: a paid (non-$0) order; the own-tab flow (`?checkout=tab`), which has an opener. Rezdy support (26 Oct) confirms: no supported automatic redirect or `redirectUrl`/`returnUrl` support; "parent" is the page itself when top-level; a completion message cannot be delivered in that state.
+
+**Rezdy already records purchases, in the facility's property.** Rezdy's own tag on its checkout/thank-you pages sends `purchase` (with value and order number) to the RFDS Darwin Tourist Facility property `425826142` (`G-XSL99FECC8`), hostname `rfdsdarwin1.rezdy.com`. Last 30 days to 25 Oct: 11 purchases, $680.51. Both test orders (`RMPB020`, `RUT2UCT`, $30 each, 25 Oct) are in it with source `thebombingofdarwin.com.au`; that $60 test revenue stays in the facility's GA4 even if the Rezdy orders are deleted. Attribution there is weak: the visit shows as a referral, not a Google Ads click.
+
+**Server-side purchase via webhook — not viable as it stands (verified 26 Oct):**
+- Rezdy account has 0 webhooks registered (Rezdy back office, Webhooks). `/api/rezdy/webhook` exists in code but nothing calls it. Registering one is account-wide and needs owner approval.
+- The account mixes sources (Online, Negotiated rate resellers such as Viator/GetYourGuide/Klook/BookMe/Luxury Escapes, Internal); orders from this site and from rfdsdarwin.com.au both show as Online, so a webhook cannot tell them apart.
+- A webhook carries no visitor ID or click ID.
+- `REZDY_WEBHOOK_SECRET` is NOT set in the production environment (the endpoint is unauthenticated; it verifies each order against the Rezdy API, so impact is low, but set it before any webhook goes live). No GA4 Measurement Protocol secret exists either.
+- Possible fallback (not built): record visitor/click data at checkout start and match to confirmed orders read from the Rezdy API; match would be inferred unless Rezdy's "Reseller Reference" can carry a token (unknown; to ask Rezdy / test).
+
+**Rezdy's recommended route (support email, 26 Oct):** keep purchase in the existing GA4 property; set up GA4 cross-domain measurement with the same Measurement ID/web data stream on both domains; review Rezdy's Linked Domain setting and generated booking JavaScript (`pluginJs`); link the property to the Ads account and import the existing `purchase` as the conversion. Rezdy says its Google integration has one Measurement ID field, cannot confirm two properties, asks that the existing RFDS setup stay unchanged, and does not endorse hand-building `_ga_data` / `GA_TRACKING_DATA`. Observed in Rezdy's checkout script (not documented by Rezdy): it accepts a `_ga_data` URL parameter (`encodeURIComponent(btoa(JSON))` of `{clientId, utmSource, utmMedium, utmCampaign, utmTerm, utmContent}`), stores it in `sessionStorage`, and listens for a `GA_TRACKING_DATA` message from the parent when framed. Its Linked Domain is currently `https://www.rfdsdarwin.com.au/`. **Risk to settle with Rezdy before any change:** whether a second Linked Domain can be added without affecting the facility site. Open follow-up questions drafted for Rezdy (owner sending): Linked Domain, `pluginJs` for a custom embed, safety of the existing Ads tag, `Reseller Reference`.
+
+**Rezdy thank-you custom code.** The 25 Oct snippet (`docs/evidence/rezdy-thankyou-snippet.html`) was reported back on 26 Oct with a broken `origins` line (syntax error as pasted), differing from the repo copy; the owner has replaced it with a clean version listing `https://thebombingofdarwin.com.au` and `https://www.thebombingofdarwin.com.au` only (the `vercel.app` origin is no longer needed). NOT yet re-verified in Rezdy (the Rezdy session had expired). The box also contains a Google Ads base tag `AW-17121250128` (config only, no conversion event); the owning Ads account is unconfirmed. Rezdy warns that extra Google installs there can disrupt its integration.
+
+**Google Ads account.** "The Bombing of Darwin", customer `5446258396` (AUD, Adelaide time). Existing "Campaign #1" Performance Max (enabled, about $62/day, no conversion history) is a placeholder; owner to pause in the Ads UI. The reporting connector (1ClickReport, plan Pro) is read-only for Ads; campaign and conversion creation needs Team ($99/mo) or manual entry. GA4 property `545435638` is not yet linked to the Ads account. Interim Ads conversion candidate: `begin_checkout` (confirmed working), reconciled against Rezdy orders.
+
+**Planning inputs (not final).** Keyword Planner (Australia-wide, rounded monthly): "things to do in darwin" and "darwin tourist attractions" about 8,100; "stokes hill wharf" about 6,600; "bombing of darwin" about 4,400 (Feb peak 8,100, Dec/Jan about 2,400); "darwin tours" about 880. 19 Feb 2027 is the 85th anniversary. Cruise-ship dates for Darwin before Christmas come from aggregator sites only; berth Fort Hill Wharf; to be verified with Darwin Port / Tourism NT before any port-day spend. Starting budget idea: about $40/day average (national about $30/day, port-day Darwin-only about $20/day on confirmed days).
+
+**Rezdy pricing (read-only findings; nothing changed).** Rezdy prices are set per session, so the same product can show different prices on different dates; 17 sessions carry older prices (owner: leave alone). Rezdy shows $32 Adult from 1 Apr 2027 vs $30 on this site. Test promo code `test2` is EXPIRED. `PRGTFQ` is a product code (gift voucher), not a discount. The "2 Adults + 3 Children $90" Family option is a 5-person bundle; four-person families may not be able to use it (facility policy, owner question).
+
+**Owner actions open:** pause Campaign #1; confirm billing on the Ads account; delete test order `RMPB020` in Rezdy; move the apex domain; send the Rezdy follow-up; verify cruise dates; optionally run one real paid booking in own-tab mode (`?checkout=tab`) and refund it, to test the full chain and answer Rezdy's paid-vs-$0 question.
+
 ## Outstanding defects (logged, not yet addressed)
 
+- **M3 / tracking:** `purchase` does not fire on this site when Rezdy's thank-you page is top-level (see checkpoint f). Resolution depends on Rezdy's reply on cross-domain measurement.
 - ~~M3 TTL revalidation~~ — fixed on `dev/ticketing` (see checkpoint d).
 - **M2:** Map-label click → Evidence Ledger handler cannot fire (canvas is `pointer-events: none` so the page scrolls); needs an accessible, non-canvas affordance.
 - **M4:** Booking-bar reverence gating starts at beat index 3; the 09:58 strike beat (index 2) and the desktop "BOOK TICKETS" button are not gated.
@@ -323,6 +353,7 @@ Owner brief: replace the silent title sequence with a sound-first opening (calm 
 
 ## Next action
 
+0. Purchase tracking for Google Ads: await Rezdy's reply (Linked Domain, `pluginJs`, `Reseller Reference`); then propose the cross-domain change (our code only, `dev/*`, owner approval before any Rezdy setting changes). Meanwhile: re-verify the saved Rezdy thank-you code and read Rezdy's generated booking code (needs the owner to sign in to Rezdy), write the Ads build document, set `REZDY_WEBHOOK_SECRET` only if a webhook is ever registered.
 1. Owner review of the `dev/site-pass` preview; on approval merge to `main`, then move the custom domain to `bombingofdarwinexperience`.
 2. Meta dataset ID + privacy wording, then enable the pixel.
 3. M3: merge `dev/site-pass` + `dev/ticketing` to `main` and move the domain (owner approval), then verify one real booking end to end (confirmation page, GA4 purchase).
