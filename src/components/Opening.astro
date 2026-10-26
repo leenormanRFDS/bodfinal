@@ -1,5 +1,10 @@
 ---
-// Opening — the cinematic title sequence for the landing page.
+// Opening — the cinematic title sequence.
+//
+// Placement (26 Oct 2026, proposed on dev/opening-story): no longer a gate on the landing page.
+// With `trigger`, it waits for a visitor to press a [data-opening-play] button (the Story intro)
+// and never starts on its own; ?opening=sound|silent still forces an immediate preview.
+// Without `trigger` it behaves as before (plays once per session on load).
 //
 // The narrative spine is the verified 09:35 Bathurst Island radio warning (Father John
 // McGrath, Sacred Heart Mission) that was discounted, followed 23 minutes later by the first
@@ -16,6 +21,9 @@
 // Sound is gated behind OPENING.soundApproved (src/consts.ts) until the voice lines are signed
 // off against the record; ?opening=sound previews it, ?opening=silent forces the silent path.
 import { OPENING } from '../consts';
+
+interface Props { trigger?: boolean }
+const { trigger = false } = Astro.props;
 
 const MESSAGE = 'An unusually large air formation bearing south, heading south, observed over Bathurst Island.';
 // Spoken line 1 = the logged transmission (MESSAGE) with a radio operator's leading "There's" (owner-confirmed 25 Oct 2026).
@@ -44,6 +52,7 @@ const cfg = JSON.stringify({
   voice1: VOICE_1,
   voice2: VOICE_2,
   cues: CUES,
+  trigger,
 });
 ---
 <div class="opening" data-opening data-cfg={cfg} role="dialog" aria-modal="true" aria-label="Opening sequence" aria-hidden="true">
@@ -200,9 +209,7 @@ const cfg = JSON.stringify({
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const seen = sessionStorage.getItem('bod-opening');
 
-    if (reduce || (seen && !force)) {
-      el.remove();
-    } else {
+    const start = () => {
       const q = <T extends HTMLElement = HTMLElement>(s: string) => el.querySelector<T>(s)!;
       const gate = q('[data-o-gate]'), soundBtn = q('[data-o-sound]'), silentBtn = q('[data-o-silent]'),
         radio = q('[data-o-radio]'), rec1 = q('[data-o-rec1]'), msgEl = q('[data-o-msg]'),
@@ -220,6 +227,9 @@ const cfg = JSON.stringify({
       el.classList.add('is-live');
       el.setAttribute('aria-hidden', 'false');
       document.documentElement.style.overflow = 'hidden';
+      // Smooth scroll (Base.astro) would keep moving the page behind the overlay.
+      const lenis = (window as any).__lenis;
+      lenis?.stop?.();
 
       gsap.set([radio, dismiss, interval, final_, paper, capwrap], { autoAlpha: 0 });
 
@@ -245,7 +255,7 @@ const cfg = JSON.stringify({
         }
         gsap.to(el, {
           autoAlpha: 0, duration: 1.1, ease: 'power2.inOut', delay: 0.05,
-          onComplete: () => { video.pause(); el.remove(); document.documentElement.style.overflow = ''; },
+          onComplete: () => { video.pause(); el.remove(); document.documentElement.style.overflow = ''; lenis?.start?.(); },
         });
       };
       const skip = () => {
@@ -418,6 +428,20 @@ const cfg = JSON.stringify({
       } else {
         startSilent();
       }
+    };
+
+    if (cfg.trigger && !force) {
+      // On request only: the visitor chose to watch, so reduced motion and "already seen" do not
+      // suppress it. One play per page load (the overlay removes itself when it ends).
+      const btns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-opening-play]'));
+      btns.forEach((b) => {
+        b.hidden = false;
+        b.addEventListener('click', () => { btns.forEach((x) => { x.hidden = true; }); start(); }, { once: true });
+      });
+    } else if (reduce || (seen && !force)) {
+      el.remove();
+    } else {
+      start();
     }
   }
 </script>
