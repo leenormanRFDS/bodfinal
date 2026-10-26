@@ -23,6 +23,7 @@ const timeline = beatsData.beats.map((beat, idx) => ({
   evidence: BEAT_EVIDENCE_MAP[idx] || null,
 }));
 import TvWitness from '../components/TvWitness.astro';
+import Opening from '../components/Opening.astro';
 ---
 <Base title="The Story — 19 February 1942" description="A chronological account of the first attacks on the Australian mainland — before the town's air-raid sirens could sound." depth="descent">
   <!-- Intro — a full screen of silence -->
@@ -35,9 +36,19 @@ import TvWitness from '../components/TvWitness.astro';
         A chronological account of the first attacks on the Australian mainland. Behind the timeline are
         people — those who decided, those who fought, and those whose lives were changed forever.
       </p>
+      <!-- Opt-in opening: shown by Opening.astro (trigger mode) once its script is ready. -->
+      <button type="button" class="s-opening s-el" style="--i:4" data-opening-play hidden>
+        <span class="s-opening__play" aria-hidden="true"></span>
+        <span class="s-opening__text">
+          <span class="s-opening__label">Begin at 09:35 — the warning</span>
+          <span class="s-opening__meta">One minute · headphones recommended</span>
+        </span>
+      </button>
     </div>
-    <div class="s-scroll s-el" style="--i:4"><span class="s-scroll__label">Scroll to begin</span><span class="s-scroll__track"><span></span></span></div>
+    <div class="s-scroll s-el" style="--i:5"><span class="s-scroll__label">Scroll to begin</span><span class="s-scroll__track"><span></span></span></div>
   </section>
+
+  <Opening trigger />
 
   <!-- Archival interstitial — the raid breaks. The real record:
        MV Neptuna explodes at Stokes Hill Wharf, HMAS Deloraine in the foreground. -->
@@ -211,6 +222,27 @@ import TvWitness from '../components/TvWitness.astro';
   .s-scroll__track { width: 1px; height: 60px; background: var(--line); position: relative; overflow: hidden; }
   .s-scroll__track span { position: absolute; inset: 0; background: var(--gold); animation: sScroll 2.2s linear infinite; }
   @keyframes sScroll { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+
+  .s-opening {
+    display: inline-flex; align-items: center; gap: 16px; margin-top: clamp(28px, 4vw, 44px);
+    padding: 0; border: 0; background: none; color: var(--bone); cursor: pointer; text-align: left; font: inherit;
+  }
+  .s-opening[hidden] { display: none; }
+  .s-opening__play {
+    flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line-strong);
+    position: relative; transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  }
+  .s-opening__play::after {
+    content: ''; position: absolute; left: 19px; top: 16px;
+    border-style: solid; border-width: 8px 0 8px 12px; border-color: transparent transparent transparent var(--gold);
+  }
+  .s-opening__text { display: flex; flex-direction: column; gap: 5px; }
+  .s-opening__label { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--bone); }
+  .s-opening__meta { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone-mute); }
+  .s-opening:hover .s-opening__play, .s-opening:focus-visible .s-opening__play { border-color: var(--gold); background: rgba(198, 161, 91, 0.08); }
+  .s-opening:hover .s-opening__label, .s-opening:focus-visible .s-opening__label { color: var(--gold-bright); }
+  .s-opening:focus-visible { outline: none; }
+  .s-opening:focus-visible .s-opening__play { box-shadow: 0 0 0 2px var(--gold); }
 
   /* intro load reveal */
   .s-el { opacity: 0; transform: translateY(40px); filter: blur(10px); animation: sRise 1.6s var(--ease-solemn) both; animation-delay: calc(var(--i) * 0.14s + 0.1s); }

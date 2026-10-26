@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import Opening from '../components/Opening.astro';
+// The opening cinematic is no longer a gate on arrival: it now starts on request from the
+// Story intro (src/pages/story.astro, <Opening trigger />).
 ---
 <Base bare depth="surface">
-  <Opening />
   <Hero />
 </Base>
