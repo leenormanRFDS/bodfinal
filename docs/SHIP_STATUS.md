@@ -5,10 +5,10 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 | Field | Value |
 |---|---|
 | Current milestone | **Opening cinematic — sound first** (released to production 25 Oct 2026). Next: Google Ads launch prerequisites (see Open items) |
-| Working branch | `dev/ads-tracking` (from `main` @ `8060d6d`; docs plus the Rezdy GA handover, unmerged). Previous: `dev/opening`, `dev/site-pass`, `dev/spatial-engine`. |
-| Production | `main` @ `92a5e1c` (opening cinematic on top of site pass + ticketing), deployment `dpl_8dR5VjSufnrErYPzH5JLCXj1YHF1`, 25 Oct 2026, on owner approval. Previous: `8b7c2d9`. `www.thebombingofdarwin.com.au` now serves this project; the apex `thebombingofdarwin.com.au` still serves the OLD project (owner/dashboard action pending). |
+| Working branch | `dev/ads-tracking` (merged to `main` 26 Oct 2026; fast-forward, nothing ahead). Previous: `dev/opening`, `dev/site-pass`, `dev/spatial-engine`. |
+| Production | `main` @ `9be92dd` (Rezdy GA handover on top of the opening cinematic), deployment `dpl_CxCoQwqz3ytpPCm4U5eQmDgabLjV`, 26 Oct 2026, on owner approval ("Yes"). Previous: `92a5e1c` (`dpl_8dR5VjSufnrErYPzH5JLCXj1YHF1`). `www.thebombingofdarwin.com.au` serves this project; the apex `thebombingofdarwin.com.au` still serves the OLD project (owner/dashboard action pending). |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
-| Updated | 26 Oct 2026 (Google Ads launch prerequisites: purchase tracking diagnosis) |
+| Updated | 26 Oct 2026 (Rezdy GA handover released to production) |
 
 ## Milestones
 
@@ -337,6 +337,8 @@ No site code changed in this checkpoint. Ads campaign NOT created; no spend.
 **To verify after release:** open the site with `?utm_source=handover&utm_medium=test&utm_campaign=handover-test`, make one booking (own-tab and iframe), then in property 425826142 find the order's `purchase` and check its source, campaign and client; refund the test order.
 
 **Owner actions open:** pause Campaign #1; confirm billing on the Ads account; delete test order `RMPB020` in Rezdy; move the apex domain; send the Rezdy follow-up; verify cruise dates; optionally run one real paid booking in own-tab mode (`?checkout=tab`) and refund it, to test the full chain and answer Rezdy's paid-vs-$0 question.
+
+**Release record (26 Oct 2026).** Owner approved the merge in chat ("Yes"). `dev/ads-tracking` fast-forwarded into `main` (`8060d6d` to `9be92dd`), deployment `dpl_CxCoQwqz3ytpPCm4U5eQmDgabLjV` READY and aliased to `www.thebombingofdarwin.com.au`. Pre-merge: `verify-ga-handover.mjs` 18/18. Production smoke test (headless Chromium against www, Rezdy stubbed, Google/Meta tags blocked so nothing reached analytics, fake `_ga` cookie): landing on `/story?utm_source=google&utm_medium=cpc&utm_campaign=handover-test` stored the first-touch tags in `sessionStorage.bod_attr`; desktop iframe checkout carried `_ga_data` on its URL and received one `GA_TRACKING_DATA` message to the Rezdy origin with clientId and campaign; own-tab (`?checkout=tab`) popup URL carried the same `_ga_data`; with no `_ga` cookie neither was sent; 0 page errors in all three runs. Still NOT verified: that Rezdy's real checkout accepts the payload and its `purchase` in property 425826142 carries our campaign (one real booking is owed, see "NOT verified" above).
 
 ## Outstanding defects (logged, not yet addressed)
 
