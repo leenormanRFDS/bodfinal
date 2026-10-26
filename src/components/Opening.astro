@@ -41,6 +41,7 @@ const CUES = {
   sound: {
     scene: [0.8, 9.0], // the scene card, inside the city soundscape and clear of voice 1
     cap1: [10.1, 17.4], cap2: [17.8, 21.0],
+    verdict: [21.7, 28.6], // the call at RAAF Operations, over the engines and clear of the hard cut at 29.85
     paper: 30.62, paperOut: 37.2,
     rec2: 38.4, end: 45.4,
   },
@@ -77,7 +78,7 @@ const cfg = JSON.stringify({
          vessels (entities/vessels), the ten P-40s turned back by weather (AIRCRAFT_P40E_WARHAWK). -->
     <div class="opening__beat opening__scene" data-o-scene>
       <p class="opening__rec record" data-o-scene-stamp>Darwin, Northern Territory, Australia<br />Thursday 19 February 1942 · Morning</p>
-      <p class="opening__line opening__scene-line" data-o-scene-line>Ships lie at anchor in the harbour.<br />Ten American P-40s, turned back by weather, are on their way back to Darwin.</p>
+      <p class="opening__line opening__scene-line" data-o-scene-line>Ships lie at anchor in the harbour.<br />Ten American <span class="opening__nb">P-40s</span>, turned back by weather, are on their way back to Darwin.</p>
     </div>
 
     <!-- Silent path · beat 1 · the transmission -->
@@ -87,8 +88,14 @@ const cfg = JSON.stringify({
       <p class="opening__attr record" data-o-attr>— Father John McGrath, mission radio</p>
     </div>
 
-    <!-- Silent path · beat 2 · the dismissal -->
-    <p class="opening__line" data-o-dismiss>The warning was discounted —<br />thought to be returning American fighters.</p>
+    <!-- Both paths · beat 2 · the call at RAAF Operations. Facts from canon: EVENT_WARNING_DISMISSAL
+         (relayed to RAAF Operations 09:40; assessed as the ten returning American P-40s; sirens not
+         ordered; the siren sounded at 10:01) and the 188-aircraft First Wave. -->
+    <div class="opening__beat opening__verdict" data-o-verdict>
+      <p class="opening__rec record" data-o-verdict-stamp>09:40 · RAAF Operations, Darwin</p>
+      <p class="opening__line opening__verdict-line" data-o-verdict-line>The warning is taken for the returning American <span class="opening__nb">P-40s</span>. No siren is sounded.</p>
+      <p class="opening__line opening__verdict-kick" data-o-verdict-kick>It was the first wave: 188 Japanese aircraft.</p>
+    </div>
 
     <!-- Silent path · beat 3 · the interval -->
     <p class="opening__rec record opening__interval" data-o-interval>Twenty-three minutes passed.</p>
@@ -171,6 +178,10 @@ const cfg = JSON.stringify({
   .opening__line { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 1.5; color: var(--bone-dim); margin: 0; opacity: 0; visibility: hidden; }
   .opening__scene [data-o-scene-stamp] { opacity: 0; margin: 0 0 clamp(22px, 4vh, 34px); line-height: 2; }
   .opening__scene-line { visibility: visible; max-width: 34ch; margin: 0 auto; text-wrap: balance; }
+  .opening__nb { white-space: nowrap; } /* never break "P-40s" at its hyphen */
+  .opening__verdict [data-o-verdict-stamp] { opacity: 0; margin: 0 0 clamp(22px, 4vh, 34px); line-height: 2; }
+  .opening__verdict-line, .opening__verdict-kick { visibility: visible; max-width: 30ch; margin: 0 auto; text-wrap: balance; }
+  .opening__verdict-kick { margin-top: clamp(20px, 3.4vh, 30px); color: var(--bone); }
   .opening__interval { margin: 0; opacity: 0; visibility: hidden; letter-spacing: 0.3em; }
 
   .opening__rule { display: block; width: 0; max-width: 120px; height: 1px; background: var(--gold); margin: 0 auto 30px; }
@@ -225,7 +236,9 @@ const cfg = JSON.stringify({
       const q = <T extends HTMLElement = HTMLElement>(s: string) => el.querySelector<T>(s)!;
       const gate = q('[data-o-gate]'), soundBtn = q('[data-o-sound]'), silentBtn = q('[data-o-silent]'),
         radio = q('[data-o-radio]'), rec1 = q('[data-o-rec1]'), msgEl = q('[data-o-msg]'),
-        cursor = q('[data-o-cursor]'), attr = q('[data-o-attr]'), dismiss = q('[data-o-dismiss]'),
+        cursor = q('[data-o-cursor]'), attr = q('[data-o-attr]'),
+        verdict = q('[data-o-verdict]'), verdictStamp = q('[data-o-verdict-stamp]'),
+        verdictLine = q('[data-o-verdict-line]'), verdictKick = q('[data-o-verdict-kick]'),
         interval = q('[data-o-interval]'), final_ = q('[data-o-final]'), rec2 = q('[data-o-rec2]'),
         rule = q('[data-o-rule]'), mon = q('[data-o-mon]'),
         scene = q('[data-o-scene]'), sceneStamp = q('[data-o-scene-stamp]'), sceneLine = q('[data-o-scene-line]'),
@@ -244,7 +257,8 @@ const cfg = JSON.stringify({
       const lenis = (window as any).__lenis;
       lenis?.stop?.();
 
-      gsap.set([scene, radio, dismiss, interval, final_, paper, capwrap], { autoAlpha: 0 });
+      gsap.set([scene, radio, verdict, interval, final_, paper, capwrap], { autoAlpha: 0 });
+      gsap.set([verdictLine, verdictKick], { opacity: 0 });
 
       let mode: 'sound' | 'silent' = 'silent';
       let done = false;
@@ -322,6 +336,11 @@ const cfg = JSON.stringify({
           .call(() => say(cfg.voice2, false), [], C.cap2[0])
           .to(capwrap, { autoAlpha: 1, duration: 0.35 }, C.cap2[0])
           .to(capwrap, { autoAlpha: 0, duration: 0.5, ease: 'power1.in' }, C.cap2[1])
+          .set(verdict, { autoAlpha: 1 }, C.verdict[0])
+          .to(verdictStamp, { opacity: 1, duration: 1.0, ease: 'power1.inOut' }, C.verdict[0])
+          .to(verdictLine, { opacity: 1, duration: 1.2 }, C.verdict[0] + 1.2)
+          .to(verdictKick, { opacity: 1, duration: 1.2 }, C.verdict[0] + 3.9)
+          .to(verdict, { autoAlpha: 0, duration: 0.8, ease: 'power1.in' }, C.verdict[1])
           .call(showPaper, [], C.paper)
           .call(hidePaper, [], C.paperOut);
         addMonument(t, C.rec2);
@@ -346,8 +365,11 @@ const cfg = JSON.stringify({
           .to(attr, { opacity: 1, duration: 0.9 }, '>0.2')
           .set(cursor, { display: 'none' }, '>0.6')
           .to(radio, { autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, '>0.5')
-          .to(dismiss, { autoAlpha: 1, duration: 1.2 }, '<0.7')
-          .to(dismiss, { autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, '>1.6')
+          .set(verdict, { autoAlpha: 1 }, '<0.7')
+          .to(verdictStamp, { opacity: 1, duration: 0.9, ease: 'power1.inOut' }, '<')
+          .to(verdictLine, { opacity: 1, duration: 1.1 }, '<1.0')
+          .to(verdictKick, { opacity: 1, duration: 1.1 }, '<2.6')
+          .to(verdict, { autoAlpha: 0, duration: 0.9, ease: 'power1.in' }, '>2.4')
           .to(interval, { autoAlpha: 1, duration: 1.1 }, '<0.6')
           .to(interval, { autoAlpha: 0, duration: 0.8, ease: 'power1.in' }, '>1.2')
           .call(showPaper, [], '>0.2')
