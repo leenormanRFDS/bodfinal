@@ -51,6 +51,10 @@ meaningful checkpoint. Do not create parallel status/plan documents.
   `grep -lE 'from"./[Cc]esium' .vercel/output/static/_astro/*.js` may list only Cesium's own deps (zip-reader).
   Never dynamically import a module that is also statically imported (see astro.config.mjs).
 - Tracking runs only on production hostnames; append `?bod_track=1` to test elsewhere. IDs in `src/consts.ts`.
+- Rezdy checkout GA handover (`src/lib/ga-handover.ts`, wired in `BookingForm.astro` and `Base.astro`): sends the visitor's GA
+  client ID and first-touch utm_* to Rezdy's checkout (`GA_TRACKING_DATA` message + `_ga_data` URL param) so Rezdy's own
+  `purchase` (reported to the facility property 425826142, not ours) carries them. Rezdy does not document the payload.
+  `node --experimental-strip-types scripts/verify-ga-handover.mjs` runs the unit checks.
 - `npm run build` also patches `.vercel/output/config.json` with immutable caching for tiles/posters
   (`scripts/vercel-cache-headers.mjs`). Tile and poster URLs carry `?v=<content hash>`.
 

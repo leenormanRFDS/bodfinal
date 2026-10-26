@@ -7,7 +7,48 @@
  *   purchase / Purchase                — a Rezdy order is server-verified CONFIRMED
  *                                        (tickets/confirmation), once per order per browser
  */
+import { captureAttribution as capture, buildHandover, withGaDataParam, type HandoverEnv } from './ga-handover';
+
 type Item = { item_id: string; item_name: string; item_variant?: string; price: number; quantity: number };
+
+function browserEnv(): HandoverEnv {
+  let storage: HandoverEnv['storage'] = null;
+  try { storage = window.sessionStorage; } catch { /* blocked */ }
+  return {
+    cookie: document.cookie,
+    search: location.search,
+    referrer: document.referrer,
+    hostname: location.hostname,
+    storage,
+    now: () => Date.now(),
+  };
+}
+
+/**
+ * Remember this visit's first campaign tags (utm_*) and external referrer for the browser session.
+ * Called on every page (Base.astro), so a visitor who lands on /story and books later on /tickets
+ * still hands Rezdy the campaign they arrived from. See ga-handover.ts.
+ */
+export function captureAttribution(): void {
+  try { capture(browserEnv()); } catch { /* never block the page */ }
+}
+
+/** The Rezdy checkout URL with this visitor's GA identity and campaign added (`_ga_data`). */
+export function checkoutUrlWithGa(url: string): string {
+  try { return withGaDataParam(url, buildHandover(browserEnv())); } catch { return url; }
+}
+
+/**
+ * Tell the Rezdy checkout inside `iframe` which visitor and campaign it is serving, the same
+ * message Rezdy's own embed script sends. Call on every iframe load: each checkout step is a new page.
+ */
+export function sendGaHandover(iframe: HTMLIFrameElement, checkoutUrl: string): void {
+  try {
+    const data = buildHandover(browserEnv());
+    if (!data || !iframe.contentWindow) return;
+    iframe.contentWindow.postMessage({ type: 'GA_TRACKING_DATA', data }, new URL(checkoutUrl).origin);
+  } catch { /* never block checkout */ }
+}
 
 function gtag(...args: unknown[]) {
   const w = window as any;

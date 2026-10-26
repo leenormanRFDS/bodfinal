@@ -42,6 +42,11 @@ const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} · ${SITE.t
     <link rel="stylesheet" href="https://use.typekit.net/hoe3ija.css" />
 
     <Analytics />
+    <script>
+      // Keep this visit's first campaign tags for the checkout handover to Rezdy (see lib/ga-handover.ts).
+      import { captureAttribution } from '../lib/tracking';
+      captureAttribution();
+    </script>
   </head>
   <body class="grain" data-depth={depth}>
     <a class="skip" href="#main">Skip to content</a>

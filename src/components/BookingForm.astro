@@ -802,7 +802,7 @@ const icon = (n: string) =>
 
 <script>
   import { t, bindTranslations } from '../i18n/client';
-  import { trackBeginCheckout } from '../lib/tracking';
+  import { trackBeginCheckout, checkoutUrlWithGa, sendGaHandover } from '../lib/tracking';
 
   const root = document.querySelector<HTMLElement>('[data-booking]');
   if (root) {
@@ -1233,7 +1233,9 @@ const icon = (n: string) =>
       });
       const baseCheckout = state.pkg.checkoutUrl || 'https://rfdsdarwin1.rezdy.com';
       const sep = baseCheckout.includes('?') ? '&' : '?';
-      const checkoutUrl = `${baseCheckout}${sep}${params.toString()}`;
+      // `_ga_data` tells Rezdy's checkout which visitor and campaign it is serving, so its own
+      // `purchase` event is reported under them (lib/ga-handover.ts). Unchanged when there is no GA cookie.
+      const checkoutUrl = checkoutUrlWithGa(`${baseCheckout}${sep}${params.toString()}`);
 
       const sel = selectionText();
       if (remind) {
@@ -1269,6 +1271,8 @@ const icon = (n: string) =>
         iframe.allow = 'payment';
         iframe.addEventListener('load', () => {
           if (load) load.style.display = 'none';
+          // Every checkout step is a new page inside the iframe, so send this on each load.
+          sendGaHandover(iframe, checkoutUrl);
         });
         frame.appendChild(iframe);
       }
