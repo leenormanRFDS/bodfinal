@@ -72,7 +72,7 @@ meaningful checkpoint. Do not create parallel status/plan documents.
   data saver, ≤1 GB devices, or `?map=static`. `?map=live` forces live.
 - Visual QA means looking at rendered captures. A passing string-match test or HTTP 200 is not
   visual acceptance.
-- Opening cinematic (`src/components/Opening.astro`): on `dev/opening-story` it is opt-in from the Story intro (`<Opening trigger />` + a `[data-opening-play]` button), not a landing gate. The sound gate is controlled by `OPENING.soundApproved` in `src/consts.ts`
+- Opening cinematic (`src/components/Opening.astro`): opt-in from the Story intro since 26 Oct 2026 (`<Opening trigger />` + a `[data-opening-play]` button), not a landing gate. The sound gate is controlled by `OPENING.soundApproved` in `src/consts.ts`
   (true: the owner confirmed the voice lines against the record on 25 Oct 2026; set false to hide sound everywhere);
   `?opening=sound` previews, `?opening=silent` forces the silent path. Assets are rebuilt with `scripts/encode-opening-assets.sh`; cue times live in `CUES` and were
   measured from the master, so re-measure them if the mix changes. Voices are dramatised re-creations — never

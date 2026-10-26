@@ -24,6 +24,8 @@ import { OPENING } from '../consts';
 
 interface Props { trigger?: boolean }
 const { trigger = false } = Astro.props;
+// On the Story page the visitor has already chosen to watch, so the gate says "Begin", not "Enter".
+const verb = trigger ? 'Begin' : 'Enter';
 
 const MESSAGE = 'An unusually large air formation bearing south, heading south, observed over Bathurst Island.';
 // Spoken line 1 = the logged transmission (MESSAGE) with a radio operator's leading "There's" (owner-confirmed 25 Oct 2026).
@@ -63,8 +65,8 @@ const cfg = JSON.stringify({
     <p class="opening__gate-title">Headphones recommended.</p>
     <p class="opening__gate-sub record">A one-minute opening. It begins with sound alone.</p>
     <div class="opening__gate-actions">
-      <button type="button" class="opening__btn opening__btn--primary" data-o-sound>Enter with sound</button>
-      <button type="button" class="opening__btn" data-o-silent>Enter silently</button>
+      <button type="button" class="opening__btn opening__btn--primary" data-o-sound>{verb} with sound</button>
+      <button type="button" class="opening__btn" data-o-silent>{verb} silently</button>
     </div>
     <p class="opening__gate-note record">Voices are re-created from the written record.</p>
   </div>
