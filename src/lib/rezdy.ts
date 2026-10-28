@@ -413,13 +413,17 @@ export async function verifyExactSession(params: VerifySessionParams): Promise<V
     }
     const matched = isAllDay
       ? mockSessions[0]
-      : mockSessions.find((s) => (params.sessionId && String(s.id) === String(params.sessionId)) || (params.time && s.time === params.time));
+      : (!params.sessionId && !params.time)
+        ? mockSessions.find((s) => (s.seatsAvailable ?? 0) >= requiredSeats)
+        : mockSessions.find((s) => (params.sessionId && String(s.id) === String(params.sessionId)) || (params.time && s.time === params.time));
 
     if (!matched) {
       return {
         available: false,
         reason: 'session_not_found',
-        message: 'The selected time slot is no longer available.',
+        message: !params.sessionId && !params.time
+          ? 'No time on this date has enough space for your tickets.'
+          : 'The selected time slot is no longer available.',
         seatsAvailable: 0,
         requiredSeats,
         isAllDay,
@@ -479,7 +483,15 @@ export async function verifyExactSession(params: VerifySessionParams): Promise<V
         const targetPrefix = `${cleanDate} ${params.time}`;
         matchedSession = sessions.find((s: any) => s.startTimeLocal && s.startTimeLocal.startsWith(targetPrefix));
       }
-      if (!matchedSession && sessions.length === 1) {
+      if (!matchedSession && !params.sessionId && !params.time) {
+        // A date-only handoff leaves the time choice to Rezdy. Confirm that at
+        // least one session can accommodate the selected ticket quantities.
+        matchedSession = sessions.find((s: any) => {
+          const seats = typeof s.seatsAvailable === 'number' ? s.seatsAvailable : (s.seats || 0);
+          return seats >= requiredSeats;
+        });
+      }
+      if (!matchedSession && sessions.length === 1 && (params.sessionId || params.time)) {
         matchedSession = sessions[0];
       }
     }
@@ -488,7 +500,9 @@ export async function verifyExactSession(params: VerifySessionParams): Promise<V
       return {
         available: false,
         reason: 'session_not_found',
-        message: 'The selected session was not found in live inventory.',
+        message: !params.sessionId && !params.time
+          ? 'No time on this date has enough space for your tickets.'
+          : 'The selected session was not found in live inventory.',
         seatsAvailable: 0,
         requiredSeats,
         isAllDay,
