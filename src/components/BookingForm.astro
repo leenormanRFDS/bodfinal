@@ -814,6 +814,9 @@ const icon = (n: string) =>
     const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const money = (n: number) => '$' + n.toLocaleString();
+    // Rezdy's hosted General Entry form accepts the date and quantities from its URL,
+    // but does not preselect a time. Let Rezdy own that final choice.
+    const timeAtCheckout = () => state.pkg?.slug === 'general-entry';
     const count = () => (state.pkg ? state.pkg.tiers.reduce((s: number, t: any) => s + (state.qty[t.code] || 0), 0) : 0);
     const total = () => (state.pkg ? state.pkg.tiers.reduce((s: number, t: any) => s + t.price * (state.qty[t.code] || 0), 0) : 0);
 
@@ -854,7 +857,7 @@ const icon = (n: string) =>
       if (stepNum === 1) return Boolean(state.pkg);
       if (stepNum === 2) return Boolean(state.pkg && count() > 0);
       if (stepNum === 3) return Boolean(state.date);
-      if (stepNum === 4) return Boolean(state.allDay || (state.session && state.session.time));
+      if (stepNum === 4) return Boolean((timeAtCheckout() && state.date) || state.allDay || (state.session && state.session.time));
       return false;
     }
 
@@ -906,7 +909,8 @@ const icon = (n: string) =>
       // 04 Time summary
       const val4 = root.querySelector('[data-step-val="4"]');
       if (val4) {
-        if (state.allDay) val4.textContent = state.liveFailed ? 'Chosen at checkout' : 'Flexible Entry · Valid all day';
+        if (timeAtCheckout()) val4.textContent = state.date ? 'Choose in checkout' : '—';
+        else if (state.allDay) val4.textContent = state.liveFailed ? 'Chosen at checkout' : 'Flexible Entry · Valid all day';
         else if (state.session && state.session.time) val4.textContent = state.session.time;
         else val4.textContent = '—';
       }
@@ -1119,6 +1123,21 @@ const icon = (n: string) =>
     /* ---- 04 · time ---- */
     function renderSessions() {
       const c = el('[data-sessions]'); c.innerHTML = '';
+      if (timeAtCheckout()) {
+        c.innerHTML = `
+          <div class="allday-banner">
+            <span class="allday-badge">Flexible entry</span>
+            <p class="allday-text">Rezdy asks you to choose a time to complete your booking. Select your preferred time there and check the date and ticket quantities before paying. General Entry visitors may arrive anytime during opening hours.</p>
+            <div class="step__nav" style="margin-top:16px;padding-top:16px;border-top:none;justify-content:flex-start;">
+              <button type="button" class="btn-step-next" data-confirm-time>
+                <span>Continue to checkout</span> <i>✓</i>
+              </button>
+            </div>
+          </div>
+        `;
+        c.querySelector('[data-confirm-time]')?.addEventListener('click', () => { openStep(0); sync(); });
+        return;
+      }
       if (state.allDay) {
         c.innerHTML = `
           <div class="allday-banner">
@@ -1164,12 +1183,12 @@ const icon = (n: string) =>
         const d = new Date(state.date + 'T00:00:00');
         el('[data-sum-date]').textContent = `${WD[d.getDay()]} ${d.getDate()} ${MO[d.getMonth()]}`;
       } else el('[data-sum-date]').textContent = '—';
-      el('[data-sum-time]').textContent = state.session ? (state.liveFailed ? 'Chosen at checkout' : (state.allDay ? 'Valid all day' : state.session.time)) : '—';
+      el('[data-sum-time]').textContent = timeAtCheckout() && state.date ? 'Choose in checkout' : (state.session ? (state.liveFailed ? 'Chosen at checkout' : (state.allDay ? 'Valid all day' : state.session.time)) : '—');
       el('[data-total]').textContent = money(total());
 
       const n = count();
       if (!state.pkg || n === 0) { cta.textContent = t('tickets.continue'); cta.disabled = !state.pkg; }
-      else if (!state.date || !state.session) { cta.textContent = `${t('nav.bookTickets')} (${n}) • ${money(total())}`; cta.disabled = false; }
+      else if (!state.date || (!state.session && !timeAtCheckout())) { cta.textContent = `${t('nav.bookTickets')} (${n}) • ${money(total())}`; cta.disabled = false; }
       else { cta.textContent = `${t('tickets.continue')} • ${money(total())}`; cta.disabled = false; }
 
       syncAccordion();
@@ -1210,7 +1229,7 @@ const icon = (n: string) =>
       const parts = state.pkg.tiers
         .filter((t: any) => state.qty[t.code] > 0)
         .map((t: any) => `${state.qty[t.code]} × ${t.label}`);
-      const timeLabel = state.liveFailed ? 'choose your time' : (state.allDay ? 'Flexible entry' : (state.session ? state.session.time : ''));
+      const timeLabel = timeAtCheckout() ? '' : (state.liveFailed ? 'choose your time' : (state.allDay ? 'Flexible entry' : (state.session ? state.session.time : '')));
       let dateLabel = state.date || '';
       try { if (state.date) dateLabel = new Date(`${state.date}T12:00:00`).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); } catch {}
       const when = [dateLabel, timeLabel].filter(Boolean).join(' · ');
@@ -1224,10 +1243,10 @@ const icon = (n: string) =>
         returnUrl: returnTarget,
       });
       if (!needsOwnTab) params.set('iframe', 'true');
-      // Rezdy honours `date` (pre-selects the day). Quantities/time are passed for completeness
-      // but Rezdy ignores them; the reminder bar tells the visitor what to choose.
+      // Rezdy preselects the day and some ticket types. Its hosted form does not
+      // preselect a General Entry time, so that choice happens in Rezdy.
       if (state.date) params.set('date', state.date);
-      if (state.session && state.session.time && !state.allDay) params.set('time', state.session.time);
+      if (state.session && state.session.time && !state.allDay && !timeAtCheckout()) params.set('time', state.session.time);
       state.pkg.tiers.forEach((t: any) => {
         if (state.qty[t.code]) params.set(t.code, String(state.qty[t.code]));
       });
@@ -1240,9 +1259,10 @@ const icon = (n: string) =>
       const sel = selectionText();
       if (remind) {
         remind.innerHTML = '';
-        remind.append('In checkout, choose ');
+        remind.append(timeAtCheckout() ? 'In checkout, set or confirm ' : 'In checkout, choose ');
         const b = document.createElement('b'); b.textContent = sel.parts || 'your tickets'; remind.append(b);
         if (sel.when) remind.append(` · ${sel.when}`);
+        if (timeAtCheckout()) remind.append(' · then choose your preferred time in Rezdy');
         remind.hidden = false;
       }
 
@@ -1328,7 +1348,7 @@ const icon = (n: string) =>
       if (!state.pkg) { openStep(1); return; }
       if (count() === 0) { openStep(2); return; }
       if (!state.date) { openStep(3); return; }
-      if (!state.session && !state.allDay) { openStep(4); return; }
+      if (!state.session && !state.allDay && !timeAtCheckout()) { openStep(4); return; }
 
       // Open the checkout tab now, inside the tap: iOS blocks window.open after an await.
       let tab: Window | null = null;
@@ -1379,7 +1399,7 @@ const icon = (n: string) =>
             alertEl.textContent = verifyData?.message || 'The selected session is no longer available. Please choose another time or date.';
             alertEl.hidden = false;
           }
-          const targetStep = state.allDay ? 3 : 4;
+          const targetStep = state.allDay || timeAtCheckout() ? 3 : 4;
           openStep(targetStep);
         }
       } catch (err) {
