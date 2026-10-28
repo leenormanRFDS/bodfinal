@@ -141,8 +141,8 @@ export const CONTACT = {
 // src/lib/tracking.ts. Tags only run on the production hostnames below, so previews,
 // *.vercel.app and localhost never pollute GA4 or the Meta dataset.
 export const ANALYTICS = {
-  ga4MeasurementId: 'G-MQ9641V0NY',
-  ga4PropertyId: '545435638', // GA4 admin reference only
+  ga4MeasurementId: 'G-XSL99FECC8',
+  ga4PropertyId: '425826142', // GA4 admin reference only
   // Dedicated "Bombing of Darwin" Meta dataset (pixel). null = Meta not loaded.
   // Do not use the shared RFDS pixel 773978734609862: Meta has flagged it as serving
   // health-related sites, which restricts optimisation.
