@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /tickets/confirmation
+
+Sitemap: https://www.thebombingofdarwin.com.au/sitemap.xml
