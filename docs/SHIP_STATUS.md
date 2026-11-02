@@ -358,6 +358,13 @@ Owner request: set the scene before the first caption. Added a card to both path
 
 **TV player (`TvWitness.astro`).** Defect: once the film was played on wide screens the player appeared on top of the set (square corners over the glass rim). Cause: `.is-playing` raised the screen layer to z-index 6, above the set image (3). Fix: the screen stays behind the set; the iframe is sized to the set's transparent opening (inset 3.6% / 4.2%, 92.4% × 91.2% of the screen layer) so the bezel frames it and the player's controls clear the rounded edge; clicks still reach the player (set, shroud and CRT layers are `pointer-events: none`; verified `elementFromPoint` is the iframe); the CRT scanlines are hidden while playing, and the shroud keeps its falloff except a masked-out window over the screen. Phones are unchanged (full-width modal). Verified headless at 1440 and 900 wide: player inside the opening (16.0–52.2% × 22.6–62.2% of the set against an opening of 15.5–52.7% × 22.0–62.9%), screen z 1 under set z 3, before/after captures compared. YouTube cannot load in the capture environment ("Video unavailable" frame), so the player's own controls are not visually verified against the bezel: needs a look on a real browser.
 
+## Checkpoint 3 Nov 2026 (j) — sitemap and robots.txt (`dev/sitemap-robots`, from `main`; NOT released)
+
+- Search Console showed no sitemap, and `/tickets` unknown to Google. Added `src/pages/sitemap.xml.ts` (prerendered; lists every static `.astro` page on the www origin) and `public/robots.txt` (allow all; disallow `/api/` and `/tickets/confirmation`; points to the sitemap).
+- The sitemap leaves out the `/book` and `/programs` redirects and `/tickets/confirmation`. Add new redirect or private pages to `EXCLUDE` in the sitemap file.
+- Verified: `bun install --frozen-lockfile` and `npm run build` pass; `.vercel/output/static/sitemap.xml` lists 11 URLs, none a redirect. Not yet checked on a live deployment.
+- After release: submit the sitemap in Search Console and request indexing for `/`, `/tickets`, `/experience`, `/story`, `/visit`. When the apex domain moves, change `ORIGIN` in the sitemap file.
+
 ## Outstanding defects (logged, not yet addressed)
 
 - **M3 / tracking:** `purchase` does not fire on this site when Rezdy's thank-you page is top-level (see checkpoint f). Resolution depends on Rezdy's reply on cross-domain measurement.
