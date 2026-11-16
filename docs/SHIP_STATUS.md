@@ -5,10 +5,10 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 | Field | Value |
 |---|---|
 | Current milestone | **Opening cinematic — sound first** (released to production 25 Oct 2026). Next: Google Ads launch prerequisites (see Open items) |
-| Working branch | `dev/ads-tracking` (merged to `main` 26 Oct 2026; fast-forward, nothing ahead). Previous: `dev/opening`, `dev/site-pass`, `dev/spatial-engine`. |
+| Working branch | `dev/ads-attribution` (16 Nov 2026; NOT merged). Previous: `dev/ads-tracking` (merged 26 Oct 2026). Previous: `dev/opening`, `dev/site-pass`, `dev/spatial-engine`. |
 | Production | `main` @ `9be92dd` (Rezdy GA handover on top of the opening cinematic), deployment `dpl_CxCoQwqz3ytpPCm4U5eQmDgabLjV`, 26 Oct 2026, on owner approval ("Yes"). Previous: `92a5e1c` (`dpl_8dR5VjSufnrErYPzH5JLCXj1YHF1`). `www.thebombingofdarwin.com.au` serves this project; the apex `thebombingofdarwin.com.au` still serves the OLD project (owner/dashboard action pending). |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
-| Updated | 26 Oct 2026 (Rezdy GA handover released to production) |
+| Updated | 16 Nov 2026 (Ads attribution: cross-domain linker, own-tab checkout; on `dev/ads-attribution`) |
 
 ## Milestones
 
@@ -364,6 +364,20 @@ Owner request: set the scene before the first caption. Added a card to both path
 - The sitemap leaves out the `/book` and `/programs` redirects and `/tickets/confirmation`. Add new redirect or private pages to `EXCLUDE` in the sitemap file.
 - Verified: `bun install --frozen-lockfile` and `npm run build` pass; `.vercel/output/static/sitemap.xml` lists 11 URLs, none a redirect. Not yet checked on a live deployment.
 - After release: submit the sitemap in Search Console and request indexing for `/`, `/tickets`, `/experience`, `/story`, `/visit`. When the apex domain moves, change `ORIGIN` in the sitemap file.
+
+## Checkpoint 16 Nov 2026 (k) — Google Ads attribution (`dev/ads-attribution`, from `main`; NOT released)
+
+Evidence (analysis 12 Nov, 20 Oct–11 Nov): Google Ads 0 primary conversions; Rezdy purchases in 425826142 arrive as referral / (not set) / direct; ~119 ad clicks gave ~50 paid GA4 sessions. Since `3c79fee` the site sends to the facility property (`G-XSL99FECC8`) only; 545435638 has had no data since 28 Oct. Owner decision 16 Nov: keep existing accounts (no new Ads/GA4 accounts); one primary property (425826142), site property kept for reporting.
+
+Changes:
+- `withCrossDomainLinker()` (`src/lib/tracking.ts`): the Rezdy checkout URL gets GA4's `_gl` (via gtag's own link decoration; `linkerDomains: ['rezdy.com']` in `consts.ts`, `gtag('set','linker')` in `Analytics.astro`). Verified on production 16 Nov in the console that decoration carries `_ga`, `_ga_XSL99FECC8`, `_gcl_aw`, `_gcl_au`.
+- Checkout opens in its own tab on every device (was Apple only); `?checkout=frame` restores the iframe for testing. Reason: the iframe breaks out at payment (checkpoint f), dropping the session. Visitor-facing change: needs owner approval to release.
+- Dual GA4: also `config G-MQ9641V0NY` (545435638), reporting only.
+- gtag loads at `DOMContentLoaded` instead of `load` (quick mobile visits were lost).
+
+Verified on preview `dpl_HvFd63rCP1E61dLbTWytNw1g815a` (owner Chrome, desktop, `?bod_track=1`, `window.open` stubbed so no tab opened, nothing booked): `page_view` and `begin_checkout` sent to both G-XSL99FECC8 and G-MQ9641V0NY; checkout URL = Rezdy General Entry product, no `iframe=true`, `_gl` present (keys `_gcl_au`, `_ga`, `_ga_XSL99FECC8`, `_ga_MQ9641V0NY`; no `_gcl_aw` as there was no ad click), `_ga_data` retained; no iframe created; own-tab panel shown. Test hits from this check: one `page_view`/`begin_checkout` pair per property from the preview host (filter by hostname). `npm run build` OK; Cesium chunk check clean; `verify-ga-handover.mjs` 18/18.
+
+NOT verified: that Rezdy's tag accepts `_gl` (requires the GA4 stream's "Configure your domains" to list rezdy.com and thebombingofdarwin.com.au: owner-approved admin change, pending); a real paid booking from an ad-style URL attributed google/cpc in 425826142 and counted in Ads; mobile / Safari on a real device.
 
 ## Outstanding defects (logged, not yet addressed)
 
