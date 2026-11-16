@@ -377,7 +377,13 @@ Changes:
 
 Verified on preview `dpl_HvFd63rCP1E61dLbTWytNw1g815a` (owner Chrome, desktop, `?bod_track=1`, `window.open` stubbed so no tab opened, nothing booked): `page_view` and `begin_checkout` sent to both G-XSL99FECC8 and G-MQ9641V0NY; checkout URL = Rezdy General Entry product, no `iframe=true`, `_gl` present (keys `_gcl_au`, `_ga`, `_ga_XSL99FECC8`, `_ga_MQ9641V0NY`; no `_gcl_aw` as there was no ad click), `_ga_data` retained; no iframe created; own-tab panel shown. Test hits from this check: one `page_view`/`begin_checkout` pair per property from the preview host (filter by hostname). `npm run build` OK; Cesium chunk check clean; `verify-ga-handover.mjs` 18/18.
 
-NOT verified: that Rezdy's tag accepts `_gl` (requires the GA4 stream's "Configure your domains" to list rezdy.com and thebombingofdarwin.com.au: owner-approved admin change, pending); a real paid booking from an ad-style URL attributed google/cpc in 425826142 and counted in Ads; mobile / Safari on a real device.
+GA4 admin (16 Nov, owner Chrome): the RFDS DTF Google tag (G-XSL99FECC8, now a Tag Manager container) already lists thebombingofdarwin.com.au, rfdsdarwin1.rezdy.com and rfdsdarwin.com.au under "Configure your domains" (set 28 Oct); no change made there. "List unwanted referrals" was EMPTY (why Rezdy sales showed as referrals from our sites). On owner approval ("Yes, add and submit") added thebombingofdarwin.com.au, rfdsdarwin.com.au and rezdy.com (referral domain contains) and published as container **Version 3** (16 Nov 2026 15:12, lee.norman@flyingdoctor.net). This also affects the facility site's reporting from now on (its own domain no longer counts as a referral source).
+
+Rezdy accepts `_gl` (verified on production 16 Nov, owner Chrome): a link decorated on www.thebombingofdarwin.com.au/tickets opened rfdsdarwin1.rezdy.com with the same `_ga` client ID as the site (hash compared on both sides; values not logged), Rezdy page tag G-XSL99FECC8. One test page view on Rezdy from this check.
+
+Google Ads conversion goals: not changed today (browser has no access to ads.google.com in this session; the reporting connector is read-only). Ads 27 Oct–15 Nov: 0 primary conversions; 163 "all conversions", all local actions/calls. Goals set on 3 Nov (GA4 `purchase` and `begin_checkout` from 425826142 as Primary) to be re-checked by the owner.
+
+NOT verified: a real paid booking from an ad-style URL attributed google/cpc in 425826142 and counted in Ads; mobile / Safari on a real device.
 
 ## Outstanding defects (logged, not yet addressed)
 
