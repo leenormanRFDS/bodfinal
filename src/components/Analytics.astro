@@ -3,14 +3,19 @@
 //
 // - Production hostnames only (ANALYTICS.productionHosts): previews, *.vercel.app and
 //   localhost never send data.
-// - Queues are created immediately (window.dataLayer / gtag / fbq), so nothing is lost,
-//   but the vendor scripts load after the page's `load` event so they never compete with
-//   the hero image or fonts.
+// - Queues are created immediately (window.dataLayer / gtag / fbq). The vendor scripts load
+//   (async) once the document is parsed. They used to wait for the `load` event, but on the
+//   heavy pages that cost most quick mobile visits: about 60% of ad clicks never became a
+//   GA4 session (Oct–Nov 2026).
+// - GA4 sends to two properties: the facility property (primary; Rezdy's purchase lands there,
+//   Google Ads imports from it) and the site's own property (reporting only). See consts.ts.
 // - Events go through window.bodTrack (src/lib/tracking.ts), which fans out to GA4 + Meta.
 import { ANALYTICS } from '../consts';
 const enabled = import.meta.env.PROD;
 const cfg = JSON.stringify({
   ga4: ANALYTICS.ga4MeasurementId,
+  ga4Site: ANALYTICS.ga4SiteMeasurementId,
+  linker: ANALYTICS.linkerDomains,
   pixel: ANALYTICS.metaPixelId,
   gtm: ANALYTICS.gtmContainerId,
   hosts: ANALYTICS.productionHosts,
@@ -26,7 +31,9 @@ const cfg = JSON.stringify({
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer.push(arguments); };
       window.gtag('js', new Date());
+      if (c.linker && c.linker.length) window.gtag('set', 'linker', { domains: c.linker });
       if (c.ga4 && !c.gtm) window.gtag('config', c.ga4);
+      if (c.ga4Site && !c.gtm) window.gtag('config', c.ga4Site);
       if (c.gtm) window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
       if (c.pixel) {
         var f = (window.fbq = function () { f.callMethod ? f.callMethod.apply(f, arguments) : f.queue.push(arguments); });
@@ -41,7 +48,7 @@ const cfg = JSON.stringify({
         else if (c.ga4) add('https://www.googletagmanager.com/gtag/js?id=' + c.ga4);
         if (c.pixel) add('https://connect.facebook.net/en_US/fbevents.js');
       }
-      if (document.readyState === 'complete') load(); else window.addEventListener('load', load, { once: true });
+      if (document.readyState !== 'loading') load(); else document.addEventListener('DOMContentLoaded', load, { once: true });
     })();
   </script>
 )}

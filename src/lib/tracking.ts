@@ -39,6 +39,38 @@ export function checkoutUrlWithGa(url: string): string {
 }
 
 /**
+ * `url` with GA4's cross-domain `_gl` parameter added, so the Rezdy checkout continues this visitor's
+ * GA4 session (client ID, session, and the Google Ads click held in `_gcl_aw`). Without it the sale is
+ * reported as a new referral visit and Google Ads cannot match it to the click.
+ *
+ * gtag decorates links to `linkerDomains` when they are pressed. Our checkout URL is set by script
+ * (tab.location / iframe.src), never clicked, so we let gtag decorate a detached-looking link and
+ * read the result back. Unchanged when gtag has not loaded, tracking is off, or decoration fails.
+ * Verified on production 16 Nov 2026: the result carries _ga, _ga_XSL99FECC8, _gcl_aw and _gcl_au.
+ */
+export function withCrossDomainLinker(url: string): string {
+  try {
+    const w = window as any;
+    if (!w.__bodTrackingOn || !w.google_tag_data) return url;
+    const a = document.createElement('a');
+    a.href = url;
+    a.style.display = 'none';
+    a.setAttribute('aria-hidden', 'true');
+    a.tabIndex = -1;
+    a.addEventListener('click', (e) => e.preventDefault());
+    document.body.appendChild(a);
+    try {
+      a.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+    } finally {
+      a.remove();
+    }
+    return /[?&]_gl=/.test(a.href) ? a.href : url;
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Tell the Rezdy checkout inside `iframe` which visitor and campaign it is serving, the same
  * message Rezdy's own embed script sends. Call on every iframe load: each checkout step is a new page.
  */

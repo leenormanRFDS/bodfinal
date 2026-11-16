@@ -141,8 +141,19 @@ export const CONTACT = {
 // src/lib/tracking.ts. Tags only run on the production hostnames below, so previews,
 // *.vercel.app and localhost never pollute GA4 or the Meta dataset.
 export const ANALYTICS = {
+  // Primary property: RFDS Darwin Tourist Facility. Rezdy's checkout reports `purchase` here, so the
+  // site must send to the same web stream for cross-domain measurement to join the ad click to the sale.
+  // Google Ads imports its conversions from this property.
   ga4MeasurementId: 'G-XSL99FECC8',
   ga4PropertyId: '425826142', // GA4 admin reference only
+  // Secondary: the site's own property (545435638), for Bombing of Darwin-only reporting. Receives the
+  // same page views and events; never receives Rezdy's purchase. null = not sent.
+  ga4SiteMeasurementId: 'G-MQ9641V0NY' as string | null,
+  ga4SitePropertyId: '545435638', // GA4 admin reference only
+  // Cross-domain linker: links to these domains get GA4's `_gl` parameter (client, session and ad-click
+  // cookies), so the Rezdy checkout continues the visitor's session. The same domains must be listed under
+  // the primary stream's "Configure your domains" for Rezdy's tag to accept it.
+  linkerDomains: ['rezdy.com'],
   // Dedicated "Bombing of Darwin" Meta dataset (pixel). null = Meta not loaded.
   // Do not use the shared RFDS pixel 773978734609862: Meta has flagged it as serving
   // health-related sites, which restricts optimisation.

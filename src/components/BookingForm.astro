@@ -751,7 +751,7 @@ const icon = (n: string) =>
     font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--bone-dim);
   }
   .co-modal__remind b { color: var(--gold-bright); font-weight: 500; }
-  /* Apple devices: checkout runs in its own tab (Safari blocks Rezdy's cookies inside an iframe). */
+  /* Own-tab checkout (all devices since Nov 2026; see needsOwnTab in the script below). */
   .co-modal__tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 40px 24px; text-align: center; background: var(--ink); }
   .co-modal__tab[hidden] { display: none; }
   .co-modal__tab-h { margin: 0; font-family: var(--font-display-reg); font-size: 1.35rem; color: var(--bone); }
@@ -802,7 +802,7 @@ const icon = (n: string) =>
 
 <script>
   import { t, bindTranslations } from '../i18n/client';
-  import { trackBeginCheckout, checkoutUrlWithGa, sendGaHandover } from '../lib/tracking';
+  import { trackBeginCheckout, checkoutUrlWithGa, sendGaHandover, withCrossDomainLinker } from '../lib/tracking';
 
   const root = document.querySelector<HTMLElement>('[data-booking]');
   if (root) {
@@ -1212,17 +1212,15 @@ const icon = (n: string) =>
     const remind = modal.querySelector<HTMLElement>('[data-coremind]');
 
     /**
-     * Apple devices run Rezdy in its own tab, not an iframe. Safari's cross-site tracking
-     * prevention (on by default; every iOS browser is WebKit) blocks Rezdy's cookies inside
-     * an iframe, and Rezdy's own advice is for guests to switch that protection off.
-     * As a first-party page in its own tab, Rezdy's checkout works normally.
+     * Rezdy's checkout runs in its own tab on every device (since Nov 2026; previously Apple only).
+     * - Safari / iOS: cross-site tracking prevention blocks Rezdy's cookies inside an iframe.
+     * - Everywhere else: Rezdy's checkout leaves the iframe at payment and becomes the top-level page
+     *   (verified 26 Oct 2026; Rezdy cannot support the custom iframe), which dropped the visitor's
+     *   GA4 session, so ad-driven sales showed up as referrals. As a first-party page opened with
+     *   GA4's cross-domain parameter, the checkout keeps the session and the ad click.
+     * `?checkout=frame` restores the old embedded checkout (testing only).
      */
-    const needsOwnTab = (() => {
-      const ua = navigator.userAgent;
-      const iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-      const macSafari = /Safari/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Android/.test(ua);
-      return iOS || macSafari || new URLSearchParams(location.search).get('checkout') === 'tab';
-    })();
+    const needsOwnTab = new URLSearchParams(location.search).get('checkout') !== 'frame';
 
     /** Reminder of the selection: Rezdy ignores quantities passed by link (verified 25 Oct 2026). */
     function selectionText() {
@@ -1254,7 +1252,8 @@ const icon = (n: string) =>
       const sep = baseCheckout.includes('?') ? '&' : '?';
       // `_ga_data` tells Rezdy's checkout which visitor and campaign it is serving, so its own
       // `purchase` event is reported under them (lib/ga-handover.ts). Unchanged when there is no GA cookie.
-      const checkoutUrl = checkoutUrlWithGa(`${baseCheckout}${sep}${params.toString()}`);
+      // `_gl` (GA4 cross-domain) continues the visitor's session and ad click on Rezdy's domain.
+      const checkoutUrl = withCrossDomainLinker(checkoutUrlWithGa(`${baseCheckout}${sep}${params.toString()}`));
 
       const sel = selectionText();
       if (remind) {
