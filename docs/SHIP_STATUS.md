@@ -5,10 +5,10 @@ Single persistent technical delivery record. Governance: `AGENTS.md`. Update at 
 | Field | Value |
 |---|---|
 | Current milestone | **Opening cinematic — sound first** (released to production 25 Oct 2026). Next: Google Ads launch prerequisites (see Open items) |
-| Working branch | `dev/ads-attribution` (16 Nov 2026; NOT merged). Previous: `dev/ads-tracking` (merged 26 Oct 2026). Previous: `dev/opening`, `dev/site-pass`, `dev/spatial-engine`. |
+| Working branch | `dev/ads-attribution` (merged to `main` 17 Nov 2026 via PR #6, merge `2543754`). Previous: `dev/ads-tracking` (merged 26 Oct 2026). Previous: `dev/opening`, `dev/site-pass`, `dev/spatial-engine`. |
 | Production | `main` @ `9be92dd` (Rezdy GA handover on top of the opening cinematic), deployment `dpl_CxCoQwqz3ytpPCm4U5eQmDgabLjV`, 26 Oct 2026, on owner approval ("Yes"). Previous: `92a5e1c` (`dpl_8dR5VjSufnrErYPzH5JLCXj1YHF1`). `www.thebombingofdarwin.com.au` serves this project; the apex `thebombingofdarwin.com.au` still serves the OLD project (owner/dashboard action pending). |
 | Last verified commit | `dev/spatial-engine` HEAD (see git log; verification below run against it) |
-| Updated | 16 Nov 2026 (Ads attribution: cross-domain linker, own-tab checkout; on `dev/ads-attribution`) |
+| Updated | 17 Nov 2026 (Ads attribution released to production, `dpl_4e8jMoc9qAVk6mv7UFrkedBH91JC`) |
 
 ## Milestones
 
@@ -384,6 +384,8 @@ Rezdy accepts `_gl` (verified on production 16 Nov, owner Chrome): a link decora
 Google Ads conversion goals: not changed today (browser has no access to ads.google.com in this session; the reporting connector is read-only). Ads 27 Oct–15 Nov: 0 primary conversions; 163 "all conversions", all local actions/calls. Goals set on 3 Nov (GA4 `purchase` and `begin_checkout` from 425826142 as Primary) to be re-checked by the owner.
 
 NOT verified: a real paid booking from an ad-style URL attributed google/cpc in 425826142 and counted in Ads; mobile / Safari on a real device.
+
+**Release record (17 Nov 2026).** Owner approved the merge in chat ("yes - please merge"). PR #6 merged (`2543754`), production deployment `dpl_4e8jMoc9qAVk6mv7UFrkedBH91JC` READY. Production check (owner Chrome, desktop, `window.open`/`gtag`/`fbq` stubbed after page load so no checkout tab opened, no begin_checkout sent, nothing booked): `/tickets` loads gtag for G-XSL99FECC8 and G-MQ9641V0NY and sends `page_view` to both; Family Pass, Wed 18 Nov, Continue to Payment produced a Rezdy General Entry URL with no `iframe=true`, `_gl` carrying `_gcl_aw`, `_gcl_au`, `_ga`, `_ga_XSL99FECC8`, `_ga_MQ9641V0NY`, plus `_ga_data`; no iframe created; own-tab panel shown; no verification error. **Owed:** one real paid booking from a real Google Ads click, refunded, then check 425826142 (purchase source google / cpc) and Ads conversions after 24–48 h.
 
 ## Outstanding defects (logged, not yet addressed)
 
